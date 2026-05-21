@@ -59,11 +59,11 @@ class Settings(BaseSettings):
     # `LLM_PROVIDER` selects the env-default. Workspaces can override per-call
     # by adding their own credential under Settings → API keys. Supported
     # providers: "openai", "anthropic", "google_ai".
-    llm_provider: str = Field(default="anthropic", alias="LLM_PROVIDER")
+    llm_provider: str = Field(default="openai", alias="LLM_PROVIDER")
     # Per-provider models — only the one matching `llm_provider` is used at
     # the env level, but all are read so a workspace BYOK credential of any
     # provider can pick up the right default model.
-    llm_model: str = Field(default="gpt-4.1-mini", alias="LLM_MODEL")
+    llm_model: str = Field(default="gpt-5.4-mini", alias="LLM_MODEL")
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
     openai_base_url: str = Field(
         default="https://api.openai.com/v1", alias="OPENAI_BASE_URL"

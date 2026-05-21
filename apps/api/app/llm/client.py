@@ -553,6 +553,8 @@ def _build_client_for(cred) -> LlmClient:
 # Add new models here as they're enabled. Falls back to gpt-4.1-mini rates
 # when the model isn't recognized.
 _PRICING_USD_MICROS_PER_1K_TOKENS: dict[str, dict[str, int]] = {
+    # GPT-5.4 family — published rates ($/1M ÷ 1000 = micros/1k).
+    "gpt-5.4-mini": {"input": 750, "output": 4_500},
     "gpt-4.1": {"input": 5_000, "output": 15_000},
     "gpt-4.1-mini": {"input": 1_500, "output": 6_000},
     "gpt-4o": {"input": 5_000, "output": 15_000},
