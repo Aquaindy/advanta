@@ -42,9 +42,15 @@ apps/web/.vite/
 .next/
 out/
 
+# TypeScript incremental build cache (generated artifact)
+*.tsbuildinfo
+
 # Tooling caches
 .turbo/
 .cache/
 
 # Local docker volumes
 infra/docker/data/
+
+# Local-only docker overrides (machine-specific port remaps, etc.)
+docker-compose.override.yml
