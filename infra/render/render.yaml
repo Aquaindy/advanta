@@ -22,11 +22,27 @@ services:
     healthCheckPath: /api/v1/health
     autoDeploy: true
     preDeployCommand: alembic upgrade head
+    domains:
+      - api.getadvanta.app
+    # Blog-image uploads write to /app/uploads, which is EPHEMERAL on Render —
+    # images are lost on every deploy/restart. For production, use object
+    # storage (S3 / Cloudflare R2). A persistent disk is possible but pins the
+    # service to one instance, drops zero-downtime deploys, and the container
+    # runs as non-root (uid 10001) while Render mounts disks as root, so writes
+    # can fail without an entrypoint chown. Uncomment only if you accept that.
+    # disk:
+    #   name: advanta-uploads
+    #   mountPath: /app/uploads
+    #   sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: LLM_PROVIDER
+        value: openai
+      - key: LLM_MODEL
+        value: gpt-5.4-mini
       - key: DATABASE_URL
         fromDatabase:
           name: advanta-postgres
@@ -41,11 +57,11 @@ services:
       - key: ENCRYPTION_KEY
         sync: false  # set manually with a Fernet key
       - key: FRONTEND_URL
-        sync: false
+        value: https://getadvanta.app
       - key: BACKEND_URL
-        sync: false
+        value: https://api.getadvanta.app
       - key: CORS_ORIGINS
-        sync: false
+        value: '["https://getadvanta.app","https://www.getadvanta.app"]'
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
@@ -115,6 +131,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: LLM_PROVIDER
+        value: openai
+      - key: LLM_MODEL
+        value: gpt-5.4-mini
       - key: DATABASE_URL
         fromDatabase:
           name: advanta-postgres
@@ -165,8 +185,13 @@ services:
     plan: starter
     healthCheckPath: /healthz
     autoDeploy: true
+    domains:
+      - getadvanta.app
+      - www.getadvanta.app
     envVars:
+      # Baked into the SPA at build time (Render passes env vars as Docker build
+      # args). Must point at the API's public origin + /api/v1.
       - key: VITE_API_BASE_URL
-        sync: false
+        value: https://api.getadvanta.app/api/v1
       - key: VITE_APP_NAME
         value: AdVanta AI
