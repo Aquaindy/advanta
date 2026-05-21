@@ -20,7 +20,7 @@ export function GoogleSignInButton({
   return (
     <a
       href={href}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-ink shadow-sm outline-none transition hover:border-slate-300 hover:bg-slate-50 focus:ring-2 focus:ring-grape-200"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm font-medium text-ink shadow-sm outline-none transition hover:border-slate-300 hover:bg-slate-50 focus:ring-2 focus:ring-grape-200"
     >
       <GoogleGlyph />
       {label}

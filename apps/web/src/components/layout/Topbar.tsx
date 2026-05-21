@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Logomark } from "@/components/Logomark";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminBadge } from "@/components/layout/AdminBadge";
 import { PlanBadge } from "@/components/layout/PlanBadge";
 import { APP_NAME } from "@/lib/constants";
@@ -60,7 +61,7 @@ export function Topbar() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur sm:px-6 lg:h-16">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-slate-200 bg-surface/80 px-4 backdrop-blur sm:px-6 lg:h-16">
       <div className="flex items-center gap-3 lg:hidden">
         <Logomark />
         <span className="text-sm font-semibold text-ink">{APP_NAME}</span>
@@ -81,7 +82,7 @@ export function Topbar() {
           <span aria-hidden className="text-slate-400">▾</span>
         </button>
         {wsOpen ? (
-          <div className="absolute left-0 top-full z-40 mt-1 w-72 rounded-xl border border-slate-100 bg-white py-1 shadow-elevate">
+          <div className="absolute left-0 top-full z-40 mt-1 w-72 rounded-xl border border-slate-100 bg-surface py-1 shadow-elevate">
             {memberships.data?.map((m) => (
               <button
                 key={m.id}
@@ -114,6 +115,7 @@ export function Topbar() {
       </div>
 
       <div ref={userRef} className="relative flex items-center gap-3">
+        <ThemeToggle />
         <AdminBadge />
         <PlanBadge />
         <button
@@ -125,7 +127,7 @@ export function Topbar() {
           {(user?.full_name ?? user?.email ?? "?").slice(0, 1).toUpperCase()}
         </button>
         {userOpen ? (
-          <div className="absolute right-0 top-full z-40 mt-1 w-60 rounded-xl border border-slate-100 bg-white py-1 shadow-elevate">
+          <div className="absolute right-0 top-full z-40 mt-1 w-60 rounded-xl border border-slate-100 bg-surface py-1 shadow-elevate">
             <div className="border-b border-slate-100 px-3 py-2">
               <div className="text-sm font-medium text-ink">{user?.full_name ?? "—"}</div>
               <div className="truncate text-xs text-slate-500">{user?.email}</div>

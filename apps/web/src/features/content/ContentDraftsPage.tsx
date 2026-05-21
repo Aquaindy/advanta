@@ -167,7 +167,7 @@ function GenerateForm() {
           <select
             value={type}
             onChange={(e) => setType(e.target.value as ContentDraftType)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           >
             {(Object.keys(TYPE_LABELS) as ContentDraftType[]).map((t) => (
               <option key={t} value={t}>
@@ -183,7 +183,7 @@ function GenerateForm() {
             value={audience}
             onChange={(e) => setAudience(e.target.value)}
             placeholder="e.g. demand-gen leads at SaaS companies"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm sm:col-span-2">
@@ -193,7 +193,7 @@ function GenerateForm() {
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="e.g. Why first-touch attribution misleads B2B teams"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm sm:col-span-2">
@@ -203,7 +203,7 @@ function GenerateForm() {
             value={keywordsRaw}
             onChange={(e) => setKeywordsRaw(e.target.value)}
             placeholder="attribution, b2b, marketing"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         {error ? (

@@ -215,7 +215,7 @@ function ProspectFields({ prospect }: { prospect: BacklinkProspectPublic }) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         {error ? (
@@ -261,7 +261,7 @@ function Input({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
       />
     </label>
   );
@@ -470,7 +470,7 @@ function EmailCard({ email }: { email: OutreachEmailPublic }) {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={10}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <div>

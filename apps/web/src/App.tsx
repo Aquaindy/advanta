@@ -78,7 +78,8 @@ export function App() {
       <BrowserRouter>
         <Routes>
           {/* Public */}
-          <Route path="/welcome" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/welcome" element={<Navigate to="/" replace />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
@@ -97,7 +98,7 @@ export function App() {
             {/* Authenticated + workspace selected */}
             <Route element={<RequireWorkspace />}>
               <Route element={<AppShell />}>
-                <Route index element={<DashboardPage />} />
+                <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="onboarding" element={<OnboardingWizardPage />} />
                 <Route path="growth-dna" element={<GrowthDnaPage />} />
                 <Route path="settings" element={<SettingsLayout />}>
@@ -140,7 +141,7 @@ export function App() {
                 <Route path="website" element={<WebsitePage />} />
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="reports/:reportId" element={<ReportDetailPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Route>
             </Route>
           </Route>

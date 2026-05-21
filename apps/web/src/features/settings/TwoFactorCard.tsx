@@ -164,7 +164,7 @@ export function TwoFactorCard() {
                 onChange={(e) => setCode(e.target.value)}
                 pattern="[0-9]*"
                 required
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm tracking-widest text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+                className="rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-sm tracking-widest text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
               />
             </label>
             <Button type="submit" disabled={busy}>
@@ -184,7 +184,7 @@ export function TwoFactorCard() {
               value={disableCode}
               onChange={(e) => setDisableCode(e.target.value)}
               required
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm tracking-widest text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-sm tracking-widest text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <Button type="submit" variant="secondary" disabled={busy}>

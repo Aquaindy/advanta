@@ -240,7 +240,7 @@ function CreateAbTestForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={target === "landing_page" ? "Hero copy: specific value props" : "Headline test: question vs statement"}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5 sm:col-span-2">
@@ -249,7 +249,7 @@ function CreateAbTestForm() {
             value={hypothesis}
             onChange={(e) => setHypothesis(e.target.value)}
             rows={2}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5">
@@ -257,7 +257,7 @@ function CreateAbTestForm() {
           <select
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           >
             <option value="conversion_rate">Conversion rate</option>
             <option value="click_through_rate">Click-through rate</option>
@@ -285,7 +285,7 @@ function CreateAbTestForm() {
               <select
                 value={provider}
                 onChange={(e) => setProvider(e.target.value)}
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+                className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
               >
                 <option value="meta_ads">Meta Ads</option>
                 <option value="google_ads">Google Ads</option>
@@ -388,7 +388,7 @@ function FormField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
       />
     </label>
   );

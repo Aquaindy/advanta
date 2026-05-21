@@ -67,7 +67,7 @@ function PostHeader({ post }: { post: PublicBlogPost }) {
     : null;
 
   return (
-    <section className="border-b border-slate-100 bg-white">
+    <section className="border-b border-slate-100 bg-surface">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
         <Link
           to="/blog"
@@ -117,7 +117,7 @@ function PostHeader({ post }: { post: PublicBlogPost }) {
 
 function PostBody({ body }: { body: string }) {
   return (
-    <article className="bg-white">
+    <article className="bg-surface">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
         {renderMarkdown(body)}
       </div>
@@ -145,7 +145,7 @@ function PostFooter({ post }: { post: PublicBlogPost }) {
           </Link>
           <Link
             to="/register"
-            className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-surface px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
             Try AdVanta free
           </Link>
@@ -163,7 +163,7 @@ function PostFooter({ post }: { post: PublicBlogPost }) {
 
 function NotFoundState({ notFound }: { notFound: boolean }) {
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
         <p className="text-xs font-medium uppercase tracking-wider text-grape-700">
           {notFound ? "Post not found" : "Couldn't load this post"}

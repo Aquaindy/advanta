@@ -156,7 +156,7 @@ function AddProspectForm() {
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
             placeholder="techcrunch.com"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
@@ -165,7 +165,7 @@ function AddProspectForm() {
             type="text"
             value={contactName}
             onChange={(e) => setContactName(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
@@ -174,7 +174,7 @@ function AddProspectForm() {
             type="email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         {error ? (

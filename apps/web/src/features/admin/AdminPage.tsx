@@ -36,7 +36,7 @@ export function AdminPage() {
     return <div className="text-sm text-slate-400">Loading…</div>;
   }
   if (!user?.is_superuser) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
@@ -136,7 +136,7 @@ function OverviewGrid({ data }: { data: NonNullable<ReturnType<typeof getAdminOv
   return (
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {tiles.map((t) => (
-        <div key={t.label} className="rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-card">
+        <div key={t.label} className="rounded-2xl border border-slate-100 bg-surface px-4 py-3 shadow-card">
           <div className="text-[11px] uppercase tracking-wider text-slate-400">{t.label}</div>
           <div
             className={cn(

@@ -187,7 +187,7 @@ function SummaryStrip({ summary }: { summary: CampaignSummary }) {
 
 function CampaignList({ campaigns }: { campaigns: CampaignPublic[] }) {
   return (
-    <ul className="flex flex-col divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
+    <ul className="flex flex-col divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-100 bg-surface shadow-card">
       {campaigns.map((c) => (
         <li key={c.id}>
           <Link
@@ -271,7 +271,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-1.5 text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

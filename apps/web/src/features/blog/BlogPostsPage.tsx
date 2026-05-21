@@ -103,7 +103,7 @@ function BlogPostsPageInner({ workspaceId }: { workspaceId: string }) {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="e.g. How AdVanta cuts wasted ad spend"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+                className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
               />
             </label>
             <Button type="submit" disabled={create.isPending}>
@@ -127,7 +127,7 @@ function BlogPostsPageInner({ workspaceId }: { workspaceId: string }) {
               onChange={(e) =>
                 setStatusFilter(e.target.value as ContentDraftStatus | "all")
               }
-              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-ink shadow-sm focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-1.5 text-xs text-ink shadow-sm focus:border-grape focus:ring-2 focus:ring-grape-200"
             >
               <option value="all">All statuses</option>
               <option value="draft">Draft</option>

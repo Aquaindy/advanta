@@ -120,7 +120,7 @@ function ProviderRow({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white">
+    <div className="rounded-xl border border-slate-200 bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div>
           <div className="font-medium text-ink">{spec.display_name}</div>
@@ -271,7 +271,7 @@ function AddForm({
           placeholder="Paste your key…"
           required
           className={cn(
-            "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink",
+            "rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink",
             "shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200",
           )}
         />
@@ -285,7 +285,7 @@ function AddForm({
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="e.g. Acme prod, dev sandbox"
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+          className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
         />
       </label>
       {error ? (

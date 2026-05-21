@@ -36,7 +36,7 @@ export function ApiKeysPage() {
               cn(
                 "flex-1 whitespace-nowrap rounded-lg px-3 py-1.5 text-center text-sm font-medium transition",
                 isActive
-                  ? "bg-white text-grape-700 shadow-sm"
+                  ? "bg-surface text-grape-700 shadow-sm"
                   : "text-slate-600 hover:text-ink",
               )
             }

@@ -158,7 +158,7 @@ function BodyCard({ draft }: { draft: ContentDraftPublic }) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         <label className="flex flex-col gap-1.5">
@@ -167,7 +167,7 @@ function BodyCard({ draft }: { draft: ContentDraftPublic }) {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={18}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
         </label>
         {error ? (
@@ -317,7 +317,7 @@ function ActionsCard({ draft }: { draft: ContentDraftPublic }) {
               value={publicationUrl}
               onChange={(e) => setPublicationUrl(e.target.value)}
               placeholder="https://example.com/blog/post"
-              className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="flex-1 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
             <Button
               onClick={() => publish.mutate()}

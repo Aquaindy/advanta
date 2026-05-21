@@ -23,21 +23,21 @@ export function renderMarkdown(source: string): ReactNode {
   let key = 0;
 
   while (i < lines.length) {
-    const line = lines[i];
+    const line = lines[i] ?? "";
 
     // Fenced code block.
     if (line.startsWith("```")) {
       const buf: string[] = [];
       i++;
-      while (i < lines.length && !lines[i].startsWith("```")) {
-        buf.push(lines[i]);
+      while (i < lines.length && !lines[i]!.startsWith("```")) {
+        buf.push(lines[i]!);
         i++;
       }
       if (i < lines.length) i++; // consume closing fence
       blocks.push(
         <pre
           key={key++}
-          className="my-4 overflow-x-auto rounded-xl bg-ink px-4 py-3 text-xs text-grape-50"
+          className="my-4 overflow-x-auto rounded-xl bg-[#0c1121] px-4 py-3 text-xs text-[#e2e8f0] ring-1 ring-white/10"
         >
           <code>{buf.join("\n")}</code>
         </pre>,
@@ -48,8 +48,8 @@ export function renderMarkdown(source: string): ReactNode {
     // Headings.
     const heading = /^(#{1,3})\s+(.*)$/.exec(line);
     if (heading) {
-      const level = heading[1].length;
-      const content = heading[2];
+      const level = heading[1]!.length;
+      const content = heading[2] ?? "";
       const cls = HEADING_CLASS[level];
       const Tag: "h2" | "h3" | "h4" =
         level === 1 ? "h2" : level === 2 ? "h3" : "h4";
@@ -87,8 +87,8 @@ export function renderMarkdown(source: string): ReactNode {
     // Unordered list.
     if (/^[\-*]\s+/.test(line)) {
       const items: string[] = [];
-      while (i < lines.length && /^[\-*]\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^[\-*]\s+/, ""));
+      while (i < lines.length && /^[\-*]\s+/.test(lines[i]!)) {
+        items.push(lines[i]!.replace(/^[\-*]\s+/, ""));
         i++;
       }
       blocks.push(
@@ -109,8 +109,8 @@ export function renderMarkdown(source: string): ReactNode {
     // Ordered list.
     if (/^\d+\.\s+/.test(line)) {
       const items: string[] = [];
-      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^\d+\.\s+/, ""));
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i]!)) {
+        items.push(lines[i]!.replace(/^\d+\.\s+/, ""));
         i++;
       }
       blocks.push(
@@ -139,10 +139,10 @@ export function renderMarkdown(source: string): ReactNode {
     i++;
     while (
       i < lines.length &&
-      lines[i].trim() !== "" &&
-      !/^(#{1,3}\s|[\-*]\s|\d+\.\s|```|!\[)/.test(lines[i])
+      lines[i]!.trim() !== "" &&
+      !/^(#{1,3}\s|[\-*]\s|\d+\.\s|```|!\[)/.test(lines[i]!)
     ) {
-      buf.push(lines[i]);
+      buf.push(lines[i]!);
       i++;
     }
     blocks.push(
@@ -200,13 +200,15 @@ function renderInline(text: string): ReactNode {
         </code>,
       );
     } else if (m[7]) {
+      const href = m[9] ?? "";
+      const external = href.startsWith("http");
       out.push(
         <a
           key={key++}
-          href={m[9]}
+          href={href}
           className="text-grape-700 underline-offset-2 hover:underline"
-          target={m[9].startsWith("http") ? "_blank" : undefined}
-          rel={m[9].startsWith("http") ? "noopener noreferrer" : undefined}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
         >
           {m[8]}
         </a>,

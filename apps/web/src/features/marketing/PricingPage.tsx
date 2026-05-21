@@ -161,7 +161,7 @@ export function PricingPage() {
                   "rounded-xl px-4 py-2 text-center text-sm font-semibold transition",
                   tier.highlight
                     ? "bg-grape text-white hover:bg-grape-800"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                    : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50",
                 )}
               >
                 Choose plan
@@ -216,7 +216,7 @@ function ConciergeSection() {
               <li
                 key={tier.name}
                 className={cn(
-                  "card flex flex-col gap-4 bg-white p-6",
+                  "card flex flex-col gap-4 bg-surface p-6",
                   tier.highlight && "border-grape-300 ring-2 ring-grape-200 shadow-elevate",
                 )}
               >
@@ -253,7 +253,7 @@ function ConciergeSection() {
                     "rounded-xl px-4 py-2 text-center text-sm font-semibold transition",
                     tier.highlight
                       ? "bg-grape text-white hover:bg-grape-800"
-                      : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                      : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50",
                   )}
                 >
                   Talk to us
@@ -263,7 +263,7 @@ function ConciergeSection() {
           })}
         </ul>
 
-        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-white px-6 py-6 text-center">
+        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-surface px-6 py-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider text-grape-700">
             Custom · Enterprise
           </p>

@@ -11,7 +11,7 @@ function renderLogin() {
     <MemoryRouter initialEntries={["/login"]}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<div>Dashboard</div>} />
+        <Route path="/dashboard" element={<div>Dashboard</div>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -34,7 +34,7 @@ describe("LoginPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls loginRequest with the form values and routes to /", async () => {
+  it("calls loginRequest with the form values and routes to /dashboard", async () => {
     const user = userEvent.setup();
     const fakeUser = {
       id: "u-1",
@@ -61,7 +61,7 @@ describe("LoginPage", () => {
       email: "alice@example.com",
       password: "secret-pw-9",
     });
-    // Successful login → redirect to "/" → renders the Dashboard route.
+    // Successful login → redirect to "/dashboard" → renders the Dashboard route.
     expect(await screen.findByText("Dashboard")).toBeInTheDocument();
   });
 

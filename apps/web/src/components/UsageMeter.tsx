@@ -104,7 +104,7 @@ export function UsageMeter({ resource }: { resource: UsageResource }) {
   // Unlimited tier — show a quiet "Unlimited" badge instead of a bar.
   if (cap === null) {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs text-slate-500">
+      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-surface px-4 py-2.5 text-xs text-slate-500">
         <span className="font-semibold text-grape-700">{data.plan.display_name}</span>
         <span>·</span>
         <span>{copy.label}: unlimited this period</span>
@@ -118,7 +118,7 @@ export function UsageMeter({ resource }: { resource: UsageResource }) {
       ? { bar: "bg-red-500", text: "text-red-700", border: "border-red-200", bg: "bg-red-50" }
       : pct >= 75
         ? { bar: "bg-amber-500", text: "text-amber-800", border: "border-amber-200", bg: "bg-amber-50" }
-        : { bar: "bg-grape", text: "text-slate-600", border: "border-slate-200", bg: "bg-white" };
+        : { bar: "bg-grape", text: "text-slate-600", border: "border-slate-200", bg: "bg-surface" };
 
   return (
     <div

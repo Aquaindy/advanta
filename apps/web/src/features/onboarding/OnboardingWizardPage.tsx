@@ -525,7 +525,7 @@ function ChannelsStep({ form, setField }: StepProps) {
                     "rounded-full border px-3 py-1.5 text-sm font-medium transition",
                     active
                       ? "border-grape bg-grape-100 text-grape-700"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-grape-200",
+                      : "border-slate-200 bg-surface text-slate-700 hover:border-grape-200",
                   )}
                 >
                   {p.label}
@@ -558,7 +558,7 @@ function ChannelsStep({ form, setField }: StepProps) {
                     "rounded-xl border p-3 text-left text-sm transition",
                     active
                       ? "border-grape bg-grape-50"
-                      : "border-slate-200 bg-white hover:border-grape-200",
+                      : "border-slate-200 bg-surface hover:border-grape-200",
                   )}
                 >
                   <div className="font-medium text-ink">{opt.label}</div>
@@ -593,14 +593,14 @@ function ChannelsStep({ form, setField }: StepProps) {
                   placeholder="Competitor name"
                   value={c.name}
                   onChange={(e) => setCompetitor(idx, { name: e.target.value })}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+                  className="flex-1 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
                 />
                 <input
                   type="url"
                   placeholder="https://"
                   value={c.url ?? ""}
                   onChange={(e) => setCompetitor(idx, { url: e.target.value })}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+                  className="flex-1 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
                 />
                 <button
                   type="button"
@@ -677,7 +677,7 @@ function TextField({
         placeholder={placeholder}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
       />
     </label>
   );
@@ -713,7 +713,7 @@ function TextArea({
         placeholder={placeholder}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
       />
     </label>
   );

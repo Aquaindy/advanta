@@ -180,7 +180,7 @@ export function GrowthDnaView({ dna }: { dna: GrowthDna }) {
           Refine onboarding answers →
         </Link>
         <Link
-          to="/"
+          to="/dashboard"
           className="text-sm font-medium text-slate-500 hover:text-ink"
         >
           Back to Command Center

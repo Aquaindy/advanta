@@ -30,7 +30,7 @@ export function WorkspaceSelectorPage() {
     onSuccess: (workspace) => {
       queryClient.invalidateQueries({ queryKey: ["workspaces"] });
       setCurrent(workspace.id);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     },
     onError: (err) => {
       setError(err instanceof ApiError ? err.message : "Could not create workspace.");
@@ -42,13 +42,13 @@ export function WorkspaceSelectorPage() {
     if (!memberships.data) return;
     if (memberships.data.length === 1 && !useWorkspaceStore.getState().currentWorkspaceId) {
       setCurrent(memberships.data[0]!.id);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [memberships.data, navigate, setCurrent]);
 
   function onSelect(id: string) {
     setCurrent(id);
-    navigate("/", { replace: true });
+    navigate("/dashboard", { replace: true });
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -130,7 +130,7 @@ export function WorkspaceSelectorPage() {
               placeholder="e.g. Acme Marketing"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="flex-1 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
             <Button type="submit" disabled={create.isPending}>
               {create.isPending ? "Creating…" : "Create workspace"}

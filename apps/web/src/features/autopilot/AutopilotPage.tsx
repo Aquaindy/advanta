@@ -180,7 +180,7 @@ function AutopilotPageInner({ workspaceId }: { workspaceId: string }) {
               onChange={(e) =>
                 patchDraft({ mode: e.target.value as AutopilotMode })
               }
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             >
               <option value="off">off — manual approvals</option>
               <option value="advisor">advisor — recommendations only</option>
@@ -222,7 +222,7 @@ function AutopilotPageInner({ workspaceId }: { workspaceId: string }) {
                   risk_ceiling: e.target.value as AutopilotConfig["risk_ceiling"],
                 })
               }
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             >
               <option value="low">low (safest)</option>
               <option value="medium">medium</option>
@@ -245,7 +245,7 @@ function AutopilotPageInner({ workspaceId }: { workspaceId: string }) {
                 })
               }
               placeholder={"paid_ads.budget_unset\npaid_ads.scale_up"}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-xs text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
             <span className="text-xs text-slate-400">
               One recommendation_type per line. Empty list means autopilot won't
@@ -323,7 +323,7 @@ function NumberField({
           const raw = e.target.value;
           onChange(raw === "" ? null : Number(raw));
         }}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
       />
     </label>
   );

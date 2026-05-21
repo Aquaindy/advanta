@@ -37,32 +37,37 @@ export function LandingPage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-grape-soft">
-      {/* Soft radial wash so the hero feels lit, not flat. */}
+    <section className="relative overflow-hidden bg-grape-gradient text-white">
+      {/* Faint grid for executive texture. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-32 top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-grape-gradient opacity-20 blur-3xl"
+        className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:44px_44px]"
+      />
+      {/* Light glows so the saturated panel reads as lit, not flat. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 -top-24 h-[26rem] w-[26rem] rounded-full bg-violet-electric/40 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 top-12 h-[20rem] w-[20rem] rounded-full bg-violet-electric/20 blur-3xl"
+        className="pointer-events-none absolute -left-32 bottom-[-12rem] h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl"
       />
 
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 sm:py-28 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-grape-200 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-wider text-grape-700 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-grape-700" />
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-white backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-white" />
             AdVanta AI · Growth Command Center
           </p>
-          <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
             Turn ad chaos
             <br />
             into{" "}
-            <span className="bg-grape-gradient bg-clip-text text-transparent">
+            <span className="bg-[linear-gradient(90deg,#ffffff_0%,#D9CFF6_100%)] bg-clip-text text-transparent">
               intelligent growth.
             </span>
           </h1>
-          <p className="mt-5 max-w-xl text-xl text-slate-600">
+          <p className="mt-5 max-w-xl text-xl text-white/80">
             Specialized AI agents read your real ad accounts, GA4, and website
             — surface wasted spend, draft creative, run launchable A/B tests,
             and apply approved changes back to the platforms. Approval-gated
@@ -71,18 +76,18 @@ function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               to="/register"
-              className="rounded-xl bg-grape px-5 py-3 text-sm font-semibold text-white shadow-elevate transition hover:bg-grape-800"
+              className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#3E2F84] shadow-elevate transition hover:bg-white/90"
             >
               Get started
             </Link>
             <Link
               to="/pricing"
-              className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               See pricing
             </Link>
           </div>
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-white/60">
             Starter from $99/mo. Full agent suite at every tier — bring your
             own LLM keys to keep token cost on your own provider bill.
           </p>
@@ -107,7 +112,7 @@ function DashboardMock() {
         aria-hidden
         className="absolute -inset-4 rounded-[2rem] bg-grape-gradient opacity-10 blur-2xl"
       />
-      <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-elevate sm:p-5">
+      <div className="relative rounded-2xl border border-slate-200 bg-surface p-4 shadow-elevate sm:p-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <span className="h-2.5 w-2.5 rounded-full bg-rose-300" />
           <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
@@ -159,7 +164,7 @@ function DashboardMock() {
 
 function KpiTile({ label, tone }: { label: string; tone?: "grape" }) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-white px-3 py-2.5">
+    <div className="rounded-xl border border-slate-100 bg-surface px-3 py-2.5">
       <div className="text-[10px] uppercase tracking-wider text-slate-400">
         {label}
       </div>
@@ -179,7 +184,7 @@ function KpiTile({ label, tone }: { label: string; tone?: "grape" }) {
 
 function AgentTile({ name, status }: { name: string; status: string }) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-white px-3 py-2.5">
+    <div className="rounded-xl border border-slate-100 bg-surface px-3 py-2.5">
       <div className="text-xs font-semibold text-ink">{name} agent</div>
       <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-cloud px-2 py-0.5 text-[10px] text-slate-500">
         <span className="h-1.5 w-1.5 rounded-full bg-grape-400" />
@@ -205,7 +210,7 @@ function TrustBand() {
     "Stripe",
   ];
   return (
-    <section className="border-y border-slate-100 bg-white">
+    <section className="border-y border-slate-100 bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <p className="text-center text-xs font-medium uppercase tracking-wider text-slate-400">
           Built on the platforms your team already runs
@@ -324,7 +329,7 @@ type AgentCard = {
 
 function AgentFeatureCard({ title, role, summary, bullets }: AgentCard) {
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-card transition hover:shadow-elevate">
+    <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-surface p-6 shadow-card transition hover:shadow-elevate">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-grape-gradient opacity-0 blur-2xl transition-opacity group-hover:opacity-15"
@@ -385,7 +390,7 @@ function AgentGlyph() {
 
 function PlatformOverview() {
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
           <div className="order-2 lg:order-1">
@@ -451,7 +456,7 @@ function CommandCenterMock() {
         aria-hidden
         className="absolute -inset-6 rounded-[2.25rem] bg-grape-gradient opacity-10 blur-3xl"
       />
-      <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-elevate">
+      <div className="relative rounded-2xl border border-slate-200 bg-surface p-5 shadow-elevate">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <span className="text-xs font-semibold text-ink">Recommendations</span>
           <span className="text-[10px] uppercase tracking-wider text-slate-400">
@@ -566,7 +571,7 @@ function ModeCard({
         "relative overflow-hidden rounded-2xl border p-6 shadow-card " +
         (isPrimary
           ? "border-grape bg-grape text-white shadow-elevate"
-          : "border-slate-200 bg-white")
+          : "border-slate-200 bg-surface")
       }
     >
       {badge ? (
@@ -577,7 +582,7 @@ function ModeCard({
       <p
         className={
           "text-xs uppercase tracking-wider " +
-          (isPrimary ? "text-grape-100" : "text-slate-400")
+          (isPrimary ? "text-white/70" : "text-slate-400")
         }
       >
         {tagline}
@@ -592,7 +597,7 @@ function ModeCard({
       </h3>
       <p
         className={
-          "mt-3 text-base " + (isPrimary ? "text-grape-50" : "text-slate-600")
+          "mt-3 text-base " + (isPrimary ? "text-white/85" : "text-slate-600")
         }
       >
         {body}
@@ -609,7 +614,7 @@ function ModeCard({
 
 function HowItWorks() {
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-grape-700">
@@ -709,7 +714,7 @@ function ProductionGuarantees() {
           {items.map((it) => (
             <div
               key={it.heading}
-              className="rounded-2xl border border-slate-100 bg-white p-6 shadow-card"
+              className="rounded-2xl border border-slate-100 bg-surface p-6 shadow-card"
             >
               <h3 className="text-lg font-semibold text-ink">{it.heading}</h3>
               <p className="mt-2 text-base text-slate-600">{it.body}</p>
@@ -783,7 +788,7 @@ function PricingTeaser() {
   ];
 
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <div className="text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-grape-700">
@@ -803,7 +808,7 @@ function PricingTeaser() {
             <li
               key={tier.name}
               className={
-                "flex flex-col rounded-2xl border bg-white p-6 " +
+                "flex flex-col rounded-2xl border bg-surface p-6 " +
                 (tier.highlight
                   ? "border-grape-300 ring-2 ring-grape-200 shadow-elevate"
                   : "border-slate-200")
@@ -841,7 +846,7 @@ function PricingTeaser() {
                   "mt-6 rounded-xl px-4 py-2 text-center text-sm font-semibold transition " +
                   (tier.highlight
                     ? "bg-grape text-white shadow-sm hover:bg-grape-800"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50")
+                    : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50")
                 }
               >
                 Start with {tier.name}
@@ -853,7 +858,7 @@ function PricingTeaser() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/pricing"
-            className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-surface px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
             View full pricing
           </Link>
@@ -917,7 +922,7 @@ function FaqSection() {
           {items.map((it) => (
             <details
               key={it.q}
-              className="group rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-card open:shadow-elevate"
+              className="group rounded-2xl border border-slate-100 bg-surface px-5 py-4 shadow-card open:shadow-elevate"
             >
               <summary className="flex cursor-pointer items-center justify-between gap-4 text-base font-semibold text-ink marker:hidden">
                 <span>{it.q}</span>
@@ -956,20 +961,20 @@ function FinalCta() {
       />
 
       <div className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 sm:py-24">
-        <p className="text-xs font-medium uppercase tracking-wider text-grape-100">
+        <p className="text-xs font-medium uppercase tracking-wider text-white/70">
           Ready when you are
         </p>
         <h2 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
           Put your growth team on a real command center.
         </h2>
-        <p className="mt-4 text-lg text-grape-50">
+        <p className="mt-4 text-lg text-white/85">
           Pick a tier, connect one platform, and you'll have your first
           recommendation queued within minutes.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/register"
-            className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-grape-700 shadow-elevate transition hover:bg-grape-50"
+            className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#3E2F84] shadow-elevate transition hover:bg-white/90"
           >
             Create your workspace
           </Link>

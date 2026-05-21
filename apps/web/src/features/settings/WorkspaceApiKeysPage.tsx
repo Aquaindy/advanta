@@ -116,7 +116,7 @@ function WorkspaceApiKeysInner({ workspaceId }: { workspaceId: string }) {
               onChange={(e) => setLabel(e.target.value)}
               placeholder="ci-ingest, zapier, etc."
               required
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <label className="flex flex-col gap-1.5 text-sm" htmlFor="api-key-role">
@@ -125,7 +125,7 @@ function WorkspaceApiKeysInner({ workspaceId }: { workspaceId: string }) {
               id="api-key-role"
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             >
               {ROLE_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -151,7 +151,7 @@ function WorkspaceApiKeysInner({ workspaceId }: { workspaceId: string }) {
               We hash the secret at rest — refreshing this page won't show it
               again.
             </p>
-            <code className="mt-2 block break-all rounded-lg bg-white px-2 py-1 font-mono text-xs text-ink">
+            <code className="mt-2 block break-all rounded-lg bg-surface px-2 py-1 font-mono text-xs text-ink">
               {justMinted.plaintext_key}
             </code>
             <Button

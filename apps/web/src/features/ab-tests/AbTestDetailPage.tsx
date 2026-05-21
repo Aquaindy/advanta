@@ -276,7 +276,7 @@ function VariantRow({
               min={0}
               value={visits}
               onChange={(e) => setVisits(e.target.value)}
-              className="w-32 rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="w-32 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <label className="flex flex-col gap-1.5">
@@ -286,7 +286,7 @@ function VariantRow({
               min={0}
               value={conversions}
               onChange={(e) => setConversions(e.target.value)}
-              className="w-32 rounded-xl border border-slate-200 bg-white px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="w-32 rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <Button type="submit" disabled={recordMut.isPending}>

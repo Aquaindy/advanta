@@ -50,7 +50,7 @@ function BlogHero({ hasPosts }: { hasPosts: boolean }) {
         className="pointer-events-none absolute -left-32 top-[-10rem] h-[24rem] w-[24rem] rounded-full bg-grape-gradient opacity-20 blur-3xl"
       />
       <div className="relative mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-24">
-        <p className="inline-flex items-center gap-2 rounded-full border border-grape-200 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-wider text-grape-700 backdrop-blur">
+        <p className="inline-flex items-center gap-2 rounded-full border border-grape-200 bg-surface/70 px-3 py-1 text-xs font-medium uppercase tracking-wider text-grape-700 backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-grape-700" />
           The AdVanta blog
         </p>
@@ -98,7 +98,7 @@ function ArchiveCard({ post }: { post: PublicBlogPostSummary }) {
   return (
     <Link
       to={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card transition hover:shadow-elevate"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-surface shadow-card transition hover:shadow-elevate"
     >
       {post.image_url ? (
         <div className="aspect-[16/9] w-full overflow-hidden bg-grape-soft">
@@ -142,7 +142,7 @@ function ArchiveCard({ post }: { post: PublicBlogPostSummary }) {
 
 function ComingSoonNotice() {
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <div className="rounded-2xl border border-slate-200 bg-cloud px-6 py-8 sm:px-10 sm:py-10">
           <p className="text-xs font-medium uppercase tracking-wider text-grape-700">
@@ -165,8 +165,8 @@ function ComingSoonNotice() {
               Create your workspace
             </Link>
             <Link
-              to="/welcome"
-              className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              to="/"
+              className="rounded-xl border border-slate-200 bg-surface px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               See the platform
             </Link>
@@ -202,7 +202,7 @@ function UpcomingTopics() {
           {topics.map((t) => (
             <article
               key={t.title}
-              className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card"
+              className="rounded-2xl border border-slate-100 bg-surface p-5 shadow-card"
             >
               <span className="inline-flex w-fit rounded-full bg-grape-100 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-grape-700">
                 {t.tag}
@@ -224,7 +224,7 @@ function UpcomingTopics() {
 
 function BlogFooterCta() {
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
         <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
           Want the next post in your inbox?

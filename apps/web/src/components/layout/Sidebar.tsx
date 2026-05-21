@@ -44,12 +44,12 @@ export function Sidebar() {
   const current = memberships.data?.find((m) => m.id === currentId) ?? null;
 
   return (
-    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-grape-800 bg-grape-700 text-white lg:flex">
+    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-grape-gradient text-white lg:flex">
       <div className="flex h-16 items-center gap-2 px-5 border-b border-white/10">
         <Logomark />
         <div>
           <div className="text-sm font-semibold text-white">AdVanta AI</div>
-          <div className="text-xs text-grape-200 truncate max-w-[10rem]">
+          <div className="text-xs text-white/60 truncate max-w-[10rem]">
             {current?.name ?? "Growth Command Center"}
           </div>
         </div>
@@ -67,7 +67,7 @@ export function Sidebar() {
                     "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
                     isActive
                       ? "bg-white/15 text-white shadow-sm"
-                      : "text-grape-100/90 hover:bg-white/10 hover:text-white",
+                      : "text-white/70 hover:bg-white/10 hover:text-white",
                   )
                 }
               >
@@ -86,7 +86,7 @@ export function Sidebar() {
                         "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
                         isActive
                           ? "bg-white/15 text-white shadow-sm"
-                          : "text-grape-100/90 hover:bg-white/10 hover:text-white",
+                          : "text-white/70 hover:bg-white/10 hover:text-white",
                       )
                     }
                   >

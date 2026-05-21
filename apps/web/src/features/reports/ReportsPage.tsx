@@ -76,7 +76,7 @@ export function ReportsPage() {
               onClick={() => generate.mutate(p.value)}
               disabled={generate.isPending}
               className={cn(
-                "flex flex-col items-start gap-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left transition hover:border-grape hover:bg-grape-50",
+                "flex flex-col items-start gap-1 rounded-2xl border border-slate-200 bg-surface px-4 py-3 text-left transition hover:border-grape hover:bg-grape-50",
                 generate.isPending && activePeriod === p.value && "opacity-60",
               )}
             >

@@ -2,24 +2,26 @@ import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 import { Logomark } from "@/components/Logomark";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-cloud">
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-surface/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link to="/welcome" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Logomark />
             <span className="text-sm font-semibold text-ink">{APP_NAME}</span>
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             <MarketingLink to="/pricing">Pricing</MarketingLink>
             <MarketingLink to="/blog">Blog</MarketingLink>
+            <ThemeToggle className="ml-1" />
             <Link
               to="/login"
-              className="ml-2 rounded-xl px-3 py-1.5 text-sm font-medium text-grape-700 hover:bg-grape-50"
+              className="ml-1 rounded-xl px-3 py-1.5 text-sm font-medium text-grape-700 hover:bg-grape-50"
             >
               Sign in
             </Link>
@@ -47,11 +49,11 @@ export function MarketingLayout({ children }: { children: ReactNode }) {
  */
 function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="border-t border-slate-200 bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link to="/welcome" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <Logomark />
               <span className="text-sm font-semibold text-ink">{APP_NAME}</span>
             </Link>
@@ -63,7 +65,7 @@ function SiteFooter() {
           </div>
 
           <FooterColumn title="Product">
-            <FooterLink to="/welcome">Overview</FooterLink>
+            <FooterLink to="/">Overview</FooterLink>
             <FooterLink to="/pricing">Pricing</FooterLink>
             <FooterLink to="/blog">Blog</FooterLink>
           </FooterColumn>

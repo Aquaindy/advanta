@@ -266,7 +266,7 @@ function Tabs({
             className={cn(
               "rounded-t-xl px-4 py-2 text-sm font-medium transition",
               current === t.id
-                ? "border border-b-white border-slate-100 bg-white text-grape-700"
+                ? "border border-b-white border-slate-100 bg-surface text-grape-700"
                 : "text-slate-500 hover:text-ink",
             )}
           >
@@ -341,7 +341,7 @@ function EditorTab({
             value={draft.title}
             onChange={(e) => onPatch({ title: e.target.value })}
             placeholder="Post title"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-lg font-semibold text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-lg font-semibold text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
           <textarea
             ref={textareaRef}
@@ -350,7 +350,7 @@ function EditorTab({
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
             rows={20}
-            className="min-h-[28rem] rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm leading-relaxed text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+            className="min-h-[28rem] rounded-xl border border-slate-200 bg-surface px-3 py-2 font-mono text-sm leading-relaxed text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
           />
           {uploadError ? (
             <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
@@ -410,7 +410,7 @@ function ImageUploadButton({
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+        className="rounded-xl border border-slate-200 bg-surface px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
       >
         {uploading ? "Uploading…" : "Insert image"}
       </button>
@@ -508,7 +508,7 @@ function AiAssistantTab({
               value={selection}
               onChange={(e) => setSelection(e.target.value)}
               placeholder="Paste the heading or paragraph you want the assistant to work on."
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <label className="flex flex-col gap-1.5 text-sm">
@@ -520,7 +520,7 @@ function AiAssistantTab({
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder='e.g. "more concrete examples", "tighten — half the length"'
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+              className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
             />
           </label>
           <div className="flex flex-wrap gap-2">
@@ -631,7 +631,7 @@ function SuggestionCard({
   onDiscard: () => void;
 }) {
   return (
-    <li className="rounded-xl border border-slate-100 bg-white p-4">
+    <li className="rounded-xl border border-slate-100 bg-surface p-4">
       <div className="flex items-center justify-between gap-3">
         <span className="text-xs font-medium uppercase tracking-wider text-grape-700">
           {s.action.replace("_", " ")}
@@ -890,7 +890,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
+          className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200"
         />
       ) : (
         <input
@@ -898,7 +898,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200",
+            "rounded-xl border border-slate-200 bg-surface px-3 py-2 text-sm text-ink shadow-sm outline-none transition focus:border-grape focus:ring-2 focus:ring-grape-200",
             mono && "font-mono",
           )}
         />
