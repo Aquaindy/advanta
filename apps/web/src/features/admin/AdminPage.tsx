@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
 
 import { Card, CardHeader } from "@/components/ui/Card";
+import { AppSumoAdminPanel } from "@/features/admin/AppSumoAdminPanel";
 import { ApiError } from "@/lib/api-client";
 import {
   getAdminOverview,
@@ -54,6 +55,8 @@ export function AdminPage() {
       ) : overview.data ? (
         <OverviewGrid data={overview.data} />
       ) : null}
+
+      <AppSumoAdminPanel />
 
       <Card>
         <CardHeader title="Workspaces" subtitle="Newest first." />
