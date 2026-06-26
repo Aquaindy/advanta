@@ -90,7 +90,10 @@ def get_billing_status(
                 db, workspace_id=workspace_id
             ),
         ),
-        has_billing_customer=bool(sub and sub.management_url),
+        # Show "Manage billing" for any real Paddle subscription — the portal
+        # URL is resolved on demand (Paddle often omits it from webhooks), so we
+        # don't require a pre-stored management_url here.
+        has_billing_customer=bool(sub and sub.external_subscription_id),
         paddle_configured=paddle_billing.is_configured(),
         subscription_provider=billing_service.subscription_provider(),
         subscription_source=(sub.source.value if sub else "paddle"),

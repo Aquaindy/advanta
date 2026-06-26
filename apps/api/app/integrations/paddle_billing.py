@@ -67,6 +67,49 @@ def environment() -> str:
     return _env("PADDLE_ENVIRONMENT") or "production"
 
 
+def _api_base() -> str:
+    """Server API base. Honor an explicit PADDLE_API_BASE override (shared with
+    the fee adapter); otherwise derive it from PADDLE_ENVIRONMENT."""
+    override = _env("PADDLE_API_BASE")
+    if override:
+        return override.rstrip("/")
+    return (
+        "https://sandbox-api.paddle.com"
+        if environment() == "sandbox"
+        else "https://api.paddle.com"
+    )
+
+
+def fetch_subscription_management_url(subscription_id: str | None) -> str | None:
+    """Resolve a subscription's Paddle-hosted management URL (cancel / update
+    payment) on demand.
+
+    Paddle frequently omits `management_urls` from webhook payloads, so the URL
+    stored at subscribe time can be empty. When a customer wants to manage or
+    cancel, we fetch it from the API instead. Returns None on any problem
+    (missing key/id, network/API error) so the caller can degrade gracefully.
+
+    Requires the API key to carry the `subscription.read` permission."""
+    key = _env("PADDLE_API_KEY")
+    if not key or not subscription_id:
+        return None
+    import httpx
+
+    try:
+        resp = httpx.get(
+            f"{_api_base()}/subscriptions/{subscription_id}",
+            headers={"Authorization": f"Bearer {key}"},
+            timeout=20.0,
+        )
+    except httpx.HTTPError:
+        return None
+    if resp.status_code >= 400:
+        return None
+    data = resp.json().get("data") or {}
+    mgmt = data.get("management_urls") or {}
+    return mgmt.get("cancel") or mgmt.get("update_payment_method")
+
+
 def client_token() -> str:
     token = _env("PADDLE_CLIENT_TOKEN")
     if not token:

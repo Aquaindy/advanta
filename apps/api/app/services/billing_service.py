@@ -415,11 +415,25 @@ def paddle_management_url(db: Session, *, workspace_id: UUID) -> str:
         .filter(BillingSubscription.workspace_id == workspace_id)
         .first()
     )
-    if sub is None or not sub.management_url:
-        raise BillingNotConfiguredError(
-            "No Paddle subscription to manage yet."
+    if sub is None:
+        raise BillingNotConfiguredError("No Paddle subscription to manage yet.")
+    if sub.management_url:
+        return sub.management_url
+    # Paddle often omits management_urls from webhooks, so resolve it from the
+    # API on demand and cache it for next time.
+    if sub.external_subscription_id:
+        url = paddle_billing.fetch_subscription_management_url(
+            sub.external_subscription_id
         )
-    return sub.management_url
+        if url:
+            sub.management_url = url
+            db.commit()
+            return url
+    raise BillingNotConfiguredError(
+        "No Paddle management link is available for this subscription yet. "
+        "If you need to cancel, use the link in your Paddle receipt email or "
+        "contact support."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -541,8 +555,16 @@ def _on_paddle_subscription_changed(db: Session, data: dict[str, Any]) -> None:
     scheduled = data.get("scheduled_change") or {}
     sub.cancel_at_period_end = bool(scheduled.get("action") == "cancel")
 
+    # Paddle's keys are `cancel` + `update_payment_method` (prefer the cancel
+    # deep-link for the manage button). `update` is kept for forward-compat.
+    # Often absent in webhooks — resolved on demand in paddle_management_url.
     mgmt = data.get("management_urls") or {}
-    sub.management_url = mgmt.get("update") or mgmt.get("cancel") or sub.management_url
+    sub.management_url = (
+        mgmt.get("cancel")
+        or mgmt.get("update_payment_method")
+        or mgmt.get("update")
+        or sub.management_url
+    )
 
 
 def _on_paddle_subscription_canceled(db: Session, data: dict[str, Any]) -> None:
