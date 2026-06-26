@@ -1,8 +1,9 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[3].parent
 
@@ -55,7 +56,12 @@ class Settings(BaseSettings):
     # plan limits. Additive + idempotent: it never demotes, and re-promotes on
     # every boot so a restored DB keeps its admins. Match is case-insensitive;
     # the user must already have registered.
-    initial_superuser_emails: list[str] = Field(
+    # NoDecode: pydantic-settings JSON-decodes complex (list/dict) env values at
+    # the source layer BEFORE field validators run, so a comma-separated string
+    # would raise SettingsError before `_split_superuser_emails` could split it.
+    # NoDecode hands the raw string to the validator, which accepts both a JSON
+    # array and a comma-separated list.
+    initial_superuser_emails: Annotated[list[str], NoDecode] = Field(
         default=[], alias="INITIAL_SUPERUSER_EMAILS"
     )
 

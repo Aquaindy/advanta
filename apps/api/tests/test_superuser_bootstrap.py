@@ -1,9 +1,33 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.core.bootstrap import ensure_initial_superusers
-from app.core.config import settings
+from app.core.config import Settings, settings
 from app.models.user import User
+
+
+# ---------------------------------------------------------------------------
+# Env parsing — INITIAL_SUPERUSER_EMAILS must accept a plain comma-separated
+# string (the natural way to set it in a dashboard) without pydantic-settings
+# choking on JSON decoding. Regression guard for the deploy that failed with
+# `SettingsError: error parsing value for field "initial_superuser_emails"`.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("a@b.com,c@d.com", ["a@b.com", "c@d.com"]),
+        ("a@b.com, c@d.com ", ["a@b.com", "c@d.com"]),
+        ('["a@b.com","c@d.com"]', ["a@b.com", "c@d.com"]),
+        ("solo@x.io", ["solo@x.io"]),
+        ("", []),
+    ],
+)
+def test_initial_superuser_emails_env_parsing(monkeypatch, raw, expected) -> None:
+    monkeypatch.setenv("INITIAL_SUPERUSER_EMAILS", raw)
+    assert Settings().initial_superuser_emails == expected
 
 
 def _register(client: TestClient, email: str) -> str:
