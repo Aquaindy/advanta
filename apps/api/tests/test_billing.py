@@ -148,10 +148,13 @@ def test_agent_run_blocked_when_free_plan_quota_exceeded(
     client: TestClient, db_session: Session
 ) -> None:
     _, workspace = _seed_workspace(db_session)
-    cap = PLANS["free"].limits.agent_runs_per_month
-    assert cap is not None
+    from app.services.billing_service import CREDIT_COST
+
+    # Exhaust the free plan's AI-credit pool with agent runs; the next run
+    # trips the credit gate.
+    runs = PLANS["free"].limits.monthly_credits // CREDIT_COST[UsageEventType.AGENT_RUN]
     now = datetime.now(timezone.utc)
-    for i in range(cap):
+    for i in range(runs):
         db_session.add(
             UsageEvent(
                 workspace_id=workspace.id,
@@ -168,7 +171,7 @@ def test_agent_run_blocked_when_free_plan_quota_exceeded(
         json={"agent_type": "onboarding_insight"},
     )
     assert response.status_code == 402
-    assert response.json()["error"]["code"] == "plan_limit_exceeded"
+    assert response.json()["error"]["code"] == "insufficient_credits"
 
 
 def test_agent_run_records_usage_event_when_succeeded(
@@ -195,9 +198,16 @@ def test_agent_run_records_usage_event_when_succeeded(
 def test_pro_plan_has_higher_quota(client: TestClient, db_session: Session) -> None:
     _, workspace = _seed_workspace(db_session)
     _seed_paid_subscription(db_session, workspace_id=workspace.id, plan_code="pro")
-    # Well under pro's ceiling, well over free's — a paid plan lifts the cap.
+    from app.services.billing_service import CREDIT_COST
+
+    # Over the free credit pool, well under pro's — a paid plan lifts it.
+    over_free = (
+        PLANS["free"].limits.monthly_credits
+        // CREDIT_COST[UsageEventType.AGENT_RUN]
+        + 5
+    )
     now = datetime.now(timezone.utc)
-    for i in range(PLANS["free"].limits.agent_runs_per_month + 5):
+    for i in range(over_free):
         db_session.add(
             UsageEvent(
                 workspace_id=workspace.id,

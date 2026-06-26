@@ -924,14 +924,11 @@ export type SubscriptionStatusValue =
   | "paused";
 
 export type PlanLimits = {
-  agent_runs_per_month: number | null;
   landing_pages: number | null;
   members: number | null;
-  content_drafts_per_month?: number | null;
-  outreach_emails_per_month?: number | null;
-  ab_tests_per_month?: number | null;
   outbound_writes_per_month?: number | null;
-  llm_tokens_per_month?: number | null;
+  // AI work is metered as a single monthly credit pool.
+  monthly_credits?: number | null;
 };
 
 export type Plan = {
@@ -945,7 +942,8 @@ export type Plan = {
 };
 
 export type Usage = {
-  agent_runs_last_30d: number;
+  credits_used_last_30d?: number;
+  agent_runs_last_30d?: number;
   content_drafts_last_30d?: number;
   outreach_emails_last_30d?: number;
   ab_tests_last_30d?: number;

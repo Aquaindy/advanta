@@ -26,12 +26,11 @@ const TIERS: Tier[] = [
     monthly: 67,
     description: "Small teams running their first paid + SEO programs.",
     features: [
-      "250 agent runs / 30 days",
+      "3,000 AI credits / mo",
       "50 landing pages",
-      "250 content drafts / 30 days",
-      "1,000 outreach emails / 30 days",
-      "1,000 provider writes / 30 days",
-      "5M LLM tokens / 30 days",
+      "15 team members",
+      "1,000 provider writes / mo",
+      "Full agent suite (paid, SEO, outreach)",
     ],
   },
   {
@@ -39,26 +38,24 @@ const TIERS: Tier[] = [
     monthly: 129,
     description: "Full agent suite for serious operators.",
     features: [
-      "1,000 agent runs / 30 days",
+      "12,000 AI credits / mo",
       "200 landing pages",
-      "1,000 content drafts / 30 days",
-      "5,000 outreach emails / 30 days",
-      "5,000 provider writes / 30 days",
-      "20M LLM tokens / 30 days",
+      "50 team members",
+      "5,000 provider writes / mo",
+      "Budget guardrails + autopilot",
     ],
     highlight: true,
   },
   {
     name: "Agency",
     monthly: 299,
-    description: "Unlimited usage + multi-team workspaces.",
+    description: "Unlimited credits + multi-team workspaces.",
     features: [
-      "Unlimited agent runs",
+      "Unlimited AI credits",
       "Unlimited landing pages",
-      "Unlimited content drafts",
-      "Unlimited outreach emails",
+      "Unlimited team members",
       "Unlimited provider writes",
-      "Unlimited LLM tokens",
+      "Multi-team workspace support",
     ],
   },
 ];
@@ -123,8 +120,9 @@ export function PricingPage() {
           </h1>
           <p className="mt-3 text-slate-600">
             Every tier includes the full agent suite, real provider writes,
-            risk-gated approvals, and the audit log. Quotas keep your bill
-            predictable as usage scales.
+            risk-gated approvals, and the audit log. AI work runs on monthly
+            credits (an agent run is 10 credits, a content draft 5) so your bill
+            stays predictable.
           </p>
         </header>
 

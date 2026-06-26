@@ -47,6 +47,11 @@ class PlanLimitExceededError(AdVantaError):
     code = "plan_limit_exceeded"
 
 
+class InsufficientCreditsError(AdVantaError):
+    status_code = 402
+    code = "insufficient_credits"
+
+
 # ---------------------------------------------------------------------------
 # Plan resolution + status
 # ---------------------------------------------------------------------------
@@ -163,21 +168,72 @@ def llm_cost_cents_last_30d(db: Session, *, workspace_id: UUID) -> int:
     return total_micros // 10_000
 
 
-def assert_within_agent_run_limit(db: Session, *, workspace_id: UUID) -> None:
+# ---------------------------------------------------------------------------
+# AI credits — a single monthly pool that meters AI work. Each AI action
+# deducts credits per CREDIT_COST; non-AI caps (landing pages, seats, provider
+# writes) are enforced separately below.
+# ---------------------------------------------------------------------------
+
+# Credits charged per AI action, keyed by the usage event the action records.
+# Events with no entry (raw LLM_CALL token meter, provider writes, reports)
+# cost no credits — an action's LLM usage is already priced into its cost.
+CREDIT_COST: dict[UsageEventType, int] = {
+    UsageEventType.AGENT_RUN: 10,
+    UsageEventType.CONTENT_DRAFT: 5,
+    UsageEventType.AB_TEST_CREATED: 3,
+    UsageEventType.OUTREACH_EMAIL_SENT: 2,
+}
+
+
+def credits_used_last_30d(db: Session, *, workspace_id: UUID) -> int:
+    """Total AI credits consumed in the trailing 30-day window — the sum of
+    CREDIT_COST over every metered action event."""
+    start, end = _month_window()
+    total = 0
+    for event_type, cost in CREDIT_COST.items():
+        if cost <= 0:
+            continue
+        count = (
+            db.query(func.count(UsageEvent.id))
+            .filter(
+                UsageEvent.workspace_id == workspace_id,
+                UsageEvent.event_type == event_type,
+                UsageEvent.occurred_at >= start,
+                UsageEvent.occurred_at <= end,
+            )
+            .scalar()
+            or 0
+        )
+        total += int(count) * cost
+    return total
+
+
+def assert_within_credit_budget(
+    db: Session, *, workspace_id: UUID, cost: int, action_label: str
+) -> None:
+    """Block an AI action when it would exceed the plan's monthly credit pool.
+    Superusers bypass; unlimited plans (`monthly_credits is None`) never block."""
     if is_superuser_request():
         return
     plan = get_active_plan(db, workspace_id=workspace_id)
-    cap = plan.limits.agent_runs_per_month
-    if cap is None:
+    allotment = plan.limits.monthly_credits
+    if allotment is None:
         return
-    used = usage_in_last_30d(
-        db, workspace_id=workspace_id, event_type=UsageEventType.AGENT_RUN
-    )
-    if used >= cap:
-        raise PlanLimitExceededError(
-            f"Plan `{plan.code}` allows {cap} agent runs per 30 days. "
-            f"Upgrade to lift the limit (used {used})."
+    used = credits_used_last_30d(db, workspace_id=workspace_id)
+    if used + cost > allotment:
+        raise InsufficientCreditsError(
+            f"Plan `{plan.code}` includes {allotment} AI credits / 30 days "
+            f"(used {used}); {action_label} needs {cost}. Upgrade for more credits."
         )
+
+
+def assert_within_agent_run_limit(db: Session, *, workspace_id: UUID) -> None:
+    assert_within_credit_budget(
+        db,
+        workspace_id=workspace_id,
+        cost=CREDIT_COST[UsageEventType.AGENT_RUN],
+        action_label="an agent run",
+    )
 
 
 def assert_within_landing_page_limit(
@@ -267,35 +323,29 @@ def _assert_event_under_cap(
 
 
 def assert_within_content_draft_limit(db: Session, *, workspace_id: UUID) -> None:
-    plan = get_active_plan(db, workspace_id=workspace_id)
-    _assert_event_under_cap(
+    assert_within_credit_budget(
         db,
         workspace_id=workspace_id,
-        event_type=UsageEventType.CONTENT_DRAFT,
-        cap=plan.limits.content_drafts_per_month,
-        resource_label="content drafts",
+        cost=CREDIT_COST[UsageEventType.CONTENT_DRAFT],
+        action_label="a content draft",
     )
 
 
 def assert_within_outreach_email_limit(db: Session, *, workspace_id: UUID) -> None:
-    plan = get_active_plan(db, workspace_id=workspace_id)
-    _assert_event_under_cap(
+    assert_within_credit_budget(
         db,
         workspace_id=workspace_id,
-        event_type=UsageEventType.OUTREACH_EMAIL_SENT,
-        cap=plan.limits.outreach_emails_per_month,
-        resource_label="outreach emails",
+        cost=CREDIT_COST[UsageEventType.OUTREACH_EMAIL_SENT],
+        action_label="an outreach email",
     )
 
 
 def assert_within_ab_test_limit(db: Session, *, workspace_id: UUID) -> None:
-    plan = get_active_plan(db, workspace_id=workspace_id)
-    _assert_event_under_cap(
+    assert_within_credit_budget(
         db,
         workspace_id=workspace_id,
-        event_type=UsageEventType.AB_TEST_CREATED,
-        cap=plan.limits.ab_tests_per_month,
-        resource_label="A/B tests",
+        cost=CREDIT_COST[UsageEventType.AB_TEST_CREATED],
+        action_label="an A/B test",
     )
 
 
@@ -311,18 +361,11 @@ def assert_within_outbound_write_limit(db: Session, *, workspace_id: UUID) -> No
 
 
 def assert_within_llm_token_limit(db: Session, *, workspace_id: UUID) -> None:
-    """Pre-flight check before an LLM call. We use the running total against
-    a soft cap; the moment usage hits the cap, generation falls back to
-    deterministic templates rather than blowing the bill."""
-
-    plan = get_active_plan(db, workspace_id=workspace_id)
-    _assert_event_under_cap(
-        db,
-        workspace_id=workspace_id,
-        event_type=UsageEventType.LLM_CALL,
-        cap=plan.limits.llm_tokens_per_month,
-        resource_label="LLM tokens",
-    )
+    """No-op: LLM usage is metered at the action level via the AI-credit pool
+    (see CREDIT_COST), not per raw token. Kept for the existing call site in the
+    LLM client so an out-of-credits action is blocked before it starts, not
+    mid-generation."""
+    return None
 
 
 # ---------------------------------------------------------------------------

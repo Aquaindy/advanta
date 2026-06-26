@@ -6,6 +6,11 @@ Price, and the per-plan Paddle Price IDs are resolved in
 `app.integrations.paddle_billing` (monthly + annual). The `monthly_price_usd` /
 `annual_price_usd` here are **display only**.
 
+AI work is metered as a single monthly **AI-credit** pool (`monthly_credits`);
+each AI action deducts credits per the cost table in `billing_service`
+(`CREDIT_COST`). Non-AI caps — landing-page count, team seats, provider writes —
+stay as their own limits. `None` = unlimited on any limit.
+
 `paid=True` marks a sellable plan (resolvable to a Paddle Price). `is_public`
 controls whether it shows on the pricing page + billing UI. `free` is the
 internal fallback for workspaces without an active subscription; the AppSumo
@@ -32,16 +37,13 @@ class UnknownPlanError(AdVantaError):
 
 @dataclass(frozen=True)
 class PlanLimits:
-    agent_runs_per_month: int | None
+    # Non-AI caps (kept separate from the AI-credit pool). `None` = unlimited.
     landing_pages: int | None
     members: int | None
-    # `None` = unlimited. Defaults preserve behaviour for any caller that
-    # constructs a PlanLimits without the newer fields.
-    content_drafts_per_month: int | None = None
-    outreach_emails_per_month: int | None = None
-    ab_tests_per_month: int | None = None
     outbound_writes_per_month: int | None = None
-    llm_tokens_per_month: int | None = None
+    # AI work (agent runs, content drafts, outreach drafts, A/B variants, …) is
+    # metered as a single monthly credit pool. `None` = unlimited.
+    monthly_credits: int | None = None
 
 
 @dataclass(frozen=True)
@@ -61,7 +63,6 @@ class Plan:
     is_public: bool = True
 
 
-# `None` limit = unlimited.
 PLANS: Final[dict[str, Plan]] = {
     "free": Plan(
         code="free",
@@ -74,14 +75,10 @@ PLANS: Final[dict[str, Plan]] = {
         paid=False,
         is_public=False,
         limits=PlanLimits(
-            agent_runs_per_month=50,
             landing_pages=10,
             members=5,
-            content_drafts_per_month=50,
-            outreach_emails_per_month=100,
-            ab_tests_per_month=20,
             outbound_writes_per_month=100,
-            llm_tokens_per_month=1_000_000,
+            monthly_credits=200,
         ),
     ),
     "starter": Plan(
@@ -92,14 +89,10 @@ PLANS: Final[dict[str, Plan]] = {
         monthly_price_usd=67,
         annual_price_usd=670,
         limits=PlanLimits(
-            agent_runs_per_month=250,
             landing_pages=50,
             members=15,
-            content_drafts_per_month=250,
-            outreach_emails_per_month=1000,
-            ab_tests_per_month=100,
             outbound_writes_per_month=1000,
-            llm_tokens_per_month=5_000_000,
+            monthly_credits=3000,
         ),
     ),
     "pro": Plan(
@@ -110,38 +103,30 @@ PLANS: Final[dict[str, Plan]] = {
         monthly_price_usd=129,
         annual_price_usd=1290,
         limits=PlanLimits(
-            agent_runs_per_month=1000,
             landing_pages=200,
             members=50,
-            content_drafts_per_month=1000,
-            outreach_emails_per_month=5000,
-            ab_tests_per_month=500,
             outbound_writes_per_month=5000,
-            llm_tokens_per_month=20_000_000,
+            monthly_credits=12000,
         ),
     ),
     "agency": Plan(
         code="agency",
         display_name="Agency",
-        description="Unlimited agent runs and landing pages, multi-team workspace support.",
+        description="Unlimited AI credits and landing pages, multi-team workspace support.",
         paid=True,
         monthly_price_usd=299,
         annual_price_usd=2990,
         limits=PlanLimits(
-            agent_runs_per_month=None,
             landing_pages=None,
             members=None,
-            content_drafts_per_month=None,
-            outreach_emails_per_month=None,
-            ab_tests_per_month=None,
             outbound_writes_per_month=None,
-            llm_tokens_per_month=None,
+            monthly_credits=None,
         ),
     ),
     # AppSumo lifetime tiers. Granted by redeeming codes (see appsumo_service),
     # never sold through checkout — so `paid=False` and `is_public=False`. Codes
     # stack: N redeemed codes = Tier N, capping at tier 3. Limits mirror the
-    # matching paid tier so plan-limit enforcement is identical.
+    # matching paid tier so enforcement is identical.
     "appsumo_tier1": Plan(
         code="appsumo_tier1",
         display_name="AppSumo Lifetime — Tier 1",
@@ -150,14 +135,10 @@ PLANS: Final[dict[str, Plan]] = {
         monthly_price_usd=None,
         is_public=False,
         limits=PlanLimits(
-            agent_runs_per_month=250,
             landing_pages=50,
             members=15,
-            content_drafts_per_month=250,
-            outreach_emails_per_month=1000,
-            ab_tests_per_month=100,
             outbound_writes_per_month=1000,
-            llm_tokens_per_month=5_000_000,
+            monthly_credits=3000,
         ),
     ),
     "appsumo_tier2": Plan(
@@ -168,14 +149,10 @@ PLANS: Final[dict[str, Plan]] = {
         monthly_price_usd=None,
         is_public=False,
         limits=PlanLimits(
-            agent_runs_per_month=1000,
             landing_pages=200,
             members=50,
-            content_drafts_per_month=1000,
-            outreach_emails_per_month=5000,
-            ab_tests_per_month=500,
             outbound_writes_per_month=5000,
-            llm_tokens_per_month=20_000_000,
+            monthly_credits=12000,
         ),
     ),
     "appsumo_tier3": Plan(
@@ -186,14 +163,10 @@ PLANS: Final[dict[str, Plan]] = {
         monthly_price_usd=None,
         is_public=False,
         limits=PlanLimits(
-            agent_runs_per_month=None,
             landing_pages=None,
             members=None,
-            content_drafts_per_month=None,
-            outreach_emails_per_month=None,
-            ab_tests_per_month=None,
             outbound_writes_per_month=None,
-            llm_tokens_per_month=None,
+            monthly_credits=None,
         ),
     ),
 }

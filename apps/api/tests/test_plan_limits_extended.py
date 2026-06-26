@@ -84,6 +84,19 @@ def _seed_usage(
     db.commit()
 
 
+def _exhaust_free_credits(db: Session, *, workspace_id) -> None:
+    """Seed enough agent-run events to consume the free plan's entire AI-credit
+    pool, so the next AI action trips the credit gate."""
+    from app.services.billing_service import CREDIT_COST
+
+    budget = PLANS["free"].limits.monthly_credits
+    assert budget is not None
+    runs = budget // CREDIT_COST[UsageEventType.AGENT_RUN]
+    _seed_usage(
+        db, workspace_id=workspace_id, event_type=UsageEventType.AGENT_RUN, count=runs
+    )
+
+
 @pytest.fixture
 def free_plan_only():
     """Pin the active plan calculation to `free` so every test sees the
@@ -107,21 +120,14 @@ def test_content_draft_cap_blocks_at_limit(
     _, ws = _seed_workspace(db_session, email="alice@example.com")
     _login(client, "alice@example.com")
 
-    cap = PLANS["free"].limits.content_drafts_per_month
-    assert cap is not None
-    _seed_usage(
-        db_session,
-        workspace_id=ws.id,
-        event_type=UsageEventType.CONTENT_DRAFT,
-        count=cap,
-    )
+    _exhaust_free_credits(db_session, workspace_id=ws.id)
 
     response = client.post(
         f"/api/v1/workspaces/{ws.id}/content-drafts",
         json={"type": "blog_post", "title": "X", "body": "Body"},
     )
     assert response.status_code == 402
-    assert response.json()["error"]["code"] == "plan_limit_exceeded"
+    assert response.json()["error"]["code"] == "insufficient_credits"
 
 
 def test_content_draft_create_ticks_meter(
@@ -155,14 +161,7 @@ def test_outreach_send_cap_blocks_at_limit(
     _, ws = _seed_workspace(db_session, email="alice@example.com")
     _login(client, "alice@example.com")
 
-    cap = PLANS["free"].limits.outreach_emails_per_month
-    assert cap is not None
-    _seed_usage(
-        db_session,
-        workspace_id=ws.id,
-        event_type=UsageEventType.OUTREACH_EMAIL_SENT,
-        count=cap,
-    )
+    _exhaust_free_credits(db_session, workspace_id=ws.id)
 
     create = client.post(
         f"/api/v1/workspaces/{ws.id}/backlink-prospects",
@@ -181,7 +180,7 @@ def test_outreach_send_cap_blocks_at_limit(
             f"/api/v1/workspaces/{ws.id}/outreach-emails/{eid}/send"
         )
     assert send.status_code == 402
-    assert send.json()["error"]["code"] == "plan_limit_exceeded"
+    assert send.json()["error"]["code"] == "insufficient_credits"
 
 
 def test_outreach_successful_send_ticks_meter(
@@ -222,14 +221,7 @@ def test_ab_test_cap_blocks_at_limit(
     _, ws = _seed_workspace(db_session, email="alice@example.com")
     _login(client, "alice@example.com")
 
-    cap = PLANS["free"].limits.ab_tests_per_month
-    assert cap is not None
-    _seed_usage(
-        db_session,
-        workspace_id=ws.id,
-        event_type=UsageEventType.AB_TEST_CREATED,
-        count=cap,
-    )
+    _exhaust_free_credits(db_session, workspace_id=ws.id)
 
     response = client.post(
         f"/api/v1/workspaces/{ws.id}/ab-tests",
@@ -407,53 +399,6 @@ def test_llm_call_persists_token_usage(
     assert used == 500  # 320 + 180
 
 
-def test_llm_cap_falls_back_to_deterministic(
-    client: TestClient, db_session: Session, free_plan_only
-) -> None:
-    """When the LLM token cap is hit, the content-generation skill catches
-    the plan-limit error and falls back to the deterministic template — the
-    user still gets a draft, no 402 surfaces."""
-
-    _, ws = _seed_workspace(db_session, email="alice@example.com")
-    _login(client, "alice@example.com")
-
-    cap = PLANS["free"].limits.llm_tokens_per_month
-    assert cap is not None
-    # Plant usage that puts the workspace right at its token cap.
-    _seed_usage(
-        db_session,
-        workspace_id=ws.id,
-        event_type=UsageEventType.LLM_CALL,
-        count=1,
-        quantity_each=cap,
-    )
-
-    import app.llm.client as llm_client
-    from app.llm.client import OpenAIClient
-
-    fake = OpenAIClient(api_key="sk-test", model="gpt-test")
-    llm_client._INSTANCE = fake
-
-    try:
-        with patch.object(
-            OpenAIClient,
-            "complete",
-            side_effect=AssertionError("must not be called once capped"),
-        ):
-            response = client.post(
-                f"/api/v1/workspaces/{ws.id}/content-drafts/generate",
-                json={"type": "blog_post", "topic": "Some topic"},
-            )
-    finally:
-        llm_client._INSTANCE = None
-
-    assert response.status_code == 200, response.text
-    body = response.json()
-    # Deterministic fallback signature: source=agent, model_used=None.
-    assert body["source"] == "agent"
-    assert body["model_used"] is None
-
-
 # ---------------------------------------------------------------------------
 # Billing status surfaces all the new counters
 # ---------------------------------------------------------------------------
@@ -491,7 +436,8 @@ def test_billing_status_returns_all_30d_counters(
     assert usage["content_drafts_last_30d"] == 2
     assert usage["outbound_writes_last_30d"] == 3
     assert usage["llm_tokens_last_30d"] == 750
-    # Limits surface the new caps too.
+    # Limits surface the credit pool + the separate provider-write cap.
     limits = resp.json()["plan"]["limits"]
-    assert "llm_tokens_per_month" in limits
+    assert "monthly_credits" in limits
     assert "outbound_writes_per_month" in limits
+    assert usage["credits_used_last_30d"] >= 0

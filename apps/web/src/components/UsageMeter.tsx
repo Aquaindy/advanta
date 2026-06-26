@@ -19,47 +19,26 @@ export type UsageResource =
   | "outbound_writes"
   | "llm_tokens";
 
+// Every AI action (agent runs, content, outreach, A/B) now draws from a single
+// monthly AI-credit pool, so those resources all render the same credit meter.
+// `outbound_writes` keeps its own dedicated cap.
 const COPY: Record<UsageResource, { label: string; unit: string }> = {
-  agent_runs: { label: "Agent runs", unit: "runs" },
-  content_drafts: { label: "Content drafts", unit: "drafts" },
-  outreach_emails: { label: "Outreach emails", unit: "sends" },
-  ab_tests: { label: "A/B tests", unit: "tests" },
+  agent_runs: { label: "AI credits", unit: "credits" },
+  content_drafts: { label: "AI credits", unit: "credits" },
+  outreach_emails: { label: "AI credits", unit: "credits" },
+  ab_tests: { label: "AI credits", unit: "credits" },
   outbound_writes: { label: "Provider writes", unit: "writes" },
-  llm_tokens: { label: "LLM tokens", unit: "tokens" },
+  llm_tokens: { label: "AI credits", unit: "credits" },
 };
 
 function readCap(limits: PlanLimits, resource: UsageResource): number | null {
-  switch (resource) {
-    case "agent_runs":
-      return limits.agent_runs_per_month;
-    case "content_drafts":
-      return limits.content_drafts_per_month ?? null;
-    case "outreach_emails":
-      return limits.outreach_emails_per_month ?? null;
-    case "ab_tests":
-      return limits.ab_tests_per_month ?? null;
-    case "outbound_writes":
-      return limits.outbound_writes_per_month ?? null;
-    case "llm_tokens":
-      return limits.llm_tokens_per_month ?? null;
-  }
+  if (resource === "outbound_writes") return limits.outbound_writes_per_month ?? null;
+  return limits.monthly_credits ?? null;
 }
 
 function readUsed(usage: Usage, resource: UsageResource): number {
-  switch (resource) {
-    case "agent_runs":
-      return usage.agent_runs_last_30d ?? 0;
-    case "content_drafts":
-      return usage.content_drafts_last_30d ?? 0;
-    case "outreach_emails":
-      return usage.outreach_emails_last_30d ?? 0;
-    case "ab_tests":
-      return usage.ab_tests_last_30d ?? 0;
-    case "outbound_writes":
-      return usage.outbound_writes_last_30d ?? 0;
-    case "llm_tokens":
-      return usage.llm_tokens_last_30d ?? 0;
-  }
+  if (resource === "outbound_writes") return usage.outbound_writes_last_30d ?? 0;
+  return usage.credits_used_last_30d ?? 0;
 }
 
 

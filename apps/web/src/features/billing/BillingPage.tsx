@@ -245,9 +245,9 @@ function CurrentPlanCard({
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <UsageBar
-          label="Agent runs · last 30 days"
-          used={usage.agent_runs_last_30d}
-          cap={plan.limits.agent_runs_per_month}
+          label="AI credits · last 30 days"
+          used={usage.credits_used_last_30d ?? 0}
+          cap={plan.limits.monthly_credits ?? null}
         />
         <LimitTile label="Landing pages" cap={plan.limits.landing_pages} />
         <LimitTile label="Team members" cap={plan.limits.members} />
@@ -496,7 +496,7 @@ function PlanCard({
       </div>
 
       <ul className="flex flex-col gap-1 text-xs text-slate-600">
-        <li>{plan.limits.agent_runs_per_month ?? "Unlimited"} agent runs / 30 days</li>
+        <li>{plan.limits.monthly_credits ?? "Unlimited"} AI credits / mo</li>
         <li>{plan.limits.landing_pages ?? "Unlimited"} landing pages</li>
         <li>{plan.limits.members ?? "Unlimited"} team members</li>
       </ul>

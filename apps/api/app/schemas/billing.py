@@ -7,14 +7,11 @@ from app.models.billing_subscription import SubscriptionStatus
 
 
 class PlanLimitsPublic(BaseModel):
-    agent_runs_per_month: int | None
     landing_pages: int | None
     members: int | None
-    content_drafts_per_month: int | None = None
-    outreach_emails_per_month: int | None = None
-    ab_tests_per_month: int | None = None
     outbound_writes_per_month: int | None = None
-    llm_tokens_per_month: int | None = None
+    # AI work is metered as a single monthly credit pool.
+    monthly_credits: int | None = None
 
 
 class PlanPublic(BaseModel):
@@ -29,7 +26,9 @@ class PlanPublic(BaseModel):
 
 
 class UsagePublic(BaseModel):
-    agent_runs_last_30d: int
+    # AI credits consumed this 30-day window (the headline meter).
+    credits_used_last_30d: int = 0
+    agent_runs_last_30d: int = 0
     content_drafts_last_30d: int = 0
     outreach_emails_last_30d: int = 0
     ab_tests_last_30d: int = 0

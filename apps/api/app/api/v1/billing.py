@@ -39,9 +39,10 @@ def _plan_to_public(plan) -> PlanPublic:
         annual_price_usd=plan.annual_price_usd,
         is_paid=plan.paid,
         limits=PlanLimitsPublic(
-            agent_runs_per_month=plan.limits.agent_runs_per_month,
             landing_pages=plan.limits.landing_pages,
             members=plan.limits.members,
+            outbound_writes_per_month=plan.limits.outbound_writes_per_month,
+            monthly_credits=plan.limits.monthly_credits,
         ),
     )
 
@@ -76,6 +77,9 @@ def get_billing_status(
         current_period_end=sub.current_period_end if sub else None,
         trial_end=sub.trial_end if sub else None,
         usage=UsagePublic(
+            credits_used_last_30d=billing_service.credits_used_last_30d(
+                db, workspace_id=workspace_id
+            ),
             agent_runs_last_30d=_u(UsageEventType.AGENT_RUN),
             content_drafts_last_30d=_u(UsageEventType.CONTENT_DRAFT),
             outreach_emails_last_30d=_u(UsageEventType.OUTREACH_EMAIL_SENT),
