@@ -229,8 +229,8 @@ export function PricingPage() {
 
         <p className="mt-8 text-center text-xs text-slate-400">
           Need higher limits or annual billing? Email{" "}
-          <a className="text-grape-700" href="mailto:hello@advantaai.com">
-            hello@advantaai.com
+          <a className="text-grape-700" href="mailto:support@aimarketinghub.io">
+            support@aimarketinghub.io
           </a>
           .
         </p>
@@ -374,7 +374,7 @@ function ConciergeSection() {
                   ))}
                 </ul>
                 <a
-                  href="mailto:hello@advantaai.com?subject=AdVanta%20Concierge%20%E2%80%94%20interest"
+                  href="mailto:support@aimarketinghub.io?subject=AdVanta%20Concierge%20%E2%80%94%20interest"
                   className={cn(
                     "rounded-xl px-4 py-2 text-center text-sm font-semibold transition",
                     tier.highlight
@@ -398,7 +398,7 @@ function ConciergeSection() {
             workspaces, or scopes outside the playbook —{" "}
             <a
               className="text-grape-700 underline"
-              href="mailto:hello@advantaai.com?subject=AdVanta%20Concierge%20%E2%80%94%20enterprise"
+              href="mailto:support@aimarketinghub.io?subject=AdVanta%20Concierge%20%E2%80%94%20enterprise"
             >
               email us
             </a>{" "}

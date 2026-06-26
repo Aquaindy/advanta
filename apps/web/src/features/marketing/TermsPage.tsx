@@ -77,7 +77,7 @@ export function TermsPage() {
 
         <Section title="8. Contact">
           <p>
-            Questions: <a className="text-grape-700" href="mailto:hello@advantaai.com">hello@advantaai.com</a>.
+            Questions: <a className="text-grape-700" href="mailto:support@aimarketinghub.io">support@aimarketinghub.io</a>.
           </p>
         </Section>
       </article>
