@@ -1,6 +1,6 @@
 # AppSumo lifetime deal
 
-AdVanta supports AppSumo lifetime codes alongside Stripe subscriptions. Codes
+AdVanta supports AppSumo lifetime codes alongside Paddle subscriptions. Codes
 are **uniform** (no per-code tier) and **stack**: a workspace's tier is the
 number of redeemed codes, capped at 3.
 
@@ -11,10 +11,10 @@ number of redeemed codes, capped at 3.
 | 3 | 3 | `appsumo_tier3` | Agency (unlimited runs/pages) |
 
 Redemption writes the workspace's `billing_subscriptions` row with
-`source=appsumo`, `status=active`, and the matching plan — no Stripe customer,
-no recurring charge. Plan-limit enforcement is identical to Stripe plans. To
-change the ladder, edit `appsumo_tier*` in
-[`app/integrations/stripe/__init__.py`](../apps/api/app/integrations/stripe/__init__.py).
+`source=appsumo`, `status=active`, and the matching plan — no recurring charge.
+Plan-limit enforcement is identical to paid (Paddle) plans. To change the
+ladder, edit `appsumo_tier*` in
+[`app/billing/plans.py`](../apps/api/app/billing/plans.py).
 
 ## Buyer flow
 

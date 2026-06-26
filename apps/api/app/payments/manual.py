@@ -1,7 +1,7 @@
 """Manual / off-platform invoice provider.
 
 The zero-config default: it records the bill as an OPEN invoice without touching
-a payment processor. Use it to collect fees by wire/ACH/manual Stripe link, or
+a payment processor. Use it to collect fees by wire/ACH/manual payment link, or
 as the always-available fallback so fees are billed even before a processor is
 wired up. Reconcile by marking the invoice paid once funds arrive."""
 

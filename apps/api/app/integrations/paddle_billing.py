@@ -11,9 +11,9 @@ against sandbox + live):
   PADDLE_CLIENT_TOKEN       publishable client-side token for Paddle.js
   PADDLE_WEBHOOK_SECRET     notification-destination secret (HMAC key)
   PADDLE_ENVIRONMENT        "sandbox" | "production" (default production)
-  PADDLE_PRICE_ID_STARTER   Paddle Price ID for each paid plan
-  PADDLE_PRICE_ID_PRO
-  PADDLE_PRICE_ID_AGENCY
+  PADDLE_PRICE_ID_STARTER   monthly Paddle Price ID per paid plan; the yearly
+  PADDLE_PRICE_ID_PRO       price for each is PADDLE_PRICE_ID_<PLAN>_ANNUAL
+  PADDLE_PRICE_ID_AGENCY    (e.g. PADDLE_PRICE_ID_STARTER_ANNUAL)
 
 Without PADDLE_API_KEY + PADDLE_WEBHOOK_SECRET the subscription endpoints
 report not-configured (503) — nothing is ever silently accepted."""
@@ -27,7 +27,7 @@ import os
 from typing import Any
 
 from app.core.exceptions import AdVantaError
-from app.integrations.stripe import BillingNotConfiguredError, PLANS
+from app.billing.plans import BillingNotConfiguredError, PLANS
 from app.models.billing_subscription import SubscriptionStatus
 
 
@@ -74,8 +74,19 @@ def client_token() -> str:
     return token
 
 
-def price_id_for_plan(plan_code: str) -> str:
-    env_name = _PLAN_PRICE_ENV.get(plan_code)
+def _price_env_name(plan_code: str, interval: str) -> str | None:
+    """Env var holding the Paddle Price ID for (plan, interval). Annual prices
+    live under the `_ANNUAL` suffix."""
+    base = _PLAN_PRICE_ENV.get(plan_code)
+    if base is None:
+        return None
+    return base if interval == "month" else f"{base}_ANNUAL"
+
+
+def price_id_for_plan(plan_code: str, interval: str = "month") -> str:
+    """Resolve the Paddle Price ID for a plan + billing interval
+    (`"month"` | `"year"`)."""
+    env_name = _price_env_name(plan_code, interval)
     if env_name is None:
         raise BillingNotConfiguredError(f"Plan `{plan_code}` is not a paid Paddle plan.")
     value = _env(env_name)
@@ -87,10 +98,11 @@ def price_id_for_plan(plan_code: str) -> str:
 
 
 def plan_for_price_id(price_id: str | None) -> str | None:
+    """Map a Paddle Price ID (monthly OR annual) back to its plan code."""
     if not price_id:
         return None
-    for plan_code, env_name in _PLAN_PRICE_ENV.items():
-        if _env(env_name) == price_id:
+    for plan_code, base in _PLAN_PRICE_ENV.items():
+        if _env(base) == price_id or _env(f"{base}_ANNUAL") == price_id:
             return plan_code
     return None
 
@@ -132,4 +144,4 @@ def verify_webhook(payload: bytes, signature: str | None) -> dict[str, Any]:
 
 # Plans offered for Paddle checkout (paid + public only).
 def public_paid_plan_codes() -> list[str]:
-    return [code for code, plan in PLANS.items() if plan.is_public and plan.price_id_env]
+    return [code for code, plan in PLANS.items() if plan.is_public and plan.paid]

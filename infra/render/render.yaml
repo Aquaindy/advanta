@@ -73,6 +73,13 @@ envVarGroups:
         sync: false
       - key: PADDLE_PRICE_ID_AGENCY
         sync: false
+      # Annual (yearly) Paddle Price IDs — used when the customer picks annual.
+      - key: PADDLE_PRICE_ID_STARTER_ANNUAL
+        sync: false
+      - key: PADDLE_PRICE_ID_PRO_ANNUAL
+        sync: false
+      - key: PADDLE_PRICE_ID_AGENCY_ANNUAL
+        sync: false
 
       # --- Google OAuth: integration client (Ads / GA4 / Search Console)
       - key: GOOGLE_CLIENT_ID
@@ -101,7 +108,12 @@ envVarGroups:
       - key: LINKEDIN_CLIENT_SECRET
         sync: false
 
-      # --- Email: outbound SMTP + inbound parse
+      # --- Email: Resend (preferred) → SMTP fallback → inbound parse.
+      #     EMAIL_FROM's domain must be VERIFIED in Resend (SPF/DKIM).
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

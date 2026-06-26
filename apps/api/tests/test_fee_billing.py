@@ -170,18 +170,6 @@ def test_void_releases_accruals(client: TestClient, db_session: Session) -> None
 # ---------------------------------------------------------------------------
 
 
-def test_stripe_provider_unconfigured_503(client: TestClient, db_session: Session) -> None:
-    ws = _superuser(client, db_session)
-    _accrual(db_session, ws=ws, amount=2500)
-    with patch.dict(os.environ, {}, clear=False):
-        os.environ.pop("STRIPE_SECRET_KEY", None)
-        resp = client.post(
-            "/api/v1/admin/fees/invoices",
-            json={"workspace_id": str(ws.id), "provider": "stripe"},
-        )
-    assert resp.status_code == 503
-
-
 def test_paddle_provider_unconfigured_503(client: TestClient, db_session: Session) -> None:
     ws = _superuser(client, db_session)
     _accrual(db_session, ws=ws, amount=2500)
@@ -200,7 +188,8 @@ def test_payment_provider_catalog(client: TestClient, db_session: Session) -> No
     assert resp.status_code == 200
     providers = {p["provider"]: p for p in resp.json()}
     assert providers["manual"]["configured"] is True
-    assert "stripe" in providers and "paddle" in providers
+    assert "paddle" in providers and "paypal" in providers
+    assert "stripe" not in providers  # Stripe removed
 
 
 def test_invoicing_requires_superuser(client: TestClient, db_session: Session) -> None:
@@ -244,12 +233,12 @@ def _invoice(
 
 
 def test_mark_paid_rejects_non_manual_invoice(db_session: Session) -> None:
-    """Staff cannot mark a processor-backed (stripe/paddle) invoice paid — that
+    """Staff cannot mark a processor-backed (paddle/paypal) invoice paid — that
     must come from a verified webhook, not an unverified button click."""
     from app.services import fee_billing_service
 
     _, ws = _seed_member(db_session, email="o1@example.com")
-    inv = _invoice(db_session, ws=ws, provider="stripe", status=FeeInvoiceStatus.OPEN)
+    inv = _invoice(db_session, ws=ws, provider="paddle", status=FeeInvoiceStatus.OPEN)
     with pytest.raises(fee_billing_service.FeeInvoiceNotManuallyPayableError):
         fee_billing_service.mark_invoice_paid(db_session, invoice_id=inv.id)
     db_session.refresh(inv)

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -21,6 +22,8 @@ class PlanPublic(BaseModel):
     display_name: str
     description: str
     monthly_price_usd: int | None
+    # Display only; annual checkout uses the plan's annual Paddle Price.
+    annual_price_usd: int | None = None
     is_paid: bool
     limits: PlanLimitsPublic
 
@@ -32,10 +35,8 @@ class UsagePublic(BaseModel):
     ab_tests_last_30d: int = 0
     outbound_writes_last_30d: int = 0
     llm_tokens_last_30d: int = 0
-    # Estimated LLM dollar cost over the same 30-day window. Computed from
-    # the per-call `estimated_cost_usd_micros` metadata recorded on each
-    # LLM_CALL usage event. Stored as cents (integer) so the UI can render
-    # without float drift.
+    # Estimated LLM dollar cost over the same 30-day window. Stored as cents
+    # (integer) so the UI can render without float drift.
     llm_cost_cents_last_30d: int = 0
 
 
@@ -47,18 +48,19 @@ class BillingStatus(BaseModel):
     current_period_end: datetime | None
     trial_end: datetime | None
     usage: UsagePublic
+    # True when there's a manageable Paddle subscription (a portal URL exists).
     has_billing_customer: bool
-    stripe_configured: bool
     paddle_configured: bool = False
-    # Which processor handles recurring plans: "paddle" | "stripe" | "none".
+    # Which processor handles recurring plans: "paddle" | "none".
     subscription_provider: str = "none"
-    # "stripe" (recurring) | "paddle" (recurring, MoR) | "appsumo" (lifetime).
-    # Lets the UI pick the right checkout/portal flow and badge.
-    subscription_source: str = "stripe"
+    # "paddle" (recurring, MoR) | "appsumo" (lifetime). Lets the UI pick the
+    # right badge / manage flow.
+    subscription_source: str = "paddle"
 
 
 class CheckoutRequest(BaseModel):
     plan_code: str
+    interval: Literal["month", "year"] = "month"
 
 
 class PaddleCheckout(BaseModel):
@@ -72,9 +74,7 @@ class PaddleCheckout(BaseModel):
 
 
 class CheckoutResponse(BaseModel):
-    # "stripe" -> use `url` (redirect); "paddle" -> use `paddle` (overlay).
-    provider: str = "stripe"
-    url: str | None = None
+    provider: str = "paddle"
     paddle: PaddleCheckout | None = None
 
 

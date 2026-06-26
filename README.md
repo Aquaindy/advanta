@@ -85,7 +85,7 @@ Health checks:
 | M8 — SEO & GEO MVP | Sitemap + crawler, GSC sync, opportunity scoring |
 | M9 — Website MVP | Landing-page audit with real PageSpeed Insights |
 | M10 — Reports | PDF + CSV with reportlab, email-report foundation |
-| M11 — Billing | Stripe Checkout + Portal + signature-verified webhook, plan limits |
+| M11 — Billing | Paddle checkout + portal + signature-verified webhook, plan limits |
 | M12 — Production Hardening | Rate limiting, request IDs, Sentry hook, admin dashboard, Docker + Render |
 
 Backend: **163 tests passing** · Frontend: typecheck + production build clean.

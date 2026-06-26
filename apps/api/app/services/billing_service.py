@@ -1,9 +1,12 @@
-"""Billing orchestration: customer creation, checkout + portal sessions,
-webhook processing, plan-limit enforcement, and usage tracking."""
+"""Billing orchestration: Paddle checkout/portal + webhook processing,
+plan-limit enforcement, and usage tracking.
+
+Recurring subscriptions are billed exclusively through **Paddle** (Merchant of
+Record). One-off platform *fees* are a separate, provider-agnostic system (see
+`app.payments` / `fee_billing_service`)."""
 
 from __future__ import annotations
 
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID
@@ -12,24 +15,17 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-import stripe
-
-from app.core.config import settings
-from app.core.exceptions import AdVantaError
-from app.core.logging import get_logger
-from app.core.superuser_context import is_superuser_request
-from app.integrations import paddle_billing
-from app.integrations.stripe import (
+from app.billing.plans import (
     BillingNotConfiguredError,
     PLANS,
     Plan,
     UnknownPlanError,
     get_plan,
-    resolve_price_id,
-    stripe_client,
-    webhook_secret,
 )
-from app.models.billing_customer import BillingCustomer
+from app.core.exceptions import AdVantaError
+from app.core.logging import get_logger
+from app.core.superuser_context import is_superuser_request
+from app.integrations import paddle_billing
 from app.models.billing_subscription import (
     BillingSubscription,
     SubscriptionSource,
@@ -51,11 +47,6 @@ class PlanLimitExceededError(AdVantaError):
     code = "plan_limit_exceeded"
 
 
-class WebhookSignatureError(AdVantaError):
-    status_code = 400
-    code = "invalid_webhook_signature"
-
-
 # ---------------------------------------------------------------------------
 # Plan resolution + status
 # ---------------------------------------------------------------------------
@@ -69,32 +60,13 @@ def _ensure_subscription(db: Session, *, workspace_id: UUID) -> BillingSubscript
     )
     if sub is not None:
         return sub
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace_id)
-        .first()
-    )
-    # We can't have a subscription without a customer row; create a placeholder
-    # only when persisting one. For the no-billing-customer case, return an
-    # un-persisted free record purely for limit lookups.
-    if customer is None:
-        placeholder = BillingSubscription(
-            workspace_id=workspace_id,
-            billing_customer_id=UUID(int=0),  # never used because we don't persist
-            plan_code="free",
-            status=SubscriptionStatus.NONE,
-        )
-        return placeholder
-    sub = BillingSubscription(
+    # No subscription row yet → return an un-persisted free record purely for
+    # limit lookups. Paddle creates the real row on the first webhook.
+    return BillingSubscription(
         workspace_id=workspace_id,
-        billing_customer_id=customer.id,
         plan_code="free",
         status=SubscriptionStatus.NONE,
     )
-    db.add(sub)
-    db.commit()
-    db.refresh(sub)
-    return sub
 
 
 def get_active_plan(db: Session, *, workspace_id: UUID) -> Plan:
@@ -354,309 +326,14 @@ def assert_within_llm_token_limit(db: Session, *, workspace_id: UUID) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Customer + checkout / portal
-# ---------------------------------------------------------------------------
-
-
-def _ensure_customer(
-    db: Session, *, workspace: Workspace, user: User
-) -> BillingCustomer:
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace.id)
-        .first()
-    )
-    if customer is not None:
-        return customer
-
-    sdk = stripe_client()
-    stripe_customer = sdk.Customer.create(
-        email=user.email,
-        name=workspace.name,
-        metadata={"workspace_id": str(workspace.id), "workspace_slug": workspace.slug},
-    )
-    customer = BillingCustomer(
-        workspace_id=workspace.id,
-        stripe_customer_id=stripe_customer["id"],
-        email=user.email,
-    )
-    db.add(customer)
-    db.commit()
-    db.refresh(customer)
-
-    # Create a baseline subscription row in `none` status so future webhook
-    # upserts have something to write into.
-    if not customer.subscription:
-        sub = BillingSubscription(
-            workspace_id=workspace.id,
-            billing_customer_id=customer.id,
-            plan_code="free",
-            status=SubscriptionStatus.NONE,
-        )
-        db.add(sub)
-        db.commit()
-
-    return customer
-
-
-def create_checkout_session(
-    db: Session,
-    *,
-    workspace: Workspace,
-    user: User,
-    plan_code: str,
-) -> str:
-    plan = get_plan(plan_code)
-    price_id = resolve_price_id(plan)
-
-    customer = _ensure_customer(db, workspace=workspace, user=user)
-    sdk = stripe_client()
-
-    session = sdk.checkout.Session.create(
-        mode="subscription",
-        customer=customer.stripe_customer_id,
-        line_items=[{"price": price_id, "quantity": 1}],
-        success_url=f"{settings.frontend_url.rstrip('/')}/billing?stripe=success",
-        cancel_url=f"{settings.frontend_url.rstrip('/')}/billing?stripe=canceled",
-        client_reference_id=str(workspace.id),
-        metadata={
-            "workspace_id": str(workspace.id),
-            "plan_code": plan.code,
-        },
-        allow_promotion_codes=True,
-    )
-    return session["url"]
-
-
-def create_portal_session(db: Session, *, workspace: Workspace) -> str:
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace.id)
-        .first()
-    )
-    if customer is None:
-        raise PlanLimitExceededError(
-            "Workspace doesn't have a billing customer yet. Upgrade to a paid plan first."
-        )
-    sdk = stripe_client()
-    session = sdk.billing_portal.Session.create(
-        customer=customer.stripe_customer_id,
-        return_url=f"{settings.frontend_url.rstrip('/')}/billing",
-    )
-    return session["url"]
-
-
-# ---------------------------------------------------------------------------
-# Webhook processing
-# ---------------------------------------------------------------------------
-
-
-def verify_and_parse_webhook(*, payload: bytes, signature: str | None) -> dict[str, Any]:
-    secret = webhook_secret()
-    if not signature:
-        raise WebhookSignatureError("Missing Stripe-Signature header.")
-    try:
-        event = stripe.Webhook.construct_event(payload, signature, secret)
-    except stripe.error.SignatureVerificationError as exc:
-        raise WebhookSignatureError(str(exc)) from exc
-    return event
-
-
-def process_webhook_event(db: Session, event: dict[str, Any]) -> None:
-    event_type = event.get("type")
-    data_object = (event.get("data") or {}).get("object") or {}
-    log.info("billing.webhook", event_type=event_type, event_id=event.get("id"))
-
-    if event_type == "checkout.session.completed":
-        _on_checkout_completed(db, data_object)
-    elif event_type in (
-        "customer.subscription.created",
-        "customer.subscription.updated",
-    ):
-        _on_subscription_changed(db, data_object)
-    elif event_type == "customer.subscription.deleted":
-        _on_subscription_deleted(db, data_object)
-    elif event_type == "invoice.payment_failed":
-        _on_invoice_payment_failed(db, data_object)
-
-
-def _on_invoice_payment_failed(db: Session, invoice_payload: dict[str, Any]) -> None:
-    """Card failed on renewal: flip the subscription to past_due immediately
-    (rather than waiting for a possibly-delayed subscription.updated), so plan
-    limits drop to free-tier during dunning. `get_active_plan` already treats
-    past_due as free."""
-    stripe_customer_id = invoice_payload.get("customer")
-    if not stripe_customer_id:
-        return
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.stripe_customer_id == stripe_customer_id)
-        .first()
-    )
-    if customer is None:
-        return
-    sub = (
-        db.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == customer.workspace_id)
-        .first()
-    )
-    if sub is None:
-        return
-    sub.status = SubscriptionStatus.PAST_DUE
-    db.commit()
-
-
-def _on_checkout_completed(db: Session, session: dict[str, Any]) -> None:
-    workspace_id_str = session.get("client_reference_id") or (
-        session.get("metadata", {}) or {}
-    ).get("workspace_id")
-    if not workspace_id_str:
-        return
-    try:
-        workspace_id = UUID(workspace_id_str)
-    except ValueError:
-        return
-
-    stripe_customer_id = session.get("customer")
-    stripe_subscription_id = session.get("subscription")
-    plan_code = (session.get("metadata") or {}).get("plan_code") or "starter"
-
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace_id)
-        .first()
-    )
-    if customer is None and stripe_customer_id:
-        customer = BillingCustomer(
-            workspace_id=workspace_id,
-            stripe_customer_id=stripe_customer_id,
-        )
-        db.add(customer)
-        db.flush()
-    if customer is None:
-        return
-
-    sub = (
-        db.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == workspace_id)
-        .first()
-    )
-    if sub is None:
-        sub = BillingSubscription(
-            workspace_id=workspace_id,
-            billing_customer_id=customer.id,
-        )
-        db.add(sub)
-
-    sub.stripe_subscription_id = stripe_subscription_id
-    sub.plan_code = plan_code
-    sub.status = SubscriptionStatus.ACTIVE
-    db.commit()
-
-
-def _on_subscription_changed(db: Session, sub_payload: dict[str, Any]) -> None:
-    stripe_customer_id = sub_payload.get("customer")
-    if not stripe_customer_id:
-        return
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.stripe_customer_id == stripe_customer_id)
-        .first()
-    )
-    if customer is None:
-        return
-
-    sub = (
-        db.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == customer.workspace_id)
-        .first()
-    )
-    if sub is None:
-        sub = BillingSubscription(
-            workspace_id=customer.workspace_id,
-            billing_customer_id=customer.id,
-            plan_code="free",
-        )
-        db.add(sub)
-        db.flush()
-
-    items = ((sub_payload.get("items") or {}).get("data") or [])
-    price_id = items[0].get("price", {}).get("id") if items else None
-    sub.stripe_subscription_id = sub_payload.get("id")
-    sub.stripe_price_id = price_id
-    sub.plan_code = _plan_code_for_price_id(price_id) or sub.plan_code or "free"
-
-    raw_status = (sub_payload.get("status") or "").lower()
-    try:
-        sub.status = SubscriptionStatus(raw_status)
-    except ValueError:
-        sub.status = SubscriptionStatus.ACTIVE
-
-    sub.cancel_at_period_end = bool(sub_payload.get("cancel_at_period_end"))
-    sub.current_period_start = _to_dt(sub_payload.get("current_period_start"))
-    sub.current_period_end = _to_dt(sub_payload.get("current_period_end"))
-    sub.trial_end = _to_dt(sub_payload.get("trial_end"))
-    db.commit()
-
-
-def _on_subscription_deleted(db: Session, sub_payload: dict[str, Any]) -> None:
-    stripe_customer_id = sub_payload.get("customer")
-    if not stripe_customer_id:
-        return
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.stripe_customer_id == stripe_customer_id)
-        .first()
-    )
-    if customer is None:
-        return
-
-    sub = (
-        db.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == customer.workspace_id)
-        .first()
-    )
-    if sub is None:
-        return
-    sub.status = SubscriptionStatus.CANCELED
-    sub.plan_code = "free"
-    sub.cancel_at_period_end = False
-    db.commit()
-
-
-def _plan_code_for_price_id(price_id: str | None) -> str | None:
-    if not price_id:
-        return None
-    import os
-
-    for plan in PLANS.values():
-        if plan.price_id_env and os.getenv(plan.price_id_env, "").strip() == price_id:
-            return plan.code
-    return None
-
-
-def _to_dt(value: Any) -> datetime | None:
-    if value is None:
-        return None
-    try:
-        return datetime.fromtimestamp(int(value), tz=timezone.utc)
-    except (TypeError, ValueError, OSError):
-        return None
-
-
-# ---------------------------------------------------------------------------
 # Provider selection
 # ---------------------------------------------------------------------------
 
 
 def subscription_provider() -> str:
-    """Which processor handles *recurring* subscriptions. Paddle takes
-    precedence when configured (Merchant of Record); falls back to Stripe."""
-    if paddle_billing.is_configured():
-        return "paddle"
-    if os.getenv("STRIPE_SECRET_KEY", "").strip():
-        return "stripe"
-    return "none"
+    """Which processor handles *recurring* subscriptions. Paddle (Merchant of
+    Record) is the only processor; returns "none" until it's configured."""
+    return "paddle" if paddle_billing.is_configured() else "none"
 
 
 # ---------------------------------------------------------------------------
@@ -665,18 +342,27 @@ def subscription_provider() -> str:
 
 
 def create_paddle_checkout(
-    db: Session, *, workspace: Workspace, user: User, plan_code: str
+    db: Session,
+    *,
+    workspace: Workspace,
+    user: User,
+    plan_code: str,
+    interval: str = "month",
 ) -> dict[str, Any]:
     if not paddle_billing.is_configured():
         raise BillingNotConfiguredError("Paddle billing is not configured.")
     get_plan(plan_code)  # validates the plan exists (raises UnknownPlanError)
-    price_id = paddle_billing.price_id_for_plan(plan_code)
+    price_id = paddle_billing.price_id_for_plan(plan_code, interval)
     return {
         "client_token": paddle_billing.client_token(),
         "environment": paddle_billing.environment(),
         "price_id": price_id,
         "customer_email": user.email,
-        "custom_data": {"workspace_id": str(workspace.id), "plan_code": plan_code},
+        "custom_data": {
+            "workspace_id": str(workspace.id),
+            "plan_code": plan_code,
+            "interval": interval,
+        },
     }
 
 

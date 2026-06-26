@@ -939,6 +939,7 @@ export type Plan = {
   display_name: string;
   description: string;
   monthly_price_usd: number | null;
+  annual_price_usd?: number | null;
   is_paid: boolean;
   limits: PlanLimits;
 };
@@ -962,10 +963,9 @@ export type BillingStatus = {
   trial_end: string | null;
   usage: Usage;
   has_billing_customer: boolean;
-  stripe_configured: boolean;
   paddle_configured: boolean;
-  subscription_provider: "stripe" | "paddle" | "none";
-  subscription_source: "stripe" | "paddle" | "appsumo";
+  subscription_provider: "paddle" | "none";
+  subscription_source: "paddle" | "appsumo";
 };
 
 export type PaddleCheckout = {
@@ -977,8 +977,7 @@ export type PaddleCheckout = {
 };
 
 export type CheckoutSessionResponse = {
-  provider: "stripe" | "paddle";
-  url?: string | null;
+  provider: "paddle";
   paddle?: PaddleCheckout | null;
 };
 export type PortalSessionResponse = { url: string };

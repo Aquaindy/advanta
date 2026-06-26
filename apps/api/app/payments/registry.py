@@ -1,4 +1,4 @@
-"""Registry of payment-collection providers.
+"""Registry of payment-collection providers (for one-off platform fees).
 
 Adding a processor = one adapter file + an entry here. The billing service and
 the fee ledger are unchanged."""
@@ -8,7 +8,6 @@ from app.payments.base import PaymentProvider
 from app.payments.manual import ManualPaymentProvider
 from app.payments.paddle import PaddlePaymentProvider
 from app.payments.paypal import PayPalPaymentProvider
-from app.payments.stripe_provider import StripePaymentProvider
 
 
 class UnknownPaymentProviderError(AdVantaError):
@@ -18,7 +17,6 @@ class UnknownPaymentProviderError(AdVantaError):
 
 PAYMENT_REGISTRY: dict[str, type[PaymentProvider]] = {
     ManualPaymentProvider.provider_id: ManualPaymentProvider,
-    StripePaymentProvider.provider_id: StripePaymentProvider,
     PaddlePaymentProvider.provider_id: PaddlePaymentProvider,
     PayPalPaymentProvider.provider_id: PayPalPaymentProvider,
 }

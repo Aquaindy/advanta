@@ -10,17 +10,19 @@ from app.db.base import Base, TimestampMixin
 
 
 class SubscriptionSource(StrEnum):
-    """Where the current plan grant comes from. `appsumo` rows are lifetime
-    deals with no Stripe customer and no recurring charge. `paddle` is the
-    Merchant-of-Record processor for recurring plans (handles global tax/VAT)."""
+    """Where the current plan grant comes from. `paddle` is the Merchant-of-
+    Record processor for recurring plans (handles global tax/VAT). `appsumo`
+    rows are lifetime deals with no recurring charge. `stripe` is a legacy
+    tombstone — Stripe was removed; it's never written, kept only so the DB
+    enum type stays stable without a migration."""
 
-    STRIPE = "stripe"
+    STRIPE = "stripe"  # legacy — Stripe removed; no longer written
     APPSUMO = "appsumo"
     PADDLE = "paddle"
 
 
 class SubscriptionStatus(StrEnum):
-    """Stripe subscription status values plus our own `none` for free workspaces."""
+    """Subscription status values plus our own `none` for free workspaces."""
 
     NONE = "none"
     TRIALING = "trialing"
@@ -34,7 +36,7 @@ class SubscriptionStatus(StrEnum):
 
 
 class BillingSubscription(Base, TimestampMixin):
-    """One row per (workspace, stripe subscription). Latest = current."""
+    """One row per workspace subscription (Paddle / AppSumo). Latest = current."""
 
     __tablename__ = "billing_subscriptions"
 
@@ -55,9 +57,11 @@ class BillingSubscription(Base, TimestampMixin):
     source: Mapped[SubscriptionSource] = mapped_column(
         Enum(SubscriptionSource, name="subscription_source"),
         nullable=False,
-        default=SubscriptionSource.STRIPE,
+        default=SubscriptionSource.PADDLE,
     )
 
+    # Legacy Stripe identifiers — Stripe was removed; inert tombstones (never
+    # written) kept to avoid a column-drop migration. Paddle uses external_*.
     stripe_subscription_id: Mapped[str | None] = mapped_column(String(64), unique=True)
     stripe_price_id: Mapped[str | None] = mapped_column(String(64))
 

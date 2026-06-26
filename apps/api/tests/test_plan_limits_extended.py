@@ -21,7 +21,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.integrations.stripe import PLANS, Plan, PlanLimits
+from app.billing.plans import PLANS, Plan, PlanLimits
 from app.models.usage_event import UsageEvent, UsageEventType
 from app.models.user import User
 from app.models.workspace import Workspace

@@ -132,7 +132,8 @@ The blueprint creates these resources:
 | Google (login) | `GOOGLE_LOGIN_CLIENT_ID`, `GOOGLE_LOGIN_CLIENT_SECRET` | For "Sign in with Google" |
 | Meta | `META_APP_ID`, `META_APP_SECRET` | Optional (Meta Ads) |
 | LinkedIn | `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET` | Optional (LinkedIn Ads) |
-| Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Optional (outreach/reports/reset emails) |
+| Email (Resend) | `RESEND_API_KEY`, `EMAIL_FROM` | **Recommended** — sends verification/reset/invite/report emails. `EMAIL_FROM` domain must be verified in Resend |
+| Email (SMTP fallback) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Optional — used only when `RESEND_API_KEY` is unset |
 | Email | `INBOUND_EMAIL_DOMAIN`, `INBOUND_EMAIL_SECRET` | Optional (inbound reply parsing) |
 | Observability | `SENTRY_DSN` | Optional |
 | Website agent | `PAGESPEED_API_KEY` | Optional (Lighthouse/PageSpeed) |
@@ -184,14 +185,14 @@ Subscribe to the subscription + transaction events:
 Copy the destination's **secret key** into `PADDLE_WEBHOOK_SECRET`. The handler
 verifies the `Paddle-Signature` HMAC over the raw body and is idempotent
 (replayed/out-of-order events are no-ops). Also set `PADDLE_API_KEY`,
-`PADDLE_CLIENT_TOKEN`, and the three `PADDLE_PRICE_ID_*` values. Use
+`PADDLE_CLIENT_TOKEN`, the monthly `PADDLE_PRICE_ID_*` values, and their
+`PADDLE_PRICE_ID_*_ANNUAL` counterparts (yearly billing). Use
 `PADDLE_ENVIRONMENT=sandbox` against the Paddle sandbox while testing.
 
-> **Stripe** subscription code remains as a dormant fallback. To use it instead,
-> set `STRIPE_SECRET_KEY` + `STRIPE_PRICE_ID_*` and point a Stripe webhook at
-> `/api/v1/billing/webhook` (events: `checkout.session.completed`,
-> `customer.subscription.created/updated/deleted`, `invoice.payment_failed`).
-> When Paddle is configured it takes precedence.
+> **Annual billing:** every paid plan has a monthly *and* a yearly Paddle Price.
+> Set `PADDLE_PRICE_ID_<PLAN>_ANNUAL` alongside the monthly IDs; the Billing
+> page's monthly/annual toggle drives which price checkout opens. **Stripe has
+> been removed — Paddle is the only subscription processor.**
 
 ---
 

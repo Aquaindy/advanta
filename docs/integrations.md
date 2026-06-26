@@ -11,7 +11,7 @@
 | LinkedIn Ads      | Campaign sync + recommendations      | M6 / M7   |
 | Google Analytics 4| Conversion + funnel analytics        | M6 / M8   |
 | Search Console    | Search visibility data               | M6 / M8   |
-| Stripe            | Billing                              | M11       |
+| Paddle            | Subscriptions (Merchant of Record)   | M11       |
 
 ## Rules ([CLAUDE.md §13](../CLAUDE.md#13-integration-requirements))
 
@@ -30,6 +30,6 @@ apps/api/app/integrations/
 ├── linkedin_ads/
 ├── google_analytics/
 ├── google_search_console/
-├── stripe/
+├── paddle_billing.py
 └── email/
 ```

@@ -76,7 +76,7 @@ def _billing_identity(db: Session, *, workspace_id: UUID) -> InvoiceCustomer:
     return InvoiceCustomer(
         workspace_id=workspace_id,
         email=email,
-        external_customer_id=customer.stripe_customer_id if customer else None,
+        external_customer_id=None,  # the processor creates its own customer at checkout
     )
 
 

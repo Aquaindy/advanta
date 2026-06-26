@@ -925,7 +925,7 @@ apps/api/
 │   │   ├── linkedin_ads/
 │   │   ├── google_analytics/
 │   │   ├── google_search_console/
-│   │   ├── stripe/
+│   │   ├── paddle_billing.py
 │   │   └── email/
 │   │
 │   ├── workers/
@@ -1263,11 +1263,16 @@ META_APP_SECRET=
 LINKEDIN_CLIENT_ID=
 LINKEDIN_CLIENT_SECRET=
 
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_PRICE_ID_STARTER=
-STRIPE_PRICE_ID_PRO=
-STRIPE_PRICE_ID_AGENCY=
+PADDLE_API_KEY=
+PADDLE_CLIENT_TOKEN=
+PADDLE_WEBHOOK_SECRET=
+PADDLE_ENVIRONMENT=sandbox
+PADDLE_PRICE_ID_STARTER=
+PADDLE_PRICE_ID_PRO=
+PADDLE_PRICE_ID_AGENCY=
+PADDLE_PRICE_ID_STARTER_ANNUAL=
+PADDLE_PRICE_ID_PRO_ANNUAL=
+PADDLE_PRICE_ID_AGENCY_ANNUAL=
 
 FRONTEND_URL=http://localhost:5173
 BACKEND_URL=http://localhost:8000

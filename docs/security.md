@@ -26,12 +26,12 @@ Status snapshot at the end of M12 (production hardening). The required controls 
 
 ### Rate limiting (M12)
 - Redis-backed fixed-window counters per `(IP, endpoint group)` via `RateLimitMiddleware`.
-- Tighter buckets on auth (30/min), agent runs (30/min), landing-page audits (30/min), Stripe checkout (10/min), Stripe portal (10/min), provider syncs (20/min).
+- Tighter buckets on auth (30/min), agent runs (30/min), landing-page audits (30/min), billing checkout (10/min), billing portal (10/min), provider syncs (20/min).
 - Default bucket is 600/min/IP for everything else.
 - Returns `429 rate_limited` with `Retry-After` and `X-RateLimit-*` headers. Fails open if Redis is unreachable.
 
 ### Webhook integrity
-- Stripe webhook validates `Stripe-Signature` via `stripe.Webhook.construct_event` against `STRIPE_WEBHOOK_SECRET`. Mismatched signatures → `400 invalid_webhook_signature`. Missing secret → `503 billing_not_configured`.
+- Paddle webhook validates `Paddle-Signature` (HMAC over the raw body) against `PADDLE_WEBHOOK_SECRET`. Mismatched signatures → `400 invalid_webhook_signature`. Missing secret → `503 billing_not_configured`.
 
 ### CORS
 - Origins driven from `CORS_ORIGINS` env var (JSON list). Credentials enabled. `X-Request-ID`, `X-RateLimit-Limit`, `X-RateLimit-Remaining` are exposed.
@@ -67,7 +67,7 @@ Status snapshot at the end of M12 (production hardening). The required controls 
 - [ ] `ENCRYPTION_KEY` rotated to a fresh Fernet key.
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`.
 - [ ] `CORS_ORIGINS` restricted to production hostnames only.
-- [ ] `STRIPE_WEBHOOK_SECRET` configured; `stripe listen` removed from production endpoints.
+- [ ] `PADDLE_WEBHOOK_SECRET` configured; the Paddle notification destination points at `/api/v1/billing/paddle/webhook`.
 - [ ] OAuth redirect URIs match `${BACKEND_URL}/api/v1/integrations/{provider}/callback` exactly.
 - [ ] Postgres + Redis are managed services with automated backups (Render handles both).
 - [ ] First superuser promoted via the runbook in [`deployment.md`](deployment.md).
@@ -78,6 +78,6 @@ Status snapshot at the end of M12 (production hardening). The required controls 
 ## Known follow-ups
 
 - **CSP / HSTS headers**: not yet enforced in nginx config. Add when serving from advantaai.com.
-- **Stripe webhook idempotency**: events are processed live; we don't track event IDs to dedupe replays. Stripe retries the same event ID on failure, so the same `subscription.updated` arriving twice writes the same row twice (idempotent in our case because we upsert by workspace_id). Add a `processed_event_ids` table if Stripe ever introduces a non-idempotent event.
+- **Webhook idempotency**: Paddle webhook events are deduped via the `processed_webhook_events` ledger (unique `(provider, event_id)`), so replayed / out-of-order events are no-ops. The same ledger backs single-use OAuth `state` tokens.
 - **Per-user rate limits**: limiter is IP-only today. Per-user buckets land alongside an explicit user header check in M13.
 - **Background workers**: agent runs are synchronous in-request. M13 will queue them on Celery and switch the API to return `202 Accepted`.

@@ -26,7 +26,7 @@ AdVanta is a multi-tenant SaaS built around a **Master Growth Orchestrator + AI 
                                   │  OAuth / API     │
                             ┌─────┴──────────────────┴─────┐
                             │ Google Ads · Meta · LinkedIn │
-                            │ GA4 · Search Console · Stripe│
+                            │ GA4 · Search Console · Paddle│
                             └──────────────────────────────┘
 ```
 

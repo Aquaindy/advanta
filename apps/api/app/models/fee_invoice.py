@@ -37,7 +37,7 @@ class FeeInvoice(Base, TimestampMixin):
         index=True,
     )
 
-    # Payment processor that issued the bill: "manual" | "stripe" | "paddle" | …
+    # Payment processor that issued the bill: "manual" | "paddle" | "paypal"
     provider: Mapped[str] = mapped_column(String(32), nullable=False)
     status: Mapped[FeeInvoiceStatus] = mapped_column(
         Enum(

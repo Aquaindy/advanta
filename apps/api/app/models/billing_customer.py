@@ -8,7 +8,8 @@ from app.db.base import Base, TimestampMixin
 
 
 class BillingCustomer(Base, TimestampMixin):
-    """One Stripe customer per workspace."""
+    """Legacy billing-customer row. Stripe was removed and Paddle creates its
+    own customer at checkout, so this is no longer populated for new workspaces."""
 
     __tablename__ = "billing_customers"
 

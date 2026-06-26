@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta, timezone
-from unittest.mock import patch
 
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.models.billing_customer import BillingCustomer
-from app.models.billing_subscription import BillingSubscription, SubscriptionStatus
+from app.billing.plans import PLANS
+from app.models.billing_subscription import (
+    BillingSubscription,
+    SubscriptionSource,
+    SubscriptionStatus,
+)
 from app.models.usage_event import UsageEvent, UsageEventType
 from app.models.user import User
 from app.models.workspace import Workspace
@@ -47,25 +49,32 @@ def _login(client: TestClient, email: str) -> None:
 
 
 def _seed_paid_subscription(
-    db: Session, *, workspace_id, plan_code: str = "pro"
+    db: Session,
+    *,
+    workspace_id,
+    plan_code: str = "pro",
+    management_url: str = "https://paddle.example/manage",
 ) -> None:
-    customer = BillingCustomer(
-        workspace_id=workspace_id,
-        stripe_customer_id=f"cus_test_{plan_code}_{workspace_id}",
-        email="alice@example.com",
-    )
-    db.add(customer)
-    db.flush()
+    """Seed an active Paddle subscription row (no Stripe — removed)."""
     db.add(
         BillingSubscription(
             workspace_id=workspace_id,
-            billing_customer_id=customer.id,
-            stripe_subscription_id=f"sub_test_{workspace_id}",
             plan_code=plan_code,
             status=SubscriptionStatus.ACTIVE,
+            source=SubscriptionSource.PADDLE,
+            external_subscription_id=f"sub_{plan_code}_{workspace_id}",
+            management_url=management_url,
         )
     )
     db.commit()
+
+
+def _configure_paddle(monkeypatch) -> None:
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_test_key")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_test_whsec")
+    monkeypatch.setenv("PADDLE_CLIENT_TOKEN", "pdl_test_ctkn")
+    monkeypatch.setenv("PADDLE_PRICE_ID_PRO", "pri_pro_monthly")
+    monkeypatch.setenv("PADDLE_PRICE_ID_PRO_ANNUAL", "pri_pro_yearly")
 
 
 # ---------------------------------------------------------------------------
@@ -87,6 +96,10 @@ def test_status_defaults_to_free_plan(client: TestClient, db_session: Session) -
     # marketed — the public listing only includes paid tiers.
     plan_codes = {p["code"] for p in body["available_plans"]}
     assert plan_codes == {"starter", "pro", "agency"}
+    # Paid plans expose both monthly and annual display prices.
+    pro = next(p for p in body["available_plans"] if p["code"] == "pro")
+    assert pro["monthly_price_usd"] == 129
+    assert pro["annual_price_usd"] == 1290
 
 
 def test_status_reflects_active_subscription(
@@ -100,7 +113,9 @@ def test_status_reflects_active_subscription(
     ).json()
     assert body["plan"]["code"] == "pro"
     assert body["subscription_status"] == "active"
+    # A manageable Paddle subscription (has a management URL).
     assert body["has_billing_customer"] is True
+    assert body["subscription_source"] == "paddle"
 
 
 def test_status_falls_back_to_free_for_past_due(
@@ -125,7 +140,7 @@ def test_status_falls_back_to_free_for_past_due(
 
 
 # ---------------------------------------------------------------------------
-# Plan-limit enforcement on agent runs
+# Plan-limit enforcement on agent runs (caps read from PLANS, not hardcoded)
 # ---------------------------------------------------------------------------
 
 
@@ -133,15 +148,16 @@ def test_agent_run_blocked_when_free_plan_quota_exceeded(
     client: TestClient, db_session: Session
 ) -> None:
     _, workspace = _seed_workspace(db_session)
-    # Free plan caps at 10 agent runs / 30d. Seed 10 events.
+    cap = PLANS["free"].limits.agent_runs_per_month
+    assert cap is not None
     now = datetime.now(timezone.utc)
-    for i in range(10):
+    for i in range(cap):
         db_session.add(
             UsageEvent(
                 workspace_id=workspace.id,
                 event_type=UsageEventType.AGENT_RUN,
                 quantity=1,
-                occurred_at=now - timedelta(hours=i),
+                occurred_at=now - timedelta(minutes=i),
             )
         )
     db_session.commit()
@@ -179,15 +195,15 @@ def test_agent_run_records_usage_event_when_succeeded(
 def test_pro_plan_has_higher_quota(client: TestClient, db_session: Session) -> None:
     _, workspace = _seed_workspace(db_session)
     _seed_paid_subscription(db_session, workspace_id=workspace.id, plan_code="pro")
-    # 20 events — well under pro's 500/30d ceiling, well over free's 10
+    # Well under pro's ceiling, well over free's — a paid plan lifts the cap.
     now = datetime.now(timezone.utc)
-    for i in range(20):
+    for i in range(PLANS["free"].limits.agent_runs_per_month + 5):
         db_session.add(
             UsageEvent(
                 workspace_id=workspace.id,
                 event_type=UsageEventType.AGENT_RUN,
                 quantity=1,
-                occurred_at=now - timedelta(hours=i),
+                occurred_at=now - timedelta(minutes=i),
             )
         )
     db_session.commit()
@@ -201,36 +217,38 @@ def test_pro_plan_has_higher_quota(client: TestClient, db_session: Session) -> N
 
 
 # ---------------------------------------------------------------------------
-# Landing-page limit enforcement
+# Landing-page limit enforcement (cap read from PLANS)
 # ---------------------------------------------------------------------------
 
 
-def test_free_plan_blocks_second_landing_page(
+def test_free_plan_blocks_landing_page_over_cap(
     client: TestClient, db_session: Session
 ) -> None:
     _, workspace = _seed_workspace(db_session)
     _login(client, "alice@example.com")
+    cap = PLANS["free"].limits.landing_pages
+    assert cap is not None
+    for i in range(cap):
+        created = client.post(
+            f"/api/v1/workspaces/{workspace.id}/landing-pages",
+            json={"url": f"https://acme.example/p{i}"},
+        )
+        assert created.status_code == 201, created.text
 
-    first = client.post(
+    blocked = client.post(
         f"/api/v1/workspaces/{workspace.id}/landing-pages",
-        json={"url": "https://acme.example/pricing"},
+        json={"url": "https://acme.example/over-cap"},
     )
-    assert first.status_code == 201
-
-    second = client.post(
-        f"/api/v1/workspaces/{workspace.id}/landing-pages",
-        json={"url": "https://acme.example/demo"},
-    )
-    assert second.status_code == 402
-    assert second.json()["error"]["code"] == "plan_limit_exceeded"
+    assert blocked.status_code == 402
+    assert blocked.json()["error"]["code"] == "plan_limit_exceeded"
 
 
 # ---------------------------------------------------------------------------
-# Checkout / Portal sessions (mocked Stripe SDK)
+# Paddle checkout / portal
 # ---------------------------------------------------------------------------
 
 
-def test_checkout_session_503_when_stripe_unconfigured(
+def test_checkout_503_when_billing_unconfigured(
     client: TestClient, db_session: Session
 ) -> None:
     _, workspace = _seed_workspace(db_session)
@@ -243,11 +261,10 @@ def test_checkout_session_503_when_stripe_unconfigured(
     assert response.json()["error"]["code"] == "billing_not_configured"
 
 
-def test_checkout_session_404_for_unknown_plan(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+def test_checkout_404_for_unknown_plan(
+    client: TestClient, db_session: Session, monkeypatch
 ) -> None:
-    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_xxx")
-    monkeypatch.setenv("STRIPE_PRICE_ID_STARTER", "price_starter_xxx")
+    _configure_paddle(monkeypatch)
     _, workspace = _seed_workspace(db_session)
     _login(client, "alice@example.com")
     response = client.post(
@@ -258,40 +275,38 @@ def test_checkout_session_404_for_unknown_plan(
     assert response.json()["error"]["code"] == "unknown_plan"
 
 
-def test_checkout_session_creates_customer_and_returns_url(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+def test_checkout_returns_paddle_overlay_monthly(
+    client: TestClient, db_session: Session, monkeypatch
 ) -> None:
-    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_xxx")
-    monkeypatch.setenv("STRIPE_PRICE_ID_PRO", "price_pro_xxx")
+    _configure_paddle(monkeypatch)
     _, workspace = _seed_workspace(db_session)
     _login(client, "alice@example.com")
-
-    with patch(
-        "stripe.Customer.create",
-        return_value={"id": "cus_test_123"},
-    ) as cust_mock, patch(
-        "stripe.checkout.Session.create",
-        return_value={"id": "cs_test_xxx", "url": "https://checkout.stripe.com/c/pay/x"},
-    ) as session_mock:
-        response = client.post(
-            f"/api/v1/workspaces/{workspace.id}/billing/checkout-session",
-            json={"plan_code": "pro"},
-        )
-    assert response.status_code == 201
-    assert response.json()["url"] == "https://checkout.stripe.com/c/pay/x"
-    assert cust_mock.called
-    session_kwargs = session_mock.call_args.kwargs
-    assert session_kwargs["customer"] == "cus_test_123"
-    assert session_kwargs["mode"] == "subscription"
-    assert session_kwargs["line_items"][0]["price"] == "price_pro_xxx"
-    assert session_kwargs["client_reference_id"] == str(workspace.id)
-
-    customer = (
-        db_session.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace.id)
-        .one()
+    response = client.post(
+        f"/api/v1/workspaces/{workspace.id}/billing/checkout-session",
+        json={"plan_code": "pro"},
     )
-    assert customer.stripe_customer_id == "cus_test_123"
+    assert response.status_code == 201, response.text
+    body = response.json()
+    assert body["provider"] == "paddle"
+    assert body["paddle"]["price_id"] == "pri_pro_monthly"
+    assert body["paddle"]["custom_data"]["workspace_id"] == str(workspace.id)
+    assert body["paddle"]["custom_data"]["interval"] == "month"
+
+
+def test_checkout_annual_uses_annual_price(
+    client: TestClient, db_session: Session, monkeypatch
+) -> None:
+    _configure_paddle(monkeypatch)
+    _, workspace = _seed_workspace(db_session)
+    _login(client, "alice@example.com")
+    response = client.post(
+        f"/api/v1/workspaces/{workspace.id}/billing/checkout-session",
+        json={"plan_code": "pro", "interval": "year"},
+    )
+    assert response.status_code == 201, response.text
+    body = response.json()
+    assert body["paddle"]["price_id"] == "pri_pro_yearly"
+    assert body["paddle"]["custom_data"]["interval"] == "year"
 
 
 def test_checkout_requires_owner_role(
@@ -306,139 +321,38 @@ def test_checkout_requires_owner_role(
     assert response.status_code == 403
 
 
-def test_portal_session_returns_url(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+def test_portal_returns_paddle_management_url(
+    client: TestClient, db_session: Session
 ) -> None:
-    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_xxx")
     _, workspace = _seed_workspace(db_session)
-    _seed_paid_subscription(db_session, workspace_id=workspace.id)
-    _login(client, "alice@example.com")
-    with patch(
-        "stripe.billing_portal.Session.create",
-        return_value={"url": "https://billing.stripe.com/p/session/x"},
-    ):
-        response = client.post(
-            f"/api/v1/workspaces/{workspace.id}/billing/portal-session"
-        )
-    assert response.status_code == 201
-    assert response.json()["url"] == "https://billing.stripe.com/p/session/x"
-
-
-# ---------------------------------------------------------------------------
-# Webhook
-# ---------------------------------------------------------------------------
-
-
-def test_webhook_rejects_invalid_signature(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_test_xxx")
-    response = client.post(
-        "/api/v1/billing/webhook",
-        content=b'{"type":"customer.subscription.updated"}',
-        headers={"Stripe-Signature": "t=0,v1=bad"},
+    _seed_paid_subscription(
+        db_session,
+        workspace_id=workspace.id,
+        management_url="https://paddle.example/manage/abc",
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "invalid_webhook_signature"
-
-
-def test_webhook_503_when_secret_missing(client: TestClient) -> None:
+    _login(client, "alice@example.com")
     response = client.post(
-        "/api/v1/billing/webhook",
-        content=b'{}',
-        headers={"Stripe-Signature": "t=0,v1=x"},
+        f"/api/v1/workspaces/{workspace.id}/billing/portal-session"
+    )
+    assert response.status_code == 201
+    assert response.json()["url"] == "https://paddle.example/manage/abc"
+
+
+def test_portal_503_when_no_subscription_to_manage(
+    client: TestClient, db_session: Session
+) -> None:
+    _, workspace = _seed_workspace(db_session)
+    _login(client, "alice@example.com")
+    response = client.post(
+        f"/api/v1/workspaces/{workspace.id}/billing/portal-session"
     )
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "billing_not_configured"
 
 
-def test_webhook_subscription_updated_promotes_workspace_to_pro(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_test_xxx")
-    monkeypatch.setenv("STRIPE_PRICE_ID_PRO", "price_pro_xxx")
-
-    _, workspace = _seed_workspace(db_session)
-    _seed_paid_subscription(db_session, workspace_id=workspace.id, plan_code="free")
-    customer = (
-        db_session.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace.id)
-        .one()
-    )
-
-    fake_event = {
-        "id": "evt_test_1",
-        "type": "customer.subscription.updated",
-        "data": {
-            "object": {
-                "id": "sub_test_xxx",
-                "customer": customer.stripe_customer_id,
-                "status": "active",
-                "items": {"data": [{"price": {"id": "price_pro_xxx"}}]},
-                "current_period_start": 1738368000,
-                "current_period_end": 1741046400,
-                "cancel_at_period_end": False,
-                "trial_end": None,
-            }
-        },
-    }
-
-    with patch(
-        "stripe.Webhook.construct_event", return_value=fake_event
-    ):
-        response = client.post(
-            "/api/v1/billing/webhook",
-            content=b'{}',
-            headers={"Stripe-Signature": "t=1,v1=fake"},
-        )
-    assert response.status_code == 200
-
-    sub = (
-        db_session.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == workspace.id)
-        .one()
-    )
-    db_session.refresh(sub)
-    assert sub.plan_code == "pro"
-    assert sub.status == SubscriptionStatus.ACTIVE
-    assert sub.stripe_subscription_id == "sub_test_xxx"
-
-
-def test_webhook_subscription_deleted_reverts_to_free(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_test_xxx")
-
-    _, workspace = _seed_workspace(db_session)
-    _seed_paid_subscription(db_session, workspace_id=workspace.id, plan_code="pro")
-    customer = (
-        db_session.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace.id)
-        .one()
-    )
-
-    fake_event = {
-        "id": "evt_test_del",
-        "type": "customer.subscription.deleted",
-        "data": {"object": {"customer": customer.stripe_customer_id}},
-    }
-
-    with patch("stripe.Webhook.construct_event", return_value=fake_event):
-        response = client.post(
-            "/api/v1/billing/webhook",
-            content=b'{}',
-            headers={"Stripe-Signature": "t=1,v1=fake"},
-        )
-    assert response.status_code == 200
-
-    sub = (
-        db_session.query(BillingSubscription)
-        .filter(BillingSubscription.workspace_id == workspace.id)
-        .one()
-    )
-    db_session.refresh(sub)
-    assert sub.plan_code == "free"
-    assert sub.status == SubscriptionStatus.CANCELED
+# ---------------------------------------------------------------------------
+# LLM cost surfacing
+# ---------------------------------------------------------------------------
 
 
 def test_llm_cost_cents_aggregates_metadata_micros(
@@ -447,14 +361,12 @@ def test_llm_cost_cents_aggregates_metadata_micros(
     """billing_service.llm_cost_cents_last_30d sums every LLM_CALL event's
     `estimated_cost_usd_micros` metadata and returns the result in cents."""
 
-    from datetime import datetime, timezone
-    from app.models.usage_event import UsageEvent, UsageEventType
     from app.services import billing_service
 
     _, ws = _seed_workspace(db_session)
     now = datetime.now(timezone.utc)
 
-    # Three LLM calls: 50k micros + 30k micros + 20k micros = 100k micros = 10c
+    # Three LLM calls: 50k + 30k + 20k micros = 100k micros = 10c
     for amount in (50_000, 30_000, 20_000):
         db_session.add(
             UsageEvent(
@@ -477,9 +389,7 @@ def test_llm_cost_cents_aggregates_metadata_micros(
     )
     db_session.commit()
 
-    cents = billing_service.llm_cost_cents_last_30d(
-        db_session, workspace_id=ws.id
-    )
+    cents = billing_service.llm_cost_cents_last_30d(db_session, workspace_id=ws.id)
     assert cents == 10  # 100_000 micros / 10_000 = 10 cents
 
 
@@ -487,9 +397,6 @@ def test_billing_status_surfaces_llm_cost(
     client: TestClient, db_session: Session
 ) -> None:
     """End-to-end: GET /billing/status returns llm_cost_cents_last_30d."""
-
-    from datetime import datetime, timezone
-    from app.models.usage_event import UsageEvent, UsageEventType
 
     user, ws = _seed_workspace(db_session)
     db_session.add(

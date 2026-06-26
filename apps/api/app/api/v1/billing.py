@@ -1,17 +1,15 @@
-import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from app.billing.plans import PLANS
 from app.db.session import get_db
-from app.integrations.stripe import PLANS
-from app.models.billing_customer import BillingCustomer
+from app.integrations import paddle_billing
 from app.models.usage_event import UsageEventType
 from app.models.workspace import Workspace
 from app.models.workspace_member import WorkspaceMember
-from app.integrations import paddle_billing
 from app.schemas.billing import (
     BillingStatus,
     CheckoutRequest,
@@ -28,7 +26,7 @@ from app.services import billing_service
 # Workspace-scoped routes (auth required)
 workspace_router = APIRouter()
 
-# Public webhook router (Stripe-signed, no auth)
+# Public webhook router (Paddle-signed, no auth)
 public_router = APIRouter()
 
 
@@ -38,7 +36,8 @@ def _plan_to_public(plan) -> PlanPublic:
         display_name=plan.display_name,
         description=plan.description,
         monthly_price_usd=plan.monthly_price_usd,
-        is_paid=plan.price_id_env is not None,
+        annual_price_usd=plan.annual_price_usd,
+        is_paid=plan.paid,
         limits=PlanLimitsPublic(
             agent_runs_per_month=plan.limits.agent_runs_per_month,
             landing_pages=plan.limits.landing_pages,
@@ -61,11 +60,7 @@ def get_billing_status(
         .filter(billing_service.BillingSubscription.workspace_id == workspace_id)
         .first()
     )
-    customer = (
-        db.query(BillingCustomer)
-        .filter(BillingCustomer.workspace_id == workspace_id)
-        .first()
-    )
+
     def _u(t: UsageEventType) -> int:
         return billing_service.usage_in_last_30d(
             db, workspace_id=workspace_id, event_type=t
@@ -91,13 +86,10 @@ def get_billing_status(
                 db, workspace_id=workspace_id
             ),
         ),
-        has_billing_customer=customer is not None,
-        stripe_configured=bool(os.getenv("STRIPE_SECRET_KEY", "").strip()),
+        has_billing_customer=bool(sub and sub.management_url),
         paddle_configured=paddle_billing.is_configured(),
         subscription_provider=billing_service.subscription_provider(),
-        subscription_source=(
-            sub.source.value if sub else billing_service.subscription_provider()
-        ),
+        subscription_source=(sub.source.value if sub else "paddle"),
     )
 
 
@@ -114,20 +106,14 @@ def create_checkout(
 ) -> CheckoutResponse:
     workspace = db.get(Workspace, workspace_id)
     assert workspace is not None  # require_owner guarantees membership
-    user = member.user
-
-    provider = billing_service.subscription_provider()
-    if provider == "paddle":
-        cfg = billing_service.create_paddle_checkout(
-            db, workspace=workspace, user=user, plan_code=payload.plan_code
-        )
-        return CheckoutResponse(provider="paddle", paddle=PaddleCheckout(**cfg))
-
-    # Stripe (default / fallback).
-    url = billing_service.create_checkout_session(
-        db, workspace=workspace, user=user, plan_code=payload.plan_code
+    cfg = billing_service.create_paddle_checkout(
+        db,
+        workspace=workspace,
+        user=member.user,
+        plan_code=payload.plan_code,
+        interval=payload.interval,
     )
-    return CheckoutResponse(provider="stripe", url=url)
+    return CheckoutResponse(provider="paddle", paddle=PaddleCheckout(**cfg))
 
 
 @workspace_router.post(
@@ -140,32 +126,13 @@ def create_portal(
     member: WorkspaceMember = Depends(require_owner),
     db: Session = Depends(get_db),
 ) -> PortalResponse:
-    workspace = db.get(Workspace, workspace_id)
-    assert workspace is not None
-    if billing_service.subscription_provider() == "paddle":
-        url = billing_service.paddle_management_url(db, workspace_id=workspace_id)
-    else:
-        url = billing_service.create_portal_session(db, workspace=workspace)
+    url = billing_service.paddle_management_url(db, workspace_id=workspace_id)
     return PortalResponse(url=url)
 
 
 # ---------------------------------------------------------------------------
-# Public processor webhooks (signature-verified, no auth)
+# Public processor webhook (signature-verified, no auth)
 # ---------------------------------------------------------------------------
-
-
-@public_router.post("/webhook")
-async def stripe_webhook(
-    request: Request,
-    stripe_signature: str | None = Header(default=None, alias="Stripe-Signature"),
-    db: Session = Depends(get_db),
-) -> JSONResponse:
-    payload = await request.body()
-    event = billing_service.verify_and_parse_webhook(
-        payload=payload, signature=stripe_signature
-    )
-    billing_service.process_webhook_event(db, event)
-    return JSONResponse({"received": True})
 
 
 @public_router.post("/paddle/webhook")

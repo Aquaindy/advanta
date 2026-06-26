@@ -27,7 +27,7 @@ Redis state is **ephemeral** — rate-limit counters only. No backup required. L
 The `oauth_tokens` table is encrypted at rest with `ENCRYPTION_KEY`. **If the key changes, every connected account must reconnect.** Treat this key like a database password:
 
 - Rotate via dual-write migration: temporarily decrypt with old key, re-encrypt with new key, update the env. (Build this when needed.)
-- Loss of the key → users have to reconnect every provider. Stripe customer IDs survive (not encrypted).
+- Loss of the key → users have to reconnect every provider. Billing/subscription records survive (not encrypted).
 
 ---
 
@@ -48,7 +48,7 @@ The `oauth_tokens` table is encrypted at rest with `ENCRYPTION_KEY`. **If the ke
 ### Metrics
 
 - Out-of-the-box: rate-limit hits are logged at `INFO` (`rate_limit.exceeded`). Aggregate in your log layer.
-- Useful future signals (M13): per-agent latency histogram, per-provider sync error rate, Stripe webhook lag.
+- Useful future signals (M13): per-agent latency histogram, per-provider sync error rate, Paddle webhook lag.
 
 ### Health checks
 
@@ -64,11 +64,11 @@ Render uses `/api/v1/health` per `render.yaml`. nginx proxies `/healthz` for the
 
 | Symptom | Likely cause | Action |
 |---|---|---|
-| `POST /agents/run` returns 402 with `plan_limit_exceeded` | Workspace at quota | Owner upgrades via Billing → Stripe Checkout |
+| `POST /agents/run` returns 402 with `plan_limit_exceeded` | Workspace at quota | Owner upgrades via Billing → Paddle checkout |
 | Many `429 rate_limited` from one IP | Crawler / abusive client | Block at CDN; increase bucket if legitimate |
-| `503 billing_not_configured` on Upgrade button | `STRIPE_SECRET_KEY` missing in environment | Set in Render dashboard, re-deploy |
-| `503 provider_not_configured` on Connect | Missing OAuth client ID/secret | Set the provider's `STRIPE_PRICE_ID_*` / `GOOGLE_CLIENT_ID` etc. |
-| Stripe webhook 400s | `STRIPE_WEBHOOK_SECRET` mismatch or replay attack | Re-copy secret from Stripe dashboard; check signature header |
+| `503 billing_not_configured` on Upgrade button | Paddle not configured (`PADDLE_API_KEY` / `PADDLE_WEBHOOK_SECRET` missing) | Set in Render dashboard, re-deploy |
+| `503 provider_not_configured` on Connect | Missing OAuth client ID/secret | Set the provider's `GOOGLE_CLIENT_ID` / `META_APP_ID` etc. |
+| Paddle webhook 400s | `PADDLE_WEBHOOK_SECRET` mismatch or replay attack | Re-copy secret from Paddle dashboard; check `Paddle-Signature` header |
 | Audits hang | Real PageSpeed Insights call to `googleapis.com` rate-limited | Set `PAGESPEED_API_KEY`; lift rate ceiling |
 
 ---

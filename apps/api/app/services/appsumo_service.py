@@ -3,8 +3,8 @@
 Codes are uniform (no per-code tier). A workspace's tier is the count of its
 REDEEMED codes, capped at `APPSUMO_MAX_TIER` — codes stack. Redemption writes
 the workspace's `billing_subscriptions` row with `source=APPSUMO`, the matching
-lifetime plan, and `status=ACTIVE` (no Stripe customer, no recurring charge).
-Plan-limit enforcement then works exactly as it does for Stripe plans.
+lifetime plan, and `status=ACTIVE` (no recurring charge). Plan-limit enforcement
+then works exactly as it does for paid (Paddle) plans.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from app.core.exceptions import AdVantaError
 from app.core.logging import get_logger
-from app.integrations.stripe import APPSUMO_MAX_TIER, APPSUMO_TIER_PLAN, PLANS
+from app.billing.plans import APPSUMO_MAX_TIER, APPSUMO_TIER_PLAN, PLANS
 from app.models.appsumo_code import AppSumoCode, AppSumoCodeStatus
 from app.models.audit_log import AuditActorType
 from app.models.billing_subscription import (
@@ -88,7 +88,7 @@ def _apply_tier(db: Session, *, workspace_id: UUID) -> BillingSubscription:
     """Sync the workspace's subscription row to its current AppSumo tier.
 
     Creates the row if missing. At tier 0 we only revert when the existing row
-    is AppSumo-sourced — a Stripe subscription is never clobbered."""
+    is AppSumo-sourced — a paid (Paddle) subscription is never clobbered."""
 
     tier = _tier_for_count(_redeemed_count(db, workspace_id=workspace_id))
     sub = (
@@ -104,7 +104,7 @@ def _apply_tier(db: Session, *, workspace_id: UUID) -> BillingSubscription:
         if sub.source == SubscriptionSource.APPSUMO:
             sub.plan_code = "free"
             sub.status = SubscriptionStatus.NONE
-        # A Stripe sub keeps its plan/status untouched.
+        # A paid (Paddle) sub keeps its plan/status untouched.
     else:
         sub.source = SubscriptionSource.APPSUMO
         sub.plan_code = APPSUMO_TIER_PLAN[tier]

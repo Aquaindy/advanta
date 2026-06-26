@@ -10,7 +10,7 @@ import { MarketingLayout } from "@/features/marketing/MarketingLayout";
  * no fake metrics, no demo data.
  *
  * The credibility section uses the platforms we genuinely OAuth into, since
- * partnerships with Google / Meta / LinkedIn / Stripe are real and shippable.
+ * partnerships with Google / Meta / LinkedIn are real and shippable.
  */
 export function LandingPage() {
   return (
@@ -207,7 +207,7 @@ function TrustBand() {
     "LinkedIn Ads",
     "Google Analytics 4",
     "Search Console",
-    "Stripe",
+    "Paddle",
   ];
   return (
     <section className="border-y border-slate-100 bg-surface">
@@ -629,7 +629,7 @@ function HowItWorks() {
           <Step
             number="01"
             title="Connect"
-            body="OAuth into Google Ads, Meta, LinkedIn, GA4, Search Console, and Stripe. Tokens encrypted at rest with Fernet. Disconnect any time."
+            body="OAuth into Google Ads, Meta, LinkedIn, GA4, and Search Console. Tokens encrypted at rest with Fernet. Disconnect any time."
           />
           <Step
             number="02"

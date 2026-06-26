@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 
+from app.billing.plans import PLANS
+
 
 def _auth_client(client: TestClient, email: str) -> tuple[TestClient, str]:
     response = client.post(
@@ -118,24 +120,33 @@ def test_invite_member_creates_pending_invitation(client: TestClient) -> None:
     assert body["expires_at"] is not None
 
 
-def test_superuser_bypasses_seat_cap(
-    client: TestClient,
-) -> None:
+def test_superuser_bypasses_seat_cap(client: TestClient) -> None:
     """A superuser hitting an interactive request bypasses plan-limit
-    assertions. Free plan caps at 2 members; the second invite would
-    normally 402 — for a superuser it succeeds.
+    assertions. Once the workspace is at its free seat cap a normal owner's
+    next invite 402s — for a superuser it still succeeds.
 
-    The flag is per-request (ContextVar) and only fires for bearer
-    tokens, so we verify the bypass via the live invite endpoint."""
+    The flag is per-request (ContextVar) and only fires for bearer tokens, so
+    we verify the bypass via the live invite endpoint."""
 
     from app.models.user import User
     from tests.conftest import TestSessionLocal
+
+    cap = PLANS["free"].limits.members
+    assert cap is not None
 
     _auth_client(client, "alice-su@example.com")
     workspace = client.post(
         "/api/v1/workspaces", json={"name": "SuperuserBypass"}
     ).json()
     workspace_id = workspace["id"]
+
+    # Fill to the cap as the owner: owner (1 active) + (cap-1) pending invites.
+    for i in range(cap - 1):
+        ok = client.post(
+            f"/api/v1/workspaces/{workspace_id}/members/invite",
+            json={"email": f"seat{i}@example.com", "role": "marketer"},
+        )
+        assert ok.status_code == 200, ok.text
 
     # Promote alice to superuser AFTER she's logged in. The next request
     # picks up the new flag because get_current_user re-reads the row.
@@ -147,76 +158,81 @@ def test_superuser_bypasses_seat_cap(
     finally:
         s.close()
 
-    first = client.post(
+    # At the cap — a normal owner would 402, but the superuser bypass mints it.
+    over = client.post(
         f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "bob@example.com", "role": "marketer"},
+        json={"email": "over-cap@example.com", "role": "marketer"},
     )
-    assert first.status_code == 200, first.text
-
-    # Second invite would 402 for a non-superuser (free cap = 2). For a
-    # superuser the bypass kicks in and the invite mints normally.
-    second = client.post(
-        f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "carol@example.com", "role": "marketer"},
-    )
-    assert second.status_code == 200, second.text
+    assert over.status_code == 200, over.text
 
 
 def test_invite_blocked_when_seat_cap_reached(client: TestClient) -> None:
-    """A new workspace defaults to the free plan (members cap = 2). The
-    owner is 1 active seat. The first invite is allowed (1 active +
-    1 pending = 2 = cap), the second must be blocked at invite-time
-    with `plan_limit_exceeded` rather than silently accepted."""
+    """A new workspace defaults to the free plan. The owner is 1 active seat;
+    invites fill the remaining seats, and the invite that would exceed the cap
+    is blocked at invite-time with `plan_limit_exceeded`."""
+
+    cap = PLANS["free"].limits.members
+    assert cap is not None
 
     _auth_client(client, "alice@example.com")
     workspace = client.post("/api/v1/workspaces", json={"name": "SeatCap"}).json()
     workspace_id = workspace["id"]
 
-    first = client.post(
-        f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "bob@example.com", "role": "marketer"},
-    )
-    assert first.status_code == 200, first.text
+    # owner (1) + (cap-1) invites = cap, all within the limit.
+    for i in range(cap - 1):
+        ok = client.post(
+            f"/api/v1/workspaces/{workspace_id}/members/invite",
+            json={"email": f"seat{i}@example.com", "role": "marketer"},
+        )
+        assert ok.status_code == 200, ok.text
 
-    second = client.post(
+    blocked = client.post(
         f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "carol@example.com", "role": "marketer"},
+        json={"email": "over-cap@example.com", "role": "marketer"},
     )
-    assert second.status_code == 402, second.text
-    assert second.json()["error"]["code"] == "plan_limit_exceeded"
+    assert blocked.status_code == 402, blocked.text
+    assert blocked.json()["error"]["code"] == "plan_limit_exceeded"
     # Error message should name the cap so the user knows what to do.
-    assert "member" in second.json()["error"]["message"].lower()
+    assert "member" in blocked.json()["error"]["message"].lower()
 
 
 def test_revoking_pending_invite_frees_a_seat(client: TestClient) -> None:
     """Revoked invitations don't count toward the seat cap, so once a
     pending invite is revoked the workspace can issue another one."""
 
+    cap = PLANS["free"].limits.members
+    assert cap is not None
+
     _auth_client(client, "alice@example.com")
     workspace = client.post("/api/v1/workspaces", json={"name": "SeatCap2"}).json()
     workspace_id = workspace["id"]
 
-    first = client.post(
-        f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "bob@example.com", "role": "marketer"},
-    ).json()
+    # Fill to the cap.
+    invites = []
+    for i in range(cap - 1):
+        resp = client.post(
+            f"/api/v1/workspaces/{workspace_id}/members/invite",
+            json={"email": f"seat{i}@example.com", "role": "marketer"},
+        )
+        assert resp.status_code == 200, resp.text
+        invites.append(resp.json())
 
-    # Hits the cap.
+    # At the cap — the next invite is blocked.
     blocked = client.post(
         f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "carol@example.com", "role": "marketer"},
+        json={"email": "over-cap@example.com", "role": "marketer"},
     )
     assert blocked.status_code == 402
 
-    # Revoke the first invite — should free a seat.
+    # Revoke one pending invite — frees a seat.
     revoke = client.post(
-        f"/api/v1/workspaces/{workspace_id}/members/invitations/{first['id']}/revoke"
+        f"/api/v1/workspaces/{workspace_id}/members/invitations/{invites[0]['id']}/revoke"
     )
     assert revoke.status_code == 200, revoke.text
 
-    # Second invite now succeeds.
+    # Now an invite succeeds again.
     retry = client.post(
         f"/api/v1/workspaces/{workspace_id}/members/invite",
-        json={"email": "carol@example.com", "role": "marketer"},
+        json={"email": "over-cap@example.com", "role": "marketer"},
     )
     assert retry.status_code == 200, retry.text

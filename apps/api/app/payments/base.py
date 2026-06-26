@@ -2,7 +2,7 @@
 
 The fee ledger (`fee_accruals`) is processor-agnostic — it records what's owed.
 This layer turns a batch of accrued fees into an actual bill through whichever
-processor a workspace/admin chooses. Adding Stripe, Paddle, PayPal, or a manual
+processor a workspace/admin chooses. Adding Paddle, PayPal, or a manual
 off-platform invoice is one adapter file + a registry entry; the billing
 service and ledger never change."""
 
@@ -36,7 +36,7 @@ class InvoiceLine:
 class InvoiceCustomer:
     workspace_id: UUID
     email: str | None
-    # Processor-native customer id, when one already exists (e.g. Stripe).
+    # Processor-native customer id, when one already exists.
     external_customer_id: str | None = None
 
 
@@ -61,7 +61,7 @@ class PaymentProvider:
     @classmethod
     def is_configured(cls) -> bool:
         """Whether this processor can be used (creds present). Manual is always
-        available; Stripe/Paddle need env config."""
+        available; Paddle/PayPal need env config."""
         return True
 
     @classmethod

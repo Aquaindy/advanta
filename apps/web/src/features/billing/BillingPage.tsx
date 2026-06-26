@@ -10,11 +10,22 @@ import {
   createPortalSession,
   getBillingStatus,
 } from "@/lib/billing";
+import { getWorkspaceFees, getWorkspaceInvoices } from "@/lib/fees";
 import { openPaddleCheckout } from "@/lib/paddle";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore } from "@/stores/workspace-store";
-import type { BillingStatus, Plan, SubscriptionStatusValue } from "@/types/api";
+import type {
+  BillingStatus,
+  FeeInvoice,
+  FeeInvoiceStatus,
+  Plan,
+  SubscriptionStatusValue,
+  WorkspaceFeeSummary,
+} from "@/types/api";
 
+type Interval = "month" | "year";
+
+const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 export function BillingPage() {
   const workspaceId = useWorkspaceStore((s) => s.currentWorkspaceId);
@@ -22,6 +33,7 @@ export function BillingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [banner, setBanner] = useState<{ kind: "success" | "warning"; text: string } | null>(null);
+  const [interval, setInterval] = useState<Interval>("month");
 
   const status = useQuery({
     queryKey: ["billing", workspaceId],
@@ -29,9 +41,21 @@ export function BillingPage() {
     enabled: !!workspaceId,
   });
 
-  // Surface checkout redirect outcome (Stripe redirect or Paddle successUrl).
+  const fees = useQuery({
+    queryKey: ["billing-fees", workspaceId],
+    queryFn: () => getWorkspaceFees(workspaceId!),
+    enabled: !!workspaceId,
+  });
+
+  const invoices = useQuery({
+    queryKey: ["billing-invoices", workspaceId],
+    queryFn: () => getWorkspaceInvoices(workspaceId!),
+    enabled: !!workspaceId,
+  });
+
+  // Surface the Paddle checkout outcome (?checkout=success|cancelled).
   useEffect(() => {
-    const outcome = searchParams.get("stripe") ?? searchParams.get("checkout");
+    const outcome = searchParams.get("checkout");
     if (!outcome) return;
     setBanner(
       outcome === "success"
@@ -40,23 +64,18 @@ export function BillingPage() {
     );
     queryClient.invalidateQueries({ queryKey: ["billing", workspaceId] });
     const next = new URLSearchParams(searchParams);
-    next.delete("stripe");
     next.delete("checkout");
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams, queryClient, workspaceId]);
 
   const checkout = useMutation({
-    mutationFn: (planCode: string) => createCheckoutSession(workspaceId!, planCode),
+    mutationFn: (planCode: string) =>
+      createCheckoutSession(workspaceId!, planCode, interval),
     onSuccess: async (resp) => {
-      if (resp.provider === "paddle" && resp.paddle) {
-        // Client-side overlay; the subscription lands via webhook. Reconcile
-        // the status query shortly after the overlay opens.
+      // Paddle opens a client-side overlay; the subscription lands via webhook.
+      if (resp.paddle) {
         await openPaddleCheckout(resp.paddle);
         queryClient.invalidateQueries({ queryKey: ["billing", workspaceId] });
-        return;
-      }
-      if (resp.url) {
-        window.location.href = resp.url;
       }
     },
     onError: (err) => setError(err instanceof ApiError ? err.message : "Could not start checkout."),
@@ -67,7 +86,7 @@ export function BillingPage() {
     onSuccess: (resp) => {
       window.location.href = resp.url;
     },
-    onError: (err) => setError(err instanceof ApiError ? err.message : "Could not open portal."),
+    onError: (err) => setError(err instanceof ApiError ? err.message : "Could not open billing portal."),
   });
 
   return (
@@ -75,10 +94,8 @@ export function BillingPage() {
       <header>
         <h1 className="text-2xl font-semibold text-ink sm:text-3xl">Plan & usage</h1>
         <p className="mt-2 text-sm text-slate-500">
-          Upgrade to lift agent-run, landing-page, and team-size limits. Plan changes are
-          processed by{" "}
-          {status.data?.subscription_provider === "paddle" ? "Paddle" : "Stripe"}; webhook updates
-          land here within seconds.
+          Subscriptions are billed by Paddle; webhook updates land here within seconds.
+          Platform fees on your ad activity are shown below.
         </p>
         <p className="mt-2 text-sm text-slate-500">
           Have an AppSumo code?{" "}
@@ -117,22 +134,71 @@ export function BillingPage() {
         />
       ) : null}
 
+      <FeeDashboard
+        summary={fees.data}
+        invoices={invoices.data}
+        loading={fees.isLoading || invoices.isLoading}
+      />
+
       {status.data ? (
-        <PlanGrid
-          status={status.data}
-          onCheckout={(plan) => checkout.mutate(plan)}
-          checkoutPending={checkout.isPending}
-        />
+        <section>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+              All plans
+            </h2>
+            <IntervalToggle interval={interval} onChange={setInterval} />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {status.data.available_plans.map((plan) => (
+              <PlanCard
+                key={plan.code}
+                plan={plan}
+                interval={interval}
+                current={plan.code === status.data!.plan.code}
+                onCheckout={(code) => checkout.mutate(code)}
+                checkoutPending={checkout.isPending}
+              />
+            ))}
+          </div>
+        </section>
       ) : null}
 
       {status.data && status.data.subscription_provider === "none" ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <strong>No subscription billing provider is configured for this server.</strong> Plan
-          limits still apply, but Upgrade actions will fail with a clear error until either Paddle
-          (<code>PADDLE_API_KEY</code> + <code>PADDLE_WEBHOOK_SECRET</code> + <code>PADDLE_PRICE_ID_*</code>)
-          or Stripe (<code>STRIPE_SECRET_KEY</code> + <code>STRIPE_PRICE_ID_*</code>) is set.
+          <strong>Subscription billing isn't configured on this server yet.</strong> Plan
+          limits still apply, but Upgrade actions will fail with a clear error until Paddle
+          is set (<code>PADDLE_API_KEY</code> + <code>PADDLE_WEBHOOK_SECRET</code> +{" "}
+          <code>PADDLE_PRICE_ID_*</code>).
         </div>
       ) : null}
+    </div>
+  );
+}
+
+
+function IntervalToggle({
+  interval,
+  onChange,
+}: {
+  interval: Interval;
+  onChange: (i: Interval) => void;
+}) {
+  return (
+    <div className="inline-flex items-center rounded-full border border-slate-200 bg-surface p-0.5 text-sm">
+      {(["month", "year"] as const).map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => onChange(opt)}
+          className={cn(
+            "rounded-full px-3 py-1 font-medium transition",
+            interval === opt ? "bg-grape text-white" : "text-slate-500 hover:text-slate-700",
+          )}
+        >
+          {opt === "month" ? "Monthly" : "Annual"}
+          {opt === "year" ? <span className="ml-1 text-xs opacity-80">save ~2 mo</span> : null}
+        </button>
+      ))}
     </div>
   );
 }
@@ -201,6 +267,130 @@ function CurrentPlanCard({
 }
 
 
+// ---------------------------------------------------------------------------
+// Platform fees (the customer-facing view of the fee engine)
+// ---------------------------------------------------------------------------
+
+const FEE_TYPE_LABEL: Record<string, string> = {
+  listing: "Campaign listing fees",
+  run_flat: "Monthly platform fees",
+  run_pct: "Spend-based fees",
+};
+
+function FeeDashboard({
+  summary,
+  invoices,
+  loading,
+}: {
+  summary: WorkspaceFeeSummary | undefined;
+  invoices: FeeInvoice[] | undefined;
+  loading: boolean;
+}) {
+  const byType = Object.entries(summary?.by_type ?? {}).filter(([, v]) => v > 0);
+  const hasInvoices = (invoices?.length ?? 0) > 0;
+
+  return (
+    <Card>
+      <CardHeader
+        title="Platform fees"
+        subtitle={summary ? `Accrued this period · ${summary.period}` : "Fees on your ad activity"}
+        action={
+          <span className="text-2xl font-semibold text-ink">
+            {summary ? money(summary.total_cents) : "—"}
+          </span>
+        }
+      />
+      <p className="mt-2 text-sm text-slate-500">
+        AdVanta charges a platform fee on ad activity managed through the app — a one-time
+        listing fee per campaign plus a monthly run fee. Fees accrue here and are billed
+        on an invoice.
+      </p>
+
+      {loading ? (
+        <p className="mt-4 text-sm text-slate-400">Loading fees…</p>
+      ) : (
+        <>
+          {byType.length ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {byType.map(([type, cents]) => (
+                <div key={type} className="rounded-xl border border-slate-100 px-3 py-2">
+                  <div className="text-[11px] uppercase tracking-wider text-slate-400">
+                    {FEE_TYPE_LABEL[type] ?? type}
+                  </div>
+                  <div className="mt-1 text-xl font-semibold text-ink">{money(cents)}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4 rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-400">
+              No fees accrued yet. Fees appear here once you launch campaigns through AdVanta.
+            </div>
+          )}
+
+          {hasInvoices ? (
+            <div className="mt-5">
+              <div className="mb-2 text-sm font-semibold text-slate-600">Invoices</div>
+              <div className="overflow-hidden rounded-xl border border-slate-100">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wider text-slate-400">
+                    <tr>
+                      <th className="px-3 py-2 font-medium">Period</th>
+                      <th className="px-3 py-2 font-medium">Amount</th>
+                      <th className="px-3 py-2 font-medium">Status</th>
+                      <th className="px-3 py-2 font-medium" />
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {invoices!.map((inv) => (
+                      <tr key={inv.id}>
+                        <td className="px-3 py-2 text-slate-600">{inv.period ?? "—"}</td>
+                        <td className="px-3 py-2 font-medium text-ink">{money(inv.amount_cents)}</td>
+                        <td className="px-3 py-2">
+                          <InvoiceStatusPill status={inv.status} />
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          {inv.hosted_url ? (
+                            <a
+                              href={inv.hosted_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-medium text-grape-700 hover:underline"
+                            >
+                              {inv.status === "paid" ? "Receipt" : "Pay"}
+                            </a>
+                          ) : null}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+        </>
+      )}
+    </Card>
+  );
+}
+
+
+function InvoiceStatusPill({ status }: { status: FeeInvoiceStatus }) {
+  return (
+    <span
+      className={cn(
+        "pill",
+        status === "paid" && "pill-success",
+        status === "open" && "pill-grape",
+        status === "failed" && "pill-danger",
+        (status === "void" || status === "draft") && "bg-slate-100 text-slate-600",
+      )}
+    >
+      {status}
+    </span>
+  );
+}
+
+
 function UsageBar({
   label,
   used,
@@ -235,17 +425,13 @@ function LimitTile({ label, cap }: { label: string; cap: number | null }) {
   return (
     <div className="rounded-xl border border-slate-100 px-3 py-2">
       <div className="text-[11px] uppercase tracking-wider text-slate-400">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-ink">
-        {cap ?? "Unlimited"}
-      </div>
+      <div className="mt-1 text-2xl font-semibold text-ink">{cap ?? "Unlimited"}</div>
     </div>
   );
 }
 
 
 function LlmSpendTile({ tokens, cents }: { tokens: number; cents: number }) {
-  // Format: $XX.XX, with the token count as a secondary annotation. We keep
-  // the dollar figure prominent because that's the part operators react to.
   const dollars = (cents / 100).toFixed(2);
   const tokensFormatted =
     tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k tokens` : `${tokens} tokens`;
@@ -266,47 +452,23 @@ function LlmSpendTile({ tokens, cents }: { tokens: number; cents: number }) {
 }
 
 
-function PlanGrid({
-  status,
-  onCheckout,
-  checkoutPending,
-}: {
-  status: BillingStatus;
-  onCheckout: (planCode: string) => void;
-  checkoutPending: boolean;
-}) {
-  return (
-    <section>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500">
-        All plans
-      </h2>
-      <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2">
-        {status.available_plans.map((plan) => (
-          <PlanCard
-            key={plan.code}
-            plan={plan}
-            current={plan.code === status.plan.code}
-            onCheckout={onCheckout}
-            checkoutPending={checkoutPending}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-
 function PlanCard({
   plan,
+  interval,
   current,
   onCheckout,
   checkoutPending,
 }: {
   plan: Plan;
+  interval: Interval;
   current: boolean;
   onCheckout: (planCode: string) => void;
   checkoutPending: boolean;
 }) {
+  const annual = interval === "year";
+  const price = annual ? plan.annual_price_usd : plan.monthly_price_usd;
+  const suffix = annual ? "/ year" : "/ month";
+
   return (
     <Card
       className={cn(
@@ -329,29 +491,18 @@ function PlanCard({
       </div>
 
       <div className="text-2xl font-semibold text-ink">
-        {plan.monthly_price_usd === 0
-          ? "Free"
-          : plan.monthly_price_usd != null
-            ? `$${plan.monthly_price_usd}`
-            : "—"}
-        {plan.monthly_price_usd && plan.monthly_price_usd > 0 ? (
-          <span className="ml-1 text-xs text-slate-400">/ month</span>
-        ) : null}
+        {price === 0 ? "Free" : price != null ? `$${price}` : "—"}
+        {price && price > 0 ? <span className="ml-1 text-xs text-slate-400">{suffix}</span> : null}
       </div>
 
       <ul className="flex flex-col gap-1 text-xs text-slate-600">
-        <li>
-          {plan.limits.agent_runs_per_month ?? "Unlimited"} agent runs / 30 days
-        </li>
+        <li>{plan.limits.agent_runs_per_month ?? "Unlimited"} agent runs / 30 days</li>
         <li>{plan.limits.landing_pages ?? "Unlimited"} landing pages</li>
         <li>{plan.limits.members ?? "Unlimited"} team members</li>
       </ul>
 
       {plan.is_paid && !current ? (
-        <Button
-          onClick={() => onCheckout(plan.code)}
-          disabled={checkoutPending}
-        >
+        <Button onClick={() => onCheckout(plan.code)} disabled={checkoutPending}>
           {checkoutPending ? "Opening checkout…" : "Upgrade"}
         </Button>
       ) : null}
