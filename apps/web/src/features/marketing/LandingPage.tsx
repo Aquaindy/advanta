@@ -22,7 +22,6 @@ export function LandingPage() {
       <SafetyBand />
       <HowItWorks />
       <ProductionGuarantees />
-      <PricingTeaser />
       <FaqSection />
       <FinalCta />
     </MarketingLayout>
@@ -88,8 +87,9 @@ function Hero() {
             </Link>
           </div>
           <p className="mt-4 text-xs text-white/60">
-            Starter from $99/mo. Full agent suite at every tier — bring your
-            own LLM keys to keep token cost on your own provider bill.
+            Full platform at every tier — campaign builder, 1-click ad
+            publishing, SEO, and outreach. Bring your own LLM keys to keep token
+            cost on your own provider bill.
           </p>
         </div>
 
@@ -727,152 +727,6 @@ function ProductionGuarantees() {
 }
 
 
-/* -------------------------------------------------------------------------- */
-/* Pricing teaser — three AdVanta tiers, no comparison                        */
-/* -------------------------------------------------------------------------- */
-
-
-/**
- * Lightweight three-tier pricing card row. Every tier ships the entire
- * agent suite — what changes is quotas, team size, and unlimited toggles.
- * The full breakdown lives at /pricing.
- */
-function PricingTeaser() {
-  type Tier = {
-    name: string;
-    monthly: number;
-    annual: number;
-    description: string;
-    bullets: string[];
-    highlight?: boolean;
-  };
-
-  const TIERS: Tier[] = [
-    {
-      name: "Starter",
-      monthly: 99,
-      annual: 1188,
-      description: "Small teams running their first paid + SEO programs.",
-      bullets: [
-        "Full agent suite (SEO, Paid Ads, Website, more)",
-        "100 agent runs / 30 days",
-        "10 landing pages · 5 team members",
-        "BYOK with OpenAI / Anthropic / Google AI",
-      ],
-    },
-    {
-      name: "Pro",
-      monthly: 299,
-      annual: 3588,
-      description: "Full agent suite + guarded Autopilot for serious operators.",
-      bullets: [
-        "Everything in Starter",
-        "500 agent runs / 30 days",
-        "50 landing pages · 15 team members",
-        "1.5M LLM tokens / 30 days",
-      ],
-      highlight: true,
-    },
-    {
-      name: "Agency",
-      monthly: 899,
-      annual: 10788,
-      description: "Unlimited usage + multi-team workspaces.",
-      bullets: [
-        "Unlimited agent runs, landing pages, drafts, writes",
-        "100 team members across multi-team workspaces",
-        "Full audit log of every action",
-        "Priority support",
-      ],
-    },
-  ];
-
-  return (
-    <section className="bg-surface">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-wider text-grape-700">
-            Pricing
-          </p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-            One product. Every agent. Three tiers.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-            The entire agent suite ships at every tier. Quotas, team size,
-            and unlimited toggles are what change as you scale.
-          </p>
-        </div>
-
-        <ul className="mt-12 grid gap-6 lg:grid-cols-3">
-          {TIERS.map((tier) => (
-            <li
-              key={tier.name}
-              className={
-                "flex flex-col rounded-2xl border bg-surface p-6 " +
-                (tier.highlight
-                  ? "border-grape-300 ring-2 ring-grape-200 shadow-elevate"
-                  : "border-slate-200")
-              }
-            >
-              <div className="text-xs font-medium uppercase tracking-wider text-grape-700">
-                {tier.name}
-              </div>
-              <div className="mt-2 text-3xl font-semibold text-ink">
-                ${tier.monthly}
-                <span className="ml-1 text-base font-normal text-slate-400">
-                  /mo
-                </span>
-              </div>
-              <div className="text-sm text-slate-500">
-                or ${tier.annual.toLocaleString()}/year
-              </div>
-              <p className="mt-3 text-base text-slate-600">
-                {tier.description}
-              </p>
-              <ul className="mt-4 flex flex-1 flex-col gap-1.5 text-base text-slate-700">
-                {tier.bullets.map((b) => (
-                  <li key={b} className="flex gap-2">
-                    <span
-                      aria-hidden
-                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-grape"
-                    />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/register"
-                className={
-                  "mt-6 rounded-xl px-4 py-2 text-center text-sm font-semibold transition " +
-                  (tier.highlight
-                    ? "bg-grape text-white shadow-sm hover:bg-grape-800"
-                    : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50")
-                }
-              >
-                Start with {tier.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/pricing"
-            className="rounded-xl border border-slate-200 bg-surface px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            View full pricing
-          </Link>
-          <Link
-            to="/register"
-            className="rounded-xl bg-grape px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-grape-800"
-          >
-            Get started
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 
 /* -------------------------------------------------------------------------- */

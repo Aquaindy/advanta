@@ -26,11 +26,11 @@ const TIERS: Tier[] = [
     monthly: 67,
     description: "Small teams running their first paid + SEO programs.",
     features: [
+      "Campaign builder + 1-click ad publishing",
+      "Full agent suite (Paid, SEO, Website, Outreach)",
       "3,000 AI credits / mo",
-      "50 landing pages",
-      "15 team members",
+      "50 landing pages · 15 team members",
       "1,000 provider writes / mo",
-      "Full agent suite (paid, SEO, outreach)",
     ],
   },
   {
@@ -38,11 +38,12 @@ const TIERS: Tier[] = [
     monthly: 129,
     description: "Full agent suite for serious operators.",
     features: [
+      "Everything in Starter, plus:",
+      "Guarded Autopilot (auto-execute within limits)",
+      "Budget guardrails + overspend alerts",
       "12,000 AI credits / mo",
-      "200 landing pages",
-      "50 team members",
+      "200 landing pages · 50 team members",
       "5,000 provider writes / mo",
-      "Budget guardrails + autopilot",
     ],
     highlight: true,
   },
@@ -51,11 +52,66 @@ const TIERS: Tier[] = [
     monthly: 299,
     description: "Unlimited credits + multi-team workspaces.",
     features: [
-      "Unlimited AI credits",
-      "Unlimited landing pages",
-      "Unlimited team members",
-      "Unlimited provider writes",
+      "Everything in Pro, plus:",
       "Multi-team workspace support",
+      "Unlimited AI credits & provider writes",
+      "Unlimited landing pages & team members",
+      "Priority support",
+    ],
+  },
+];
+
+/**
+ * Full feature matrix powering the per-tier "See all features" accordion below
+ * each plan card. Kept honest to what the product actually ships (campaign
+ * build/launch/publish, the agent suite, real OAuth integrations, the audit
+ * log). `true` = included, `false` = not in this tier, string = the tier value.
+ */
+type TierKey = "Starter" | "Pro" | "Agency";
+type FeatureValue = boolean | string;
+type FeatureRow = { label: string; values: Record<TierKey, FeatureValue> };
+type FeatureGroup = { category: string; rows: FeatureRow[] };
+
+const FEATURE_MATRIX: FeatureGroup[] = [
+  {
+    category: "Ads & Campaigns",
+    rows: [
+      { label: "Cross-platform campaign builder", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "One-click ad publishing (Google, Meta, LinkedIn)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Campaign launch & management", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Performance analytics & insights", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Budget guardrails + overspend alerts", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Risk-gated approval workflows", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Guarded Autopilot (auto-execute within limits)", values: { Starter: false, Pro: true, Agency: true } },
+    ],
+  },
+  {
+    category: "AI agents & content",
+    rows: [
+      { label: "Full agent suite (Paid, SEO/GEO, Website, ICP, Creative, Reporting)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Growth DNA profile + 30-day plan", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Suggested Copies — keyword, ad, landing, email & social (.txt/.docx)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Creative strategy + A/B test generation", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Bring your own LLM keys (OpenAI / Anthropic / Google)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Monthly AI credits", values: { Starter: "3,000", Pro: "12,000", Agency: "Unlimited" } },
+    ],
+  },
+  {
+    category: "Limits & scale",
+    rows: [
+      { label: "Landing pages", values: { Starter: "50", Pro: "200", Agency: "Unlimited" } },
+      { label: "Team members", values: { Starter: "15", Pro: "50", Agency: "Unlimited" } },
+      { label: "Provider writes / mo", values: { Starter: "1,000", Pro: "5,000", Agency: "Unlimited" } },
+      { label: "Multi-team workspaces", values: { Starter: false, Pro: false, Agency: true } },
+    ],
+  },
+  {
+    category: "Platform & security",
+    rows: [
+      { label: "Real OAuth integrations (Google Ads, Meta, LinkedIn, GA4, Search Console)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Role-based access control", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Full audit log of every action", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "Encrypted token storage", values: { Starter: true, Pro: true, Agency: true } },
     ],
   },
 ];
@@ -119,10 +175,12 @@ export function PricingPage() {
             Pricing that grows with your spend.
           </h1>
           <p className="mt-3 text-slate-600">
-            Every tier includes the full agent suite, real provider writes,
-            risk-gated approvals, and the audit log. AI work runs on monthly
-            credits (an agent run is 10 credits, a content draft 5) so your bill
-            stays predictable.
+            Every tier ships the full platform — campaign builder, 1-click ad
+            publishing, the agent suite, real provider writes, risk-gated
+            approvals, and the audit log. AI work runs on monthly credits (an
+            agent run is 10 credits, a content draft 5) so your bill stays
+            predictable. Expand <span className="font-medium text-slate-700">See
+            all features</span> on any plan for the full comparison.
           </p>
         </header>
 
@@ -164,6 +222,7 @@ export function PricingPage() {
               >
                 Choose plan
               </Link>
+              <TierFeatureAccordion tier={tier.name as TierKey} />
             </li>
           ))}
         </ul>
@@ -179,6 +238,75 @@ export function PricingPage() {
 
       <ConciergeSection />
     </MarketingLayout>
+  );
+}
+
+
+/**
+ * Per-tier "See all features" accordion shown under each plan card. Native
+ * <details> so it's accessible + zero-JS, no extra deps. Renders the full
+ * feature matrix from the selected tier's perspective: included rows get a
+ * check, tier-specific values are shown inline, and rows the tier doesn't
+ * include are dimmed with a dash — so opening each plan reads as a comparison.
+ */
+function TierFeatureAccordion({ tier }: { tier: TierKey }) {
+  return (
+    <details className="group mt-1 rounded-xl border border-slate-200 bg-surface">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-2.5 text-sm font-medium text-grape-700 [&::-webkit-details-marker]:hidden">
+        <span>See all features</span>
+        <svg
+          viewBox="0 0 20 20"
+          aria-hidden
+          className="size-4 shrink-0 text-slate-400 transition group-open:rotate-180"
+        >
+          <path fill="currentColor" d="M5.5 7.5 10 12l4.5-4.5z" />
+        </svg>
+      </summary>
+      <div className="flex flex-col gap-4 border-t border-slate-100 px-4 py-4">
+        {FEATURE_MATRIX.map((group) => (
+          <div key={group.category}>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {group.category}
+            </p>
+            <ul className="mt-2 flex flex-col gap-1.5 text-sm">
+              {group.rows.map((row) => {
+                const value = row.values[tier];
+                const included = value !== false;
+                return (
+                  <li key={row.label} className="flex items-start gap-2">
+                    {included ? (
+                      <svg
+                        viewBox="0 0 20 20"
+                        aria-hidden
+                        className="mt-0.5 size-4 shrink-0 text-grape"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M7.6 13.6 4 10l-1.3 1.3 4.9 4.9L17.3 6.5 16 5.2z"
+                        />
+                      </svg>
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="mt-0.5 w-4 shrink-0 text-center text-slate-300"
+                      >
+                        —
+                      </span>
+                    )}
+                    <span className={cn("flex-1", included ? "text-slate-600" : "text-slate-400")}>
+                      {row.label}
+                      {typeof value === "string" ? (
+                        <span className="font-semibold text-ink"> · {value}</span>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </details>
   );
 }
 
