@@ -58,9 +58,9 @@ function SiteFooter() {
               <span className="text-sm font-semibold text-ink">{APP_NAME}</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-slate-500">
-              The Growth Command Center. Specialized AI agents that read your
-              real ad accounts, GA4, and website — and apply approved
-              changes back, audit-logged.
+              The AI ad-creation platform. Build, launch, and optimize campaigns
+              across Google, Meta &amp; LinkedIn — with specialized agents for
+              SEO, content, and conversion behind every move.
             </p>
           </div>
 

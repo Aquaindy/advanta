@@ -26,23 +26,22 @@ const TIERS: Tier[] = [
     monthly: 67,
     description: "Small teams running their first paid + SEO programs.",
     features: [
-      "Campaign builder + 1-click ad publishing",
+      "Build & launch ads on Google, Meta & LinkedIn",
+      "AI ad copy + creative concepts + campaign builder",
       "Full agent suite (Paid, SEO, Website, Outreach)",
-      "3,000 AI credits / mo",
-      "50 landing pages · 15 team members",
+      "3,000 AI credits · 50 landing pages · 15 seats",
       "1,000 provider writes / mo",
     ],
   },
   {
     name: "Pro",
     monthly: 129,
-    description: "Full agent suite for serious operators.",
+    description: "Build, launch & optimize ads at serious scale.",
     features: [
-      "Everything in Starter, plus:",
-      "Guarded Autopilot (auto-execute within limits)",
+      "Build, launch & optimize ads at scale",
+      "AI ad copy + creative + guarded Autopilot",
       "Budget guardrails + overspend alerts",
-      "12,000 AI credits / mo",
-      "200 landing pages · 50 team members",
+      "12,000 AI credits · 200 landing pages · 50 seats",
       "5,000 provider writes / mo",
     ],
     highlight: true,
@@ -50,13 +49,13 @@ const TIERS: Tier[] = [
   {
     name: "Agency",
     monthly: 299,
-    description: "Unlimited credits + multi-team workspaces.",
+    description: "Unlimited ad campaigns + multi-team workspaces.",
     features: [
-      "Everything in Pro, plus:",
-      "Multi-team workspace support",
-      "Unlimited AI credits & provider writes",
-      "Unlimited landing pages & team members",
-      "Priority support",
+      "Unlimited ad campaigns across all platforms",
+      "Multi-team workspaces + priority support",
+      "AI ad creative + guarded Autopilot",
+      "Unlimited AI credits, landing pages & seats",
+      "Unlimited provider writes / mo",
     ],
   },
 ];
@@ -78,6 +77,7 @@ const FEATURE_MATRIX: FeatureGroup[] = [
     rows: [
       { label: "Cross-platform campaign builder", values: { Starter: true, Pro: true, Agency: true } },
       { label: "One-click ad publishing (Google, Meta, LinkedIn)", values: { Starter: true, Pro: true, Agency: true } },
+      { label: "AI ad copy + creative concept generation", values: { Starter: true, Pro: true, Agency: true } },
       { label: "Campaign launch & management", values: { Starter: true, Pro: true, Agency: true } },
       { label: "Performance analytics & insights", values: { Starter: true, Pro: true, Agency: true } },
       { label: "Budget guardrails + overspend alerts", values: { Starter: true, Pro: true, Agency: true } },
@@ -171,16 +171,21 @@ export function PricingPage() {
     <MarketingLayout>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <header className="mx-auto max-w-2xl text-center">
-          <h1 className="text-3xl font-semibold text-ink sm:text-4xl">
+          <p className="text-xs font-semibold uppercase tracking-wider text-grape-700">
+            AI Ad Creation &amp; Campaign Platform
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold text-ink sm:text-4xl">
             Pricing that grows with your spend.
           </h1>
           <p className="mt-3 text-slate-600">
-            Every tier ships the full platform — campaign builder, 1-click ad
-            publishing, the agent suite, real provider writes, risk-gated
-            approvals, and the audit log. AI work runs on monthly credits (an
-            agent run is 10 credits, a content draft 5) so your bill stays
-            predictable. Expand <span className="font-medium text-slate-700">See
-            all features</span> on any plan for the full comparison.
+            AdVanta is your AI ad-creation platform: build campaigns, generate
+            ad copy and creative, and publish to Google, Meta &amp; LinkedIn in
+            one click — then let the agents optimize spend, SEO, and conversion.
+            Every tier ships the full agent suite, risk-gated approvals, and the
+            audit log; AI work runs on monthly credits (an agent run is 10
+            credits, a content draft 5) so your bill stays predictable. Expand{" "}
+            <span className="font-medium text-slate-700">See all features</span>{" "}
+            on any plan for the full comparison.
           </p>
         </header>
 

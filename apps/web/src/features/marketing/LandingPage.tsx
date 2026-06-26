@@ -56,7 +56,7 @@ function Hero() {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-white backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-white" />
-            AdVanta · Growth Command Center
+            AdVanta · AI Ad Creation Platform
           </p>
           <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
             Turn ad chaos
@@ -67,10 +67,10 @@ function Hero() {
             </span>
           </h1>
           <p className="mt-5 max-w-xl text-xl text-white/80">
-            Specialized AI agents read your real ad accounts, GA4, and website
-            — surface wasted spend, draft creative, run launchable A/B tests,
-            and apply approved changes back to the platforms. Approval-gated
-            by default; flip on Autopilot when you're ready.
+            Build campaigns, generate ad copy and creative, and publish to
+            Google, Meta &amp; LinkedIn in one click — then let specialized AI
+            agents optimize spend, SEO, and conversion against your real data.
+            Approval-gated by default; flip on Autopilot when you're ready.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
@@ -241,13 +241,13 @@ function AgentGrid() {
   const agents: AgentCard[] = [
     {
       title: "Paid Ads agent",
-      role: "Watches your spend",
+      role: "Builds, launches & optimizes",
       summary:
-        "Inspects every campaign you've connected, surfaces wasted spend and stale active campaigns, and proposes pauses, budget changes, or audience tweaks. Approve and we apply the change on the platform — with prior-state capture so any write is reversible.",
+        "Build campaigns, generate ad copy and creative concepts, and publish straight to Google, Meta & LinkedIn — then it watches spend, surfaces waste, and proposes pauses, budget changes, or audience tweaks. Every write is approval-gated with prior-state capture, so it's reversible.",
       bullets: [
+        "Campaign builder + 1-click ad publishing",
+        "AI ad copy + creative concepts",
         "Cross-platform: Google, Meta, LinkedIn",
-        "Approval-gated writes",
-        "One-click revert with snapshot diff",
       ],
     },
     {
