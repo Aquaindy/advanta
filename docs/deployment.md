@@ -1,6 +1,6 @@
 # Deployment
 
-This is the production runbook. AdVanta AI is shaped to run on **Render** out of the box (see [`infra/render/render.yaml`](../infra/render/render.yaml)) and on any **Docker** host via the production compose file.
+This is the production runbook. AdVanta is shaped to run on **Render** out of the box (see [`infra/render/render.yaml`](../infra/render/render.yaml)) and on any **Docker** host via the production compose file.
 
 ---
 
@@ -12,6 +12,11 @@ This is the production runbook. AdVanta AI is shaped to run on **Render** out of
 | `web` | React SPA (nginx) | 80 | [`infra/docker/Dockerfile.web`](../infra/docker/Dockerfile.web) |
 | `postgres` | Primary database | 5432 | `postgres:16-alpine` |
 | `redis` | Rate limiter + Celery broker (M13+) | 6379 | `redis:7-alpine` |
+
+> On **Render**, the frontend is served as a free **static site** (global CDN,
+> no container) — the nginx `web` image above is used only by the Docker-compose
+> stack and is kept as the "full nginx control" alternative. The API and worker
+> run on the `starter` plan in the blueprint (bump to `standard` for more traffic).
 
 ---
 
@@ -32,9 +37,10 @@ Visit `http://localhost:8080` (web) and `http://localhost:8000/api/v1/docs` (API
 ## 3. Render
 
 The blueprint provisions everything: Postgres, Redis, the API web service, the
-Celery worker (with beat), and the nginx-served SPA. Domain wiring for
-**getadvanta.app** is baked into [`render.yaml`](../infra/render/render.yaml) —
-only secrets are entered by hand.
+Celery worker (with beat), and the SPA as a free **static site** (global CDN, no
+container — its CSP/security headers live in the blueprint `headers:` block).
+Domain wiring for **getadvanta.app** is baked into
+[`render.yaml`](../infra/render/render.yaml) — only secrets are entered by hand.
 
 1. Push the repo to GitHub.
 2. Render → **New** → **Blueprint**, point at the repo. It auto-discovers
@@ -100,9 +106,9 @@ The blueprint creates these resources:
 | `advanta-postgres` | Postgres DB | provides `DATABASE_URL` to api + worker |
 | `advanta-redis` | Redis | internal-only; provides `REDIS_URL` |
 | `advanta-shared` | Env-var group | shared secrets/config for api + worker |
-| `advanta-api` | Web (FastAPI) | `api.getadvanta.app`, health `/api/v1/health/ready` |
-| `advanta-worker` | Worker (Celery+beat) | single replica |
-| `advanta-web` | Web (nginx SPA) | `getadvanta.app`, `www` |
+| `advanta-api` | Web (FastAPI, Docker, `starter`) | `api.getadvanta.app`, health `/api/v1/health/ready` |
+| `advanta-worker` | Worker (Celery+beat, Docker, `starter`) | single replica |
+| `advanta-web` | Static Site (SPA, CDN, **free**) | `getadvanta.app`, `www` — CSP/headers in blueprint |
 
 **Already set by the blueprint — no action:**
 

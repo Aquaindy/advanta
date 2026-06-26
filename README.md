@@ -1,8 +1,8 @@
-# AdVanta AI
+# AdVanta
 
 **Turn ad chaos into intelligent growth.**
 
-AdVanta AI is an AI Growth Command Center where businesses connect real ad accounts, analytics, websites, and search data. Specialized AI Skill Agents — coordinated by a Master Growth Orchestrator — analyze performance, surface wasted spend, propose optimizations, strengthen SEO/GEO visibility, and improve landing-page conversion across Google, Meta, LinkedIn, and future ad networks.
+AdVanta is an AI Growth Command Center where businesses connect real ad accounts, analytics, websites, and search data. Specialized AI Skill Agents — coordinated by a Master Growth Orchestrator — analyze performance, surface wasted spend, propose optimizations, strengthen SEO/GEO visibility, and improve landing-page conversion across Google, Meta, LinkedIn, and future ad networks.
 
 This is a production-build SaaS, not a prototype. See [CLAUDE.md](CLAUDE.md) for the full product spec, architecture, and milestone plan.
 
@@ -71,7 +71,7 @@ Health checks:
 
 ## Build status
 
-**Milestones 1–12 — complete.** AdVanta AI ships a production-ready foundation:
+**Milestones 1–12 — complete.** AdVanta ships a production-ready foundation:
 
 | Milestone | Highlights |
 |---|---|

@@ -38,7 +38,7 @@ def build_report_email_body(payload: dict[str, Any], *, title: str) -> EmailMess
     top_recs = payload.get("top_recommendations") or []
 
     lines: list[str] = [
-        f"AdVanta AI {period.get('label') or period.get('type', '')} Report",
+        f"AdVanta {period.get('label') or period.get('type', '')} Report",
         f"Workspace: {workspace}",
         f"Window: {(period.get('start') or '')[:10]} → {(period.get('end') or '')[:10]}",
         "",

@@ -1,6 +1,6 @@
 # Local development
 
-This guide brings AdVanta AI up locally on macOS or Linux.
+This guide brings AdVanta up locally on macOS or Linux.
 
 ## Prerequisites
 

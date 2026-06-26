@@ -60,7 +60,7 @@ def request_reset(db: Session, *, email: str) -> None:
     base = (settings.frontend_url or "").rstrip("/")
     link = f"{base}/reset-password?token={token}"
     draft = EmailMessageDraft(
-        subject="Reset your AdVanta AI password",
+        subject="Reset your AdVanta password",
         text_body=(
             "You (or someone on your behalf) requested a password reset for "
             f"{normalized}.\n\nReset your password: {link}\n\n"

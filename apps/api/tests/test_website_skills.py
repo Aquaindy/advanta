@@ -25,7 +25,7 @@ def test_title_short_is_medium_severity() -> None:
 
 
 def test_title_in_range_is_ok() -> None:
-    finding = check_title(_soup("<title>AdVanta AI — Growth Command Center for Modern SaaS</title>"))
+    finding = check_title(_soup("<title>AdVanta — Growth Command Center for Modern SaaS</title>"))
     assert finding["severity"] == "ok"
     assert 30 <= finding["length"] <= 65
 
@@ -36,7 +36,7 @@ def test_meta_description_missing_is_high() -> None:
 
 
 def test_meta_description_in_range_is_ok() -> None:
-    desc = "AdVanta AI is the growth command center for SaaS marketers, deploying AI skill agents across paid, SEO, and conversion to remove busywork." * 1
+    desc = "AdVanta is the growth command center for SaaS marketers, deploying AI skill agents across paid, SEO, and conversion to remove busywork." * 1
     finding = check_meta_description(
         _soup(f'<meta name="description" content="{desc}">')
     )

@@ -157,7 +157,7 @@ def test_website_audit_runs_skills_against_fetched_html(client: TestClient) -> N
     <html>
       <head>
         <title>Acme — Pipeline From Paid, SEO, And Conversion</title>
-        <meta name='description' content='AdVanta AI is the growth command center for SaaS marketers, deploying AI skill agents across paid, SEO, and conversion to remove busywork.'>
+        <meta name='description' content='AdVanta is the growth command center for SaaS marketers, deploying AI skill agents across paid, SEO, and conversion to remove busywork.'>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
       </head>
       <body>

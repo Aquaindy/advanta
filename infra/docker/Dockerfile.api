@@ -1,4 +1,4 @@
-# AdVanta AI — backend (FastAPI) production image.
+# AdVanta — backend (FastAPI) production image.
 # Build context: repo root.
 
 FROM python:3.13-slim AS base

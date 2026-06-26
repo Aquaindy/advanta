@@ -1,4 +1,4 @@
-# AdVanta AI — 2-Minute Interactive Dashboard Demo Script
+# AdVanta — 2-Minute Interactive Dashboard Demo Script
 
 **Format:** screen-recorded product walkthrough with voiceover.
 **Duration:** ~2:00 (≈ 280 words of VO @ 140 WPM).
@@ -25,7 +25,7 @@ cut to the Command Center dashboard, lit but not loud.
 
 **VO:**
 > "If your ad ops live across five tabs and a backlog of optimizations no
-> one has time for, this is for you. AdVanta AI runs the growth playbook
+> one has time for, this is for you. AdVanta runs the growth playbook
 > with you — read your accounts, surface waste, ship fixes."
 
 ---
@@ -108,7 +108,7 @@ AdVanta logo + tagline + URL.
 **VO:**
 > "Daily, weekly, and monthly reports are built from your real data. No
 > fabricated numbers. Connect one account, queue your first
-> recommendation in minutes. AdVanta AI — your growth command center."
+> recommendation in minutes. AdVanta — your growth command center."
 
 ---
 

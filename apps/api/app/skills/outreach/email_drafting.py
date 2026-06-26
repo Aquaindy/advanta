@@ -84,7 +84,7 @@ def _draft_with_llm(
     sender = sender_name or "the team"
 
     system = (
-        "You are AdVanta AI's backlink-outreach drafter. Write a single short, "
+        "You are AdVanta's backlink-outreach drafter. Write a single short, "
         "respectful, personalized cold email to a publication or website owner "
         "asking for a contextual mention or a guest contribution. Do not invent "
         "metrics, customer counts, or claims you cannot support. "

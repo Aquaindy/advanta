@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "advanta-api"
 version = "0.0.1"
-description = "AdVanta AI backend — FastAPI + SQLAlchemy + Celery"
+description = "AdVanta backend — FastAPI + SQLAlchemy + Celery"
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [{ name = "AdVanta AI" }]
+authors = [{ name = "AdVanta" }]
 
 dependencies = [
   "fastapi>=0.115",

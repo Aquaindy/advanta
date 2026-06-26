@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = Field(default="AdVanta AI", alias="APP_NAME")
+    app_name: str = Field(default="AdVanta", alias="APP_NAME")
     app_env: str = Field(default="development", alias="APP_ENV")
     app_debug: bool = Field(default=True, alias="APP_DEBUG")
     app_secret_key: str = Field(default="dev-secret-change-me", alias="APP_SECRET_KEY")
@@ -138,6 +138,28 @@ class Settings(BaseSettings):
     workers_enabled: bool = Field(default=False, alias="WORKERS_ENABLED")
     celery_broker_url: str = Field(default="", alias="CELERY_BROKER_URL")
     celery_result_backend: str = Field(default="", alias="CELERY_RESULT_BACKEND")
+
+    @field_validator("database_url", "test_database_url", mode="before")
+    @classmethod
+    def _force_psycopg_driver(cls, value: object) -> object:
+        """Pin the SQLAlchemy URL to the psycopg (v3) driver.
+
+        Managed hosts (Render, Heroku, Railway) hand out a *bare*
+        ``postgresql://…`` (or the legacy ``postgres://…``) connection string
+        with no driver. SQLAlchemy then defaults to the ``psycopg2`` dialect,
+        which this project does NOT install — we ship ``psycopg`` v3. Without
+        this, the auto-wired ``DATABASE_URL`` blows up with
+        ``ModuleNotFoundError: No module named 'psycopg2'`` (e.g. the
+        ``alembic upgrade head`` pre-deploy step). Rewriting the scheme here
+        means the connection string works untouched, app engine + migrations
+        alike.
+        """
+        if not isinstance(value, str) or not value:
+            return value
+        for prefix in ("postgresql+psycopg2://", "postgresql://", "postgres://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value[len(prefix):]
+        return value
 
     @field_validator("cors_origins", mode="before")
     @classmethod

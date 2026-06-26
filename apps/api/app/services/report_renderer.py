@@ -50,7 +50,7 @@ def render_pdf(payload: dict[str, Any], *, title: str) -> bytes:
     workspace = (payload.get("workspace") or {}).get("name") or "Workspace"
     period = payload.get("period") or {}
 
-    story.append(Paragraph("AdVanta AI", styles["brand"]))
+    story.append(Paragraph("AdVanta", styles["brand"]))
     story.append(Paragraph(title, styles["title"]))
     story.append(
         Paragraph(

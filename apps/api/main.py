@@ -66,11 +66,11 @@ app = FastAPI(
     docs_url=f"{settings.api_v1_prefix}/docs",
     redoc_url=f"{settings.api_v1_prefix}/redoc",
     description=(
-        "AdVanta AI — Growth Command Center API. Multi-tenant SaaS that runs "
+        "AdVanta — Growth Command Center API. Multi-tenant SaaS that runs "
         "AI Skill Agents over real ad accounts, analytics, and websites. "
         "All routes are JWT-authenticated and workspace-scoped."
     ),
-    contact={"name": "AdVanta AI", "url": "https://advantaai.com"},
+    contact={"name": "AdVanta", "url": "https://advantaai.com"},
 )
 
 # Order matters: outermost first. CORS sees outbound responses last; rate

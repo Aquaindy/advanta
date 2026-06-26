@@ -1,4 +1,4 @@
-# Google API & OAuth Setup — AdVanta AI
+# Google API & OAuth Setup — AdVanta
 
 This runbook walks through every Google credential AdVanta needs, where each
 value comes from, and how to verify it. There are **two separate OAuth clients**
@@ -48,7 +48,7 @@ client in it.
 
 1. **APIs & Services → OAuth consent screen** (newer UI: **Google Auth Platform → Branding**).
 2. **User type: External** → Create.
-3. App name (`AdVanta AI`), user support email, developer contact email. Add
+3. App name (`AdVanta`), user support email, developer contact email. Add
    `getadvanta.app` under **Authorized domains** when you have it (blank is fine for local dev).
 4. **Scopes → Add**:
    ```

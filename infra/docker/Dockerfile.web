@@ -1,4 +1,4 @@
-# AdVanta AI — frontend (React + Vite) production image.
+# AdVanta — frontend (React + Vite) production image.
 # Builds the SPA and serves it through nginx.
 
 FROM node:20-alpine AS builder
@@ -17,7 +17,7 @@ RUN pnpm install --frozen-lockfile=false
 COPY apps/web apps/web
 
 ARG VITE_API_BASE_URL
-ARG VITE_APP_NAME=AdVanta\ AI
+ARG VITE_APP_NAME=AdVanta
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_APP_NAME=$VITE_APP_NAME
 

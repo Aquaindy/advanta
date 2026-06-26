@@ -128,7 +128,7 @@ def create_invitation(
     # we still persist the invitation so a manually-shared link works.
     accept_url = _build_accept_url(plaintext)
     draft = EmailMessageDraft(
-        subject=f"You're invited to {workspace.name} on AdVanta AI",
+        subject=f"You're invited to {workspace.name} on AdVanta",
         text_body=(
             f"{inviter.full_name or inviter.email} invited you to join "
             f"{workspace.name} as {role.value}.\n\n"

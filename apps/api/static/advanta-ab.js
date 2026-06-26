@@ -1,4 +1,4 @@
-/* AdVanta AI — A/B traffic split snippet.
+/* AdVanta — A/B traffic split snippet.
  * Usage on the customer's landing page:
  *
  *   <script

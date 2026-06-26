@@ -1,8 +1,8 @@
-# CLAUDE.md — AdVanta AI
+# CLAUDE.md — AdVanta
 
 ## Project Name
 
-**AdVanta AI**
+**AdVanta**
 
 ## Product Type
 
@@ -10,9 +10,9 @@ Production-ready SaaS application for AI-powered ads automation, SEO/GEO intelli
 
 ## Core Positioning
 
-**AdVanta AI — Turn Ad Chaos Into Intelligent Growth.**
+**AdVanta — Turn Ad Chaos Into Intelligent Growth.**
 
-AdVanta AI is an AI Growth Command Center where businesses connect real ad accounts, analytics platforms, websites, and search data. Specialized AI Skill Agents analyze performance, discover wasted spend, generate recommendations, improve landing pages, strengthen SEO/GEO visibility, and help teams plan, launch, monitor, and optimize campaigns across platforms such as Google Ads, Meta Ads, LinkedIn Ads, and future ad networks.
+AdVanta is an AI Growth Command Center where businesses connect real ad accounts, analytics platforms, websites, and search data. Specialized AI Skill Agents analyze performance, discover wasted spend, generate recommendations, improve landing pages, strengthen SEO/GEO visibility, and help teams plan, launch, monitor, and optimize campaigns across platforms such as Google Ads, Meta Ads, LinkedIn Ads, and future ad networks.
 
 This is not a demo app. This must be built as a commercial, production-ready SaaS from the start.
 
@@ -145,7 +145,7 @@ Do not use cluttered visuals, gimmicky AI art, fake charts, or placeholder metri
 
 # 4. Product Architecture
 
-AdVanta AI should use a **Master Orchestrator + AI Skill Agents** model.
+AdVanta should use a **Master Orchestrator + AI Skill Agents** model.
 
 The system is not one giant AI prompt. It is a coordinated agentic SaaS system where specialized agents act as Skills under a Master Growth Orchestrator.
 
@@ -1232,7 +1232,7 @@ Implement:
 Create `.env.example` with:
 
 ```env
-APP_NAME=AdVanta AI
+APP_NAME=AdVanta
 APP_ENV=development
 APP_DEBUG=true
 APP_SECRET_KEY=replace-with-secure-secret
@@ -1564,7 +1564,7 @@ Build:
 
 Deliverable:
 
-AdVanta AI can charge customers and enforce plan limits.
+AdVanta can charge customers and enforce plan limits.
 
 ---
 
@@ -1661,7 +1661,7 @@ Use actual production domain once chosen.
 
 # 23. Final Product Experience
 
-When a user logs into AdVanta AI, the product should feel like a living growth command center.
+When a user logs into AdVanta, the product should feel like a living growth command center.
 
 The app should communicate:
 
@@ -1673,7 +1673,7 @@ The app should communicate:
 
 The experience should be inspiring, but operationally serious.
 
-AdVanta AI should feel like an always-awake growth team, not a simple dashboard.
+AdVanta should feel like an always-awake growth team, not a simple dashboard.
 
 ---
 

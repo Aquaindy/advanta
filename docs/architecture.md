@@ -1,6 +1,6 @@
 # Architecture
 
-AdVanta AI is a multi-tenant SaaS built around a **Master Growth Orchestrator + AI Skill Agents** model. See [CLAUDE.md §4–§5](../CLAUDE.md) for the canonical product spec — this doc is the engineering view.
+AdVanta is a multi-tenant SaaS built around a **Master Growth Orchestrator + AI Skill Agents** model. See [CLAUDE.md §4–§5](../CLAUDE.md) for the canonical product spec — this doc is the engineering view.
 
 ## High-level shape
 

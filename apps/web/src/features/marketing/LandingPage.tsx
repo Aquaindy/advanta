@@ -57,7 +57,7 @@ function Hero() {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-white backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-white" />
-            AdVanta AI · Growth Command Center
+            AdVanta · Growth Command Center
           </p>
           <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
             Turn ad chaos

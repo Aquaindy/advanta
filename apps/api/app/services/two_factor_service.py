@@ -67,7 +67,7 @@ def start_setup(db: Session, *, user: User) -> dict:
     user.two_factor_recovery_hashes = None
     db.commit()
 
-    issuer = settings.app_name or "AdVanta AI"
+    issuer = settings.app_name or "AdVanta"
     uri = provisioning_uri(secret, account_email=user.email, issuer=issuer)
     return {
         "secret": secret,

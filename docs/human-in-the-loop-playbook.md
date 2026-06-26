@@ -1,4 +1,4 @@
-# AdVanta AI — Human-in-the-Loop Playbook
+# AdVanta — Human-in-the-Loop Playbook
 
 The 10–30% of ongoing growth-ops work that AdVanta's AI agents *don't*
 fully cover, written as a step-by-step operational guide a virtual

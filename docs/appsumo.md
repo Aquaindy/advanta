@@ -1,6 +1,6 @@
 # AppSumo lifetime deal
 
-AdVanta AI supports AppSumo lifetime codes alongside Stripe subscriptions. Codes
+AdVanta supports AppSumo lifetime codes alongside Stripe subscriptions. Codes
 are **uniform** (no per-code tier) and **stack**: a workspace's tier is the
 number of redeemed codes, capped at 3.
 

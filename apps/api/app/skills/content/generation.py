@@ -120,7 +120,7 @@ def _refresh_with_llm(
     target_low, target_high = TARGET_BODY_LENGTH[request.type]
 
     system = (
-        f"You are AdVanta AI's content refresher for {business}. Brand voice: "
+        f"You are AdVanta's content refresher for {business}. Brand voice: "
         f"{voice}. Rewrite the user's existing content per their instructions, "
         "preserving any specific facts unless they're flagged for replacement. "
         "Do not invent metrics, customer names, or claims. Return strict JSON "
@@ -256,7 +256,7 @@ def _system_prompt(profile: OnboardingProfile | None) -> str:
     audience = (profile and profile.target_audience) or "the company's primary audience"
     offer = (profile and profile.offer_description) or "the product the user described"
     return (
-        "You are AdVanta AI's content drafter. Produce a single draft for the requested "
+        "You are AdVanta's content drafter. Produce a single draft for the requested "
         f"content type for {business}. Target audience: {audience}. Offer: {offer}. "
         f"Brand voice: {voice}. Do not invent metrics, customer names, or claims you can't "
         "support. Return strict JSON with keys: title (string), body (string), "

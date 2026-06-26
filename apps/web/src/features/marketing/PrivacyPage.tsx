@@ -57,7 +57,7 @@ export function PrivacyPage() {
 
         <Section title="Outreach + inbound email">
           <p>
-            Outreach emails sent via AdVanta AI carry a Reply-To address
+            Outreach emails sent via AdVanta carry a Reply-To address
             that routes replies back to your workspace. Reply payloads are
             stored only to update the linked outreach status — we don't
             persist the message body beyond the inbound webhook log.

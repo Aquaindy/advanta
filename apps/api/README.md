@@ -1,6 +1,6 @@
-# AdVanta AI — Backend (FastAPI)
+# AdVanta — Backend (FastAPI)
 
-Python 3.12+ FastAPI backend for the AdVanta AI Growth Command Center.
+Python 3.12+ FastAPI backend for the AdVanta Growth Command Center.
 
 ## Setup
 

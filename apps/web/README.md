@@ -1,6 +1,6 @@
-# AdVanta AI — Frontend (Vite + React)
+# AdVanta — Frontend (Vite + React)
 
-React 18 + TypeScript + Tailwind frontend for the AdVanta AI Growth Command Center.
+React 18 + TypeScript + Tailwind frontend for the AdVanta Growth Command Center.
 
 ## Setup
 

@@ -35,7 +35,7 @@ export function AppSumoRedeemPage() {
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2">
             <Logomark />
-            <span className="text-sm font-semibold text-ink">AdVanta AI</span>
+            <span className="text-sm font-semibold text-ink">AdVanta</span>
           </Link>
           <ThemeToggle />
         </div>
@@ -50,7 +50,7 @@ export function AppSumoRedeemPage() {
           Redeem your AppSumo code
         </h1>
         <p className="mt-3 text-base text-slate-600">
-          Enter the code from your AppSumo purchase to unlock AdVanta AI for
+          Enter the code from your AppSumo purchase to unlock AdVanta for
           life. Stack up to three codes to climb tiers — more agent runs,
           landing pages, and seats at each level.
         </p>
