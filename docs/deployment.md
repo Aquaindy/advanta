@@ -194,6 +194,62 @@ verifies the `Paddle-Signature` HMAC over the raw body and is idempotent
 > page's monthly/annual toggle drives which price checkout opens. **Stripe has
 > been removed — Paddle is the only subscription processor.**
 
+### Going live: sandbox → production checklist
+
+Sandbox and Live are **completely separate** Paddle environments — products,
+prices, API key, client token, webhook destination + secret, and customers do
+not carry over. Redo every step in Live.
+
+**1. Account & domain approval (Live only)**
+- [ ] Submit your business + website for verification; Paddle reviews `getadvanta.app`.
+- [ ] Site exposes: product description, **Pricing** (`/pricing`), **Terms** (`/terms`), **Privacy** (`/privacy`), **Refund & Cancellation** (`/refund`), and a **contact** email — all present.
+- [ ] Add `getadvanta.app` under **Checkout → Approved domains** so the overlay runs in Live.
+
+**2. Catalog — one Product, six Prices**
+- [ ] Create a Product (e.g. "AdVanta") with recurring Prices:
+
+  | Plan | Monthly | Annual |
+  |---|---|---|
+  | Starter | $67 | $670 |
+  | Pro | $129 | $1,290 |
+  | Agency | $299 | $2,990 |
+
+  The app's displayed prices are cosmetic — **the Paddle Price amount is what charges**; as MoR, Paddle adds tax on top (e.g. $67 → ~$72.95). Concierge tiers are contact-sales — **do not** create Paddle prices for them.
+
+**3. API key permissions** (Developer Tools → API keys, Live)
+- [ ] **Customers R/W**, **Transactions R/W**, **Products W**, **Prices W** (fee adapter), **Subscriptions Read** (Manage/Cancel button resolves the portal URL via `GET /subscriptions/{id}`).
+
+**4. Client-side token** — Developer Tools → Authentication → client-side tokens (Live).
+
+**5. Webhook destination** — Developer Tools → Notifications:
+- [ ] URL `https://api.getadvanta.app/api/v1/billing/paddle/webhook` (exact — a typo silently returns 404 at Paddle, not an app error).
+- [ ] Events: `subscription.created`, `subscription.activated`, `subscription.updated`, `subscription.canceled`, `subscription.past_due`, `transaction.completed` (+ `transaction.paid`).
+- [ ] Copy the destination's **signing secret**.
+
+**6. Set env on `advanta-api` (+ the shared group), then redeploy:**
+```
+PADDLE_ENVIRONMENT=production
+PADDLE_API_KEY=<live key>
+PADDLE_CLIENT_TOKEN=<live client token>
+PADDLE_WEBHOOK_SECRET=<live destination secret>
+PADDLE_PRICE_ID_STARTER=...      PADDLE_PRICE_ID_STARTER_ANNUAL=...
+PADDLE_PRICE_ID_PRO=...          PADDLE_PRICE_ID_PRO_ANNUAL=...
+PADDLE_PRICE_ID_AGENCY=...       PADDLE_PRICE_ID_AGENCY_ANNUAL=...
+```
+Env changes only take effect after a redeploy.
+
+**7. Live smoke test**
+- [ ] Subscribe → workspace flips to the paid plan.
+- [ ] **Manage billing** → opens the Paddle portal (requires Subscriptions Read).
+- [ ] Cancel → workspace reverts to Free.
+- [ ] Each event shows **Delivered (200)** in Paddle's Notification log.
+
+**Gotchas (learned the hard way)**
+- The app log only proves an event was *accepted*; it does **not** prove *delivery*. Always confirm in the provider's delivery log (Paddle Notifications / Resend Emails).
+- Paddle frequently omits `management_urls` from webhooks; the app resolves the cancel URL on demand from the API — hence the **Subscriptions Read** permission.
+- **Editing** a destination's URL keeps its signing secret; **deleting + recreating** rotates it (update `PADDLE_WEBHOOK_SECRET`).
+- The sender domain for verification/reset emails must be **verified in Resend** and ideally not the same domain you receive at (self-domain mail gets quarantined).
+
 ---
 
 ## 6. CORS
