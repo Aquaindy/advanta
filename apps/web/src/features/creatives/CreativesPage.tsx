@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader } from "@/components/ui/Card";
+import { SuggestedCopiesSection } from "@/features/creatives/SuggestedCopiesSection";
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import type {
@@ -52,6 +53,8 @@ function CreativesPageInner({ workspaceId }: { workspaceId: string }) {
           before attaching them to ads.
         </p>
       </header>
+
+      <SuggestedCopiesSection workspaceId={workspaceId} />
 
       <Card>
         <CardHeader title="Filters" />

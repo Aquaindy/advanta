@@ -65,6 +65,7 @@ def test_list_agents_returns_catalog_with_no_runs(client: TestClient) -> None:
         "market_intelligence",
         "icp_persona",
         "creative_strategy",
+        "growth_content",
         "campaign_builder",
         "tracking_attribution",
         "master_orchestrator",

@@ -28,6 +28,29 @@ export type CreativeType =
 export type CreativeSource = "platform_synced" | "ai_generated" | "user_uploaded";
 export type AdObjectSource = "platform_synced" | "advanta_draft";
 
+export type SuggestedCopyType =
+  | "keywords"
+  | "ad_copy"
+  | "landing_page"
+  | "email"
+  | "social_post"
+  | "blog_outline"
+  | "meta_tags";
+
+export interface SuggestedCopy {
+  id: string;
+  workspace_id: string;
+  growth_dna_profile_id: string | null;
+  product_name: string;
+  copy_type: SuggestedCopyType;
+  section: string;
+  title: string;
+  body: string;
+  source: string;
+  model_used: string | null;
+  created_at: string;
+}
+
 export type AdGroupTargeting = {
   locations?: string[];
   age_min?: number | null;

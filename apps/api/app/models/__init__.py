@@ -53,6 +53,7 @@ from app.models.refresh_token import RefreshToken
 from app.models.report import Report, ReportPeriod, ReportStatus
 from app.models.seo_project import SeoProject
 from app.models.skill_output import SkillOutput
+from app.models.suggested_copy import SuggestedCopy, SuggestedCopyType
 from app.models.sync_log import SyncLog, SyncLogStatus
 from app.models.usage_event import UsageEvent, UsageEventType
 from app.models.user import User
@@ -133,6 +134,8 @@ __all__ = [
     "ReportStatus",
     "SeoProject",
     "SkillOutput",
+    "SuggestedCopy",
+    "SuggestedCopyType",
     "SubscriptionSource",
     "SubscriptionStatus",
     "SyncLog",
