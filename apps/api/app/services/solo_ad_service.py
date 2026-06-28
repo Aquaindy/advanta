@@ -222,13 +222,17 @@ def score_order_quality(
     order.quality_flags = flags
     order.quality_note = note
 
-    # Roll the vendor's quality up as the average of its scored orders.
+    # Roll the vendor's quality up as the average of its scored orders. Exclude
+    # THIS order from the query and add its fresh score once: the session runs
+    # autoflush=False, so the query would otherwise return this in-session
+    # instance carrying the just-set quality_score and double-count it on re-score.
     if order.vendor_id:
         scored = [
             o.quality_score
             for o in db.query(SoloAdOrder).filter(
                 SoloAdOrder.workspace_id == workspace_id,
                 SoloAdOrder.vendor_id == order.vendor_id,
+                SoloAdOrder.id != order.id,
                 SoloAdOrder.quality_score.isnot(None),
             ).all()
             if o.quality_score is not None

@@ -5,6 +5,7 @@ export const SOURCE_TYPE_LABEL: Record<string, string> = {
   paid: "Paid",
   paid_email: "Paid email",
   organic: "Organic",
+  other: "Other",
 };
 
 export function statusLabel(status: string): { label: string; cls: string } {

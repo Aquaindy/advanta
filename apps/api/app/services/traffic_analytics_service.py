@@ -276,8 +276,9 @@ def next_best_actions(overview: dict) -> list[dict]:
             actions.append(_action("scale", "high", name,
                 f"Scale {name}", f"{name} is profitable at {roas:.1f}x ROAS (+{_usd(profit)}). Increase budget gradually and keep watching CPL."))
         elif cost > 0 and profit < 0:
+            # roas is always defined here (cost > 0 ⇒ _finalize set it).
             actions.append(_action("fix_or_pause", "high", name,
-                f"Fix or pause {name}", f"{name} is unprofitable ({_usd(profit)} at {('%.1fx' % roas) if roas is not None else 'n/a'} ROAS). Pause it or fix the offer/landing before spending more."))
+                f"Fix or pause {name}", f"{name} is unprofitable ({_usd(profit)} at {roas:.1f}x ROAS). Pause it or fix the offer/landing before spending more."))
         elif cost > 0 and (s.get("sales") or 0) == 0 and (s.get("leads") or 0) >= 10:
             actions.append(_action("improve_offer", "medium", name,
                 f"Improve conversion for {name}", f"{name} is generating leads but no sales — tighten the offer, follow-up or pricing."))

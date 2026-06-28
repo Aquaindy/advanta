@@ -15,6 +15,7 @@ import {
   listVendors,
   scoreOrder,
 } from "@/lib/solo-ads";
+import { listTrafficCampaigns } from "@/lib/traffic";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import type { SoloAdOrder, SoloAdVendor } from "@/types/api";
@@ -235,6 +236,7 @@ function NewOrderForm({
   onCreated: () => void;
 }) {
   const [vendorId, setVendorId] = useState("");
+  const [campaignId, setCampaignId] = useState("");
   const [name, setName] = useState("");
   const [f, setF] = useState({
     clicks_purchased: "",
@@ -251,10 +253,16 @@ function NewOrderForm({
   const toInt = (v: string) => (v ? Math.round(Number(v)) : 0);
   const toCents = (v: string) => (v ? Math.round(Number(v) * 100) : 0);
 
+  const campaigns = useQuery({
+    queryKey: ["traffic", "campaigns", workspaceId],
+    queryFn: () => listTrafficCampaigns(workspaceId),
+  });
+
   const create = useMutation({
     mutationFn: () =>
       createOrder(workspaceId, {
         vendor_id: vendorId || null,
+        traffic_campaign_id: campaignId || null,
         name: name || null,
         clicks_purchased: toInt(f.clicks_purchased),
         clicks_delivered: toInt(f.clicks_delivered),
@@ -280,6 +288,13 @@ function NewOrderForm({
           <select value={vendorId} onChange={(e) => setVendorId(e.target.value)} className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200">
             <option value="">No vendor</option>
             {vendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="text-slate-500">Traffic campaign (optional)</span>
+          <select value={campaignId} onChange={(e) => setCampaignId(e.target.value)} className="rounded-xl border border-slate-200 bg-surface px-3 py-2 text-ink shadow-sm outline-none focus:border-grape focus:ring-2 focus:ring-grape-200">
+            <option value="">Not linked</option>
+            {(campaigns.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
         <NumInput label="Order name (optional)" value={name} onChange={(e) => setName(e.target.value)} text />
