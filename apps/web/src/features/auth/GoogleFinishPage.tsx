@@ -16,7 +16,12 @@ export function GoogleFinishPage() {
   const [params] = useSearchParams();
   const setSession = useAuthStore((s) => s.setSession);
 
-  const to = params.get("to") || "/";
+  // The backend defaults redirect_to to "/" (the public landing page) when the
+  // sign-in carried no deep-link target. Send those to the app — same default
+  // as email/password login (/dashboard) — while still honoring a real in-app
+  // path (e.g. a /campaigns link the user was bounced from).
+  const rawTo = params.get("to");
+  const to = !rawTo || rawTo === "/" ? "/dashboard" : rawTo;
 
   useEffect(() => {
     let cancelled = false;
