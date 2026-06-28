@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recommendations, Approvals &amp; Autopilot — Step-by-Step Guide | AdGenieHQ</title>
+<meta name="description" content="The AdGenieHQ automation & safety cheat sheet: how agents run, how recommendations are approved or rejected with role gating, how executions are tracked and reverted, and how Autopilot guardrails work." />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://adgeniehq.com/recommendations-module.html" />
+<style>
+  :root{--grape:#3E2F84;--violet:#7C3AED;--lav:#EEEAFE;--night:#111827;--cloud:#F9FAFB;--green:#16A34A;--amber:#F59E0B;--red:#DC2626;--slate:#334155;--line:#e5e7eb;--muted:#64748B;}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;line-height:1.6;margin:0;background:var(--cloud)}
+  a{color:var(--grape)}
+  header,main,footer{max-width:880px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .brand{font-weight:700;color:var(--grape);text-decoration:none;font-size:16px}
+  nav a{margin-left:16px;text-decoration:none;color:var(--slate);font-size:14px}
+  nav a.active{color:var(--grape);font-weight:600}
+  main{padding-top:32px;padding-bottom:24px}
+  .hero{background:linear-gradient(135deg,#3E2F84,#7C3AED);color:#fff;border-radius:18px;padding:28px 24px;margin-bottom:24px}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.8;margin:0 0 6px}
+  .hero h1{font-size:30px;font-weight:700;margin:0 0 8px;color:#fff}
+  .hero p{margin:0;color:rgba(255,255,255,.92);max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+  h2{font-size:21px;font-weight:700;margin:34px 0 6px;color:var(--night);scroll-margin-top:16px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--lav);color:var(--grape);font-size:14px;margin-right:8px;vertical-align:middle}
+  h3{font-size:16px;font-weight:600;margin:20px 0 4px;color:var(--night)}
+  p{margin:8px 0;color:var(--slate)}
+  .lead{color:var(--muted);margin-top:0}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:8px}
+  .toc h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+  .toc li{margin:4px 0}.toc a{text-decoration:none}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:12px 0}
+  .steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--grape);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--night)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--grape);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:0}
+  .badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-low{background:#dcfce7;color:#166534}
+  .b-med{background:#fef3c7;color:#92400e}
+  .b-high{background:#fee2e2;color:#991b1b}
+  .callout{border-left:4px solid var(--violet);background:#faf9ff;border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--amber);background:#fffbeb}
+  .callout.safe{border-left-color:var(--green);background:#f0fdf4}
+  .callout p{margin:4px 0}.callout .t{font-weight:700;color:var(--night)}
+  code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a}
+  ul.tight{margin:8px 0;padding-left:20px}
+  ul.tight li{margin:4px 0;color:var(--slate)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--grape);font-weight:600}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0;font-weight:600;color:var(--grape)}
+  .flow span{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 12px}
+  .flow .sep{border:0;background:none;color:var(--violet);padding:0}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-top:20px;padding-bottom:48px;margin-top:40px}
+  footer a{margin-right:16px;text-decoration:none}
+  .updated{color:#94a3b8;font-size:13px;margin-top:6px}
+  @media (max-width:640px){.toc ol{columns:1}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">AdGenieHQ</a>
+  <nav>
+    <a href="/guides.html">All guides</a>
+    <a href="/">App</a>
+  </nav>
+</header>
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">Module guide · Cheat sheet</p>
+    <h1>Recommendations, Approvals &amp; Autopilot</h1>
+    <p>The safety system that governs every module. Agents find opportunities, turn them into recommendations, and nothing touches a live platform until it clears role gates and guardrails — or you've explicitly handed a category to Autopilot.</p>
+    <div class="chips">
+      <span class="chip">Run agents</span>
+      <span class="chip">Risk-gated approvals</span>
+      <span class="chip">Execute · retry · revert</span>
+      <span class="chip">Autopilot guardrails</span>
+      <span class="chip">Full audit trail</span>
+    </div>
+  </section>
+
+  <p class="lead">Three sidebar pages, one workflow: <span class="path">Agents</span> → <span class="path">Recommendations</span> → <span class="path">Autopilot</span>. This applies to Ads, Traffic, SEO, Website — everything.</p>
+
+  <div class="flow">
+    <span>Agent runs</span><span class="sep">→</span><span>Recommendation</span><span class="sep">→</span><span>Approve / Reject</span><span class="sep">→</span><span>Execute</span><span class="sep">→</span><span>Revert (if needed)</span>
+  </div>
+
+  <div class="toc">
+    <h4>On this page</h4>
+    <ol>
+      <li><a href="#agents">Running agents</a></li>
+      <li><a href="#recs">The Recommendations center</a></li>
+      <li><a href="#roles">Risk levels &amp; role gating</a></li>
+      <li><a href="#exec">Execute, retry &amp; revert</a></li>
+      <li><a href="#modes">The three modes</a></li>
+      <li><a href="#guardrails">Autopilot guardrails</a></li>
+      <li><a href="#stoploss">Stop-loss &amp; preview</a></li>
+      <li><a href="#audit">Audit trail</a></li>
+      <li><a href="#faq">FAQ &amp; tips</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="agents"><span class="num">1</span>Running agents <span style="font-weight:400;font-size:14px;color:var(--muted)">— /agents</span></h2>
+  <p>Agents are your AI growth team. Each runs against your real workspace data, saves its tasks + outputs, and emits recommendations.</p>
+  <ol class="steps">
+    <li><b>Open Agents</b> and pick a card (Paid Ads, Creative Strategy, SEO audit, Landing-page audit, and more).</li>
+    <li><b>Run now</b> — the run is metered against your plan's agent-run quota.</li>
+    <li><b>View last run</b> — see every skill task (succeeded / failed / skipped), the raw outputs, and the recommendations it produced.</li>
+  </ol>
+  <p class="updated">Agents have deterministic fallbacks, so they produce real output even without an LLM key.</p>
+
+  <!-- 2 -->
+  <h2 id="recs"><span class="num">2</span>The Recommendations center <span style="font-weight:400;font-size:14px;color:var(--muted)">— /recommendations</span></h2>
+  <p>Everything agents find lands here, grouped by risk. Each card shows what was found, why it matters, the expected impact, the suggested action, and a link back to the agent run that produced it.</p>
+  <ol class="steps">
+    <li><b>Open one</b> for the full detail, related platform/campaign, and history.</li>
+    <li><b>Edit before applying</b> (Admin+) — tighten the title, summary, impact, or action.</li>
+    <li><b>Approve &amp; apply</b> — optionally toggle "apply to {platform} on approve" to execute the change immediately.</li>
+    <li><b>Reject</b> with a reason — it's recorded and the card closes out.</li>
+  </ol>
+
+  <!-- 3 -->
+  <h2 id="roles"><span class="num">3</span>Risk levels &amp; role gating</h2>
+  <p>Every recommendation carries a risk level, and the risk decides who's allowed to approve it:</p>
+  <table>
+    <tr><th>Risk</th><th>Examples</th><th>Who can approve</th></tr>
+    <tr><td><span class="badge b-low">low</span></td><td>Pause a past-end-date campaign; trim budget on a CPA spike</td><td>Marketer and up</td></tr>
+    <tr><td><span class="badge b-med">medium</span></td><td>Scale a winner's budget; publish a built draft ad set/ad</td><td>Admin and up</td></tr>
+    <tr><td><span class="badge b-high">high</span></td><td>Actions on stale/large campaigns</td><td>Owner only</td></tr>
+  </table>
+  <p>Editing a recommendation requires Admin+; reverting an execution requires Admin+.</p>
+
+  <!-- 4 -->
+  <h2 id="exec"><span class="num">4</span>Execute, retry &amp; revert</h2>
+  <p>When a recommendation has an executable action, approving it (with auto-execute on) sends the change to the provider and records an <b>execution</b>:</p>
+  <ul class="tight">
+    <li><b>What's captured</b> — the provider, action type, exactly what was sent, the result, and the <b>prior state</b> (so it can be undone).</li>
+    <li><b>Retry</b> — if an execution fails, retry it; an idempotency key prevents network retries from double-sending.</li>
+    <li><b>Revert</b> (Admin+) — restore the prior state captured before the change. One-click undo for anything that went live.</li>
+  </ul>
+
+  <!-- 5 -->
+  <h2 id="modes"><span class="num">5</span>The three modes <span style="font-weight:400;font-size:14px;color:var(--muted)">— /autopilot</span></h2>
+  <p>Set how much autonomy the workspace grants. Off by default.</p>
+  <table>
+    <tr><th>Mode</th><th>Behavior</th></tr>
+    <tr><td><b>Advisor</b></td><td>Agents only analyze and recommend. No external actions, ever.</td></tr>
+    <tr><td><b>Approval</b></td><td>AI proposes; a human approves before anything executes. <i>Recommended default.</i></td></tr>
+    <tr><td><b>Autopilot</b></td><td>Recommendations that pass <b>all</b> guardrails are auto-approved and logged as <code>SYSTEM</code>. Anything that fails a rule falls back to manual approval.</td></tr>
+  </table>
+
+  <!-- 6 -->
+  <h2 id="guardrails"><span class="num">6</span>Autopilot guardrails <span style="font-weight:400;font-size:14px;color:var(--muted)">— Owner only</span></h2>
+  <p>Autopilot will only ever act inside the limits you set:</p>
+  <ul class="tight">
+    <li>Max daily spend increase &amp; max daily spend total (hard caps)</li>
+    <li>Max % increase per change</li>
+    <li>Minimum recent conversions before any spend-up</li>
+    <li><b>Risk ceiling</b> — low (safest) / medium / high</li>
+    <li><b>Allowed action types</b> — an explicit whitelist (e.g. <code>campaign.pause</code>, <code>campaign.update_budget</code>)</li>
+  </ul>
+  <h3>Autonomous action tiers (each opt-in)</h3>
+  <table>
+    <tr><th>Action</th><th>Tier</th><th>Risk</th></tr>
+    <tr><td><code>campaign.pause</code></td><td>spend-down, fully reversible</td><td><span class="badge b-low">low</span></td></tr>
+    <tr><td><code>campaign.update_budget</code></td><td>trim on CPA spikes / scale winners within caps</td><td><span class="badge b-low">low</span>/<span class="badge b-med">med</span></td></tr>
+    <tr><td><code>ad_set.create</code> · <code>ad.create</code></td><td>publish human-built drafts (paused)</td><td><span class="badge b-med">medium</span></td></tr>
+  </table>
+
+  <!-- 7 -->
+  <h2 id="stoploss"><span class="num">7</span>Stop-loss &amp; preview</h2>
+  <div class="callout warn">
+    <p class="t">🛑 Stop-loss — your emergency brake</p>
+    <p>One switch. While engaged, Autopilot refuses <b>every</b> recommendation regardless of guardrails. Flip it the moment something looks off.</p>
+  </div>
+  <p>The Autopilot page also has a <b>Preview</b>: for every open recommendation it shows whether it would auto-approve right now and why — so you can tune guardrails with full visibility before trusting them. A separate "run autonomous scan" lets the agents propose executable actions from live campaign signals on demand.</p>
+
+  <!-- 8 -->
+  <h2 id="audit"><span class="num">8</span>Audit trail</h2>
+  <p>Every sensitive action is logged — agent runs, approvals, rejections, edits, executions, reverts — with the actor (user or <code>SYSTEM</code>), IP address, and user agent. Open any recommendation to see its full history. Nothing happens invisibly.</p>
+
+  <!-- FAQ -->
+  <h2 id="faq"><span class="num">?</span>FAQ &amp; tips</h2>
+  <div class="card">
+    <h3>Will AI ever spend my money without me?</h3>
+    <p>Only if you switch to Autopilot, whitelist the action type, and it passes every guardrail and the risk ceiling. Default is Approval — a human signs off on everything.</p>
+    <h3>I approved something by mistake — can I undo it?</h3>
+    <p>If it executed and captured a prior state, an Admin can <b>Revert</b> it to restore the previous setting on the provider.</p>
+    <h3>Why is a recommendation "manual" even though Autopilot is on?</h3>
+    <p>It failed a guardrail (cap, % limit, conversions threshold, risk ceiling, or it's not on the allowed-action whitelist). The Preview tells you which.</p>
+    <h3>Does this apply beyond ads?</h3>
+    <p>Yes — recommendations come from every module (SEO, Website, Traffic, Email). Approvals and audit logging are universal; executable provider actions are mainly ad-platform changes.</p>
+  </div>
+
+</main>
+<footer>
+  <a href="/guides.html">All guides</a>
+  <a href="/ads-module.html">Ads</a>
+  <a href="/command-center-module.html">Command Center</a>
+  <a href="/reports-module.html">Reports</a>
+  <a href="/">Home</a>
+  <div class="updated">AdGenieHQ — module guide · Last updated June 2026</div>
+</footer>
+</body>
+</html>

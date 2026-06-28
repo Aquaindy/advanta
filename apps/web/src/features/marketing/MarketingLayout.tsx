@@ -74,6 +74,7 @@ function SiteFooter() {
               before the SPA rewrite), so they MUST use real <a> anchors —
               a React Router <Link> would client-side route and 404. */}
           <FooterColumn title="Guides">
+            <FooterAnchor href="/guides.html">All guides</FooterAnchor>
             <FooterAnchor href="/ads-module.html">Ads module</FooterAnchor>
             <FooterAnchor href="/traffic-module.html">Traffic module</FooterAnchor>
             <FooterAnchor href="/email-marketing-module.html">Email module</FooterAnchor>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Command Center — Step-by-Step Guide | AdGenieHQ</title>
+<meta name="description" content="The AdGenieHQ Command Center cheat sheet: your launchpad with onboarding status, Growth DNA readiness scores, live system health, and where every real metric lives." />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://adgeniehq.com/command-center-module.html" />
+<style>
+  :root{--grape:#3E2F84;--violet:#7C3AED;--lav:#EEEAFE;--night:#111827;--cloud:#F9FAFB;--green:#16A34A;--amber:#F59E0B;--red:#DC2626;--slate:#334155;--line:#e5e7eb;--muted:#64748B;}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;line-height:1.6;margin:0;background:var(--cloud)}
+  a{color:var(--grape)}
+  header,main,footer{max-width:880px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .brand{font-weight:700;color:var(--grape);text-decoration:none;font-size:16px}
+  nav a{margin-left:16px;text-decoration:none;color:var(--slate);font-size:14px}
+  nav a.active{color:var(--grape);font-weight:600}
+  main{padding-top:32px;padding-bottom:24px}
+  .hero{background:linear-gradient(135deg,#3E2F84,#7C3AED);color:#fff;border-radius:18px;padding:28px 24px;margin-bottom:24px}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.8;margin:0 0 6px}
+  .hero h1{font-size:30px;font-weight:700;margin:0 0 8px;color:#fff}
+  .hero p{margin:0;color:rgba(255,255,255,.92);max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+  h2{font-size:21px;font-weight:700;margin:34px 0 6px;color:var(--night);scroll-margin-top:16px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--lav);color:var(--grape);font-size:14px;margin-right:8px;vertical-align:middle}
+  h3{font-size:16px;font-weight:600;margin:20px 0 4px;color:var(--night)}
+  p{margin:8px 0;color:var(--slate)}
+  .lead{color:var(--muted);margin-top:0}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:12px 0}
+  .steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--grape);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--night)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--grape);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:0}
+  .badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-live{background:#dcfce7;color:#166534}
+  .callout{border-left:4px solid var(--violet);background:#faf9ff;border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--amber);background:#fffbeb}
+  .callout.safe{border-left-color:var(--green);background:#f0fdf4}
+  .callout p{margin:4px 0}
+  .callout .t{font-weight:700;color:var(--night)}
+  code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a}
+  ul.tight{margin:8px 0;padding-left:20px}
+  ul.tight li{margin:4px 0;color:var(--slate)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--grape);font-weight:600}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-top:20px;padding-bottom:48px;margin-top:40px}
+  footer a{margin-right:16px;text-decoration:none}
+  .updated{color:#94a3b8;font-size:13px;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">AdGenieHQ</a>
+  <nav>
+    <a href="/guides.html">All guides</a>
+    <a href="/">App</a>
+  </nav>
+</header>
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">Module guide · Cheat sheet</p>
+    <h1>Command Center</h1>
+    <p>Your home screen and launchpad. It tells you what to do next, shows your two readiness scores once your Growth DNA exists, and confirms the platform is healthy — then sends you into the module where the real numbers live.</p>
+    <div class="chips">
+      <span class="chip">Onboarding gate</span>
+      <span class="chip">Growth DNA snapshot</span>
+      <span class="chip">System health</span>
+      <span class="chip">No vanity metrics</span>
+    </div>
+  </section>
+
+  <div class="callout">
+    <p class="t">Why the dashboard looks calm, not crowded</p>
+    <p>AdGenieHQ never shows fake numbers. So the Command Center deliberately doesn't fill itself with spend/ROAS/CPA tiles before you've connected anything — those live inside each module and in <a href="/reports-module.html">Reports</a>, where they're backed by real data. The home screen's job is to orient you and point to the next action.</p>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="open"><span class="num">1</span>What you'll see <span style="font-weight:400;font-size:14px;color:var(--muted)">— route /</span></h2>
+  <p>Top to bottom, the Command Center renders:</p>
+  <ol class="steps">
+    <li><b>Header</b> — "Your AI Growth Operating System" with a one-line description of how the agents work under approval.</li>
+    <li><b>Onboarding gate</b> — a card that adapts to your progress (see §2). It's the single thing to act on first.</li>
+    <li><b>Growth DNA snapshot</b> — appears once your profile exists: <b>Funnel readiness</b> and <b>Paid ads readiness</b> (each /100), with a "View full profile →" link.</li>
+    <li><b>System health</b> — three live status cards: <b>API</b>, <b>PostgreSQL</b>, and <b>Redis</b>, each showing Healthy / Degraded / Unreachable.</li>
+  </ol>
+
+  <!-- 2 -->
+  <h2 id="gate"><span class="num">2</span>The onboarding gate <span style="font-weight:400;font-size:14px;color:var(--muted)">— your first action</span></h2>
+  <p>The gate card changes based on where you are, so there's always exactly one clear next step:</p>
+  <table>
+    <tr><th>Your state</th><th>Card says</th><th>Button</th></tr>
+    <tr><td>Brand-new workspace</td><td>"Complete onboarding to activate your Growth DNA" · "Five short steps. Takes about three minutes."</td><td>Start onboarding</td></tr>
+    <tr><td>Onboarding in progress</td><td>"…X steps remaining."</td><td>Resume</td></tr>
+    <tr><td>Onboarding done, no DNA yet</td><td>"Onboarding complete — generate your Growth DNA"</td><td>Generate Growth DNA</td></tr>
+    <tr><td>Onboarding done + DNA exists</td><td>gate hidden; snapshot shows instead</td><td>View full profile →</td></tr>
+  </table>
+  <p>See the <a href="/growth-dna-module.html">Growth DNA &amp; Onboarding guide</a> for what each step collects and what the profile produces.</p>
+
+  <!-- 3 -->
+  <h2 id="scores"><span class="num">3</span>Reading the readiness scores</h2>
+  <p>Once generated, the snapshot shows two deterministic scores derived purely from your onboarding answers — not from connected ad data:</p>
+  <ul class="tight">
+    <li><b>Funnel readiness</b> — audience clarity, offer clarity, landing pages, brand voice, analytics.</li>
+    <li><b>Paid ads readiness</b> — budget, conversion goal, audience, geo, platforms, analytics.</li>
+  </ul>
+  <p>They're color-coded: green ≥ 80, grape 50–79, amber below 50 — a quick read on where your setup is strong or thin before you spend.</p>
+
+  <!-- 4 -->
+  <h2 id="health"><span class="num">4</span>System health cards</h2>
+  <table>
+    <tr><th>Card</th><th>What it confirms</th></tr>
+    <tr><td><b>API</b></td><td>The FastAPI service is up — shows app name, environment, and version.</td></tr>
+    <tr><td><b>PostgreSQL</b></td><td>The primary datastore answers (users, workspaces, onboarding, Growth DNA).</td></tr>
+    <tr><td><b>Redis</b></td><td>The cache + background-job broker is reachable.</td></tr>
+  </table>
+  <p>Green across the board means the platform is fully operational. A "Degraded/Unreachable" pill tells you (or support) exactly which dependency to look at.</p>
+
+  <!-- 5 -->
+  <h2 id="where"><span class="num">5</span>Where the real metrics live</h2>
+  <p>The Command Center points you outward. Here's the map:</p>
+  <table>
+    <tr><th>You want…</th><th>Go to</th></tr>
+    <tr><td>Spend, budgets, ROAS, campaign health</td><td><a href="/ads-module.html">Ads</a> · <a href="/reports-module.html">Reports</a></td></tr>
+    <tr><td>Traffic-source performance &amp; quality</td><td><a href="/traffic-module.html">Traffic dashboard</a></td></tr>
+    <tr><td>Email engagement &amp; deliverability</td><td><a href="/email-marketing-module.html">Email audit</a></td></tr>
+    <tr><td>Keyword opportunities &amp; SEO health</td><td><a href="/seo-module.html">SEO &amp; GEO</a></td></tr>
+    <tr><td>Landing-page &amp; speed scores</td><td><a href="/website-module.html">Website</a></td></tr>
+    <tr><td>What AI found &amp; what to approve</td><td><a href="/recommendations-module.html">Recommendations</a></td></tr>
+    <tr><td>Connect Google/Meta/LinkedIn/GA4</td><td><span class="path">Settings → Integrations</span></td></tr>
+  </table>
+
+  <!-- FAQ -->
+  <h2 id="faq"><span class="num">?</span>FAQ &amp; tips</h2>
+  <div class="card">
+    <h3>Why don't I see spend / ROAS / leads on the home screen?</h3>
+    <p>By design — those would be fabricated for a workspace with nothing connected. Connect an integration and run an agent, and the real figures appear in the relevant module and in Reports.</p>
+    <h3>What should I do first?</h3>
+    <p>Follow the onboarding gate: complete onboarding → generate your Growth DNA. That unlocks readiness scores and gives every agent the context it needs.</p>
+    <h3>A health card is red — what now?</h3>
+    <p>It points to a specific dependency (API/Postgres/Redis). If it persists, it's an operational issue for your admin/support, not something in your workspace data.</p>
+  </div>
+
+</main>
+<footer>
+  <a href="/guides.html">All guides</a>
+  <a href="/growth-dna-module.html">Growth DNA</a>
+  <a href="/recommendations-module.html">Recommendations</a>
+  <a href="/reports-module.html">Reports</a>
+  <a href="/">Home</a>
+  <div class="updated">AdGenieHQ — module guide · Last updated June 2026</div>
+</footer>
+</body>
+</html>

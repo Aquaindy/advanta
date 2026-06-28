@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reports — Step-by-Step Guide | AdGenieHQ</title>
+<meta name="description" content="The AdGenieHQ Reports cheat sheet: generate daily, weekly, or monthly roll-ups of agent activity, recommendations, campaigns, SEO, landing pages, A/B tests and more — downloadable as PDF or CSV." />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://adgeniehq.com/reports-module.html" />
+<style>
+  :root{--grape:#3E2F84;--violet:#7C3AED;--lav:#EEEAFE;--night:#111827;--cloud:#F9FAFB;--green:#16A34A;--amber:#F59E0B;--red:#DC2626;--slate:#334155;--line:#e5e7eb;--muted:#64748B;}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;line-height:1.6;margin:0;background:var(--cloud)}
+  a{color:var(--grape)}
+  header,main,footer{max-width:880px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .brand{font-weight:700;color:var(--grape);text-decoration:none;font-size:16px}
+  nav a{margin-left:16px;text-decoration:none;color:var(--slate);font-size:14px}
+  nav a.active{color:var(--grape);font-weight:600}
+  main{padding-top:32px;padding-bottom:24px}
+  .hero{background:linear-gradient(135deg,#3E2F84,#7C3AED);color:#fff;border-radius:18px;padding:28px 24px;margin-bottom:24px}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.8;margin:0 0 6px}
+  .hero h1{font-size:30px;font-weight:700;margin:0 0 8px;color:#fff}
+  .hero p{margin:0;color:rgba(255,255,255,.92);max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+  h2{font-size:21px;font-weight:700;margin:34px 0 6px;color:var(--night);scroll-margin-top:16px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--lav);color:var(--grape);font-size:14px;margin-right:8px;vertical-align:middle}
+  h3{font-size:16px;font-weight:600;margin:20px 0 4px;color:var(--night)}
+  p{margin:8px 0;color:var(--slate)}
+  .lead{color:var(--muted);margin-top:0}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:12px 0}
+  .steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--grape);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--night)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--grape);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:0}
+  .badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-live{background:#dcfce7;color:#166534}
+  .callout{border-left:4px solid var(--violet);background:#faf9ff;border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--amber);background:#fffbeb}
+  .callout.safe{border-left-color:var(--green);background:#f0fdf4}
+  .callout p{margin:4px 0}.callout .t{font-weight:700;color:var(--night)}
+  code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a}
+  ul.tight{margin:8px 0;padding-left:20px}
+  ul.tight li{margin:4px 0;color:var(--slate)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--grape);font-weight:600}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-top:20px;padding-bottom:48px;margin-top:40px}
+  footer a{margin-right:16px;text-decoration:none}
+  .updated{color:#94a3b8;font-size:13px;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">AdGenieHQ</a>
+  <nav>
+    <a href="/guides.html">All guides</a>
+    <a href="/">App</a>
+  </nav>
+</header>
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">Module guide · Cheat sheet</p>
+    <h1>Reports</h1>
+    <p>One click turns everything your AI growth team did over a window into a clean, shareable roll-up — agent activity, recommendations, campaigns, SEO, landing pages, A/B tests and more — as PDF or CSV.</p>
+    <div class="chips">
+      <span class="chip">Daily · Weekly · Monthly</span>
+      <span class="chip">PDF &amp; CSV export</span>
+      <span class="chip">Real data only</span>
+    </div>
+  </section>
+
+  <p class="lead">One sidebar page: <span class="path">Reports</span>. Reports pull real workspace data — they never invent numbers, and only show the sections you actually have data for.</p>
+
+  <div class="callout">
+    <p class="t">⚡ 60-second quickstart</p>
+    <p><b>Reports</b> → click <b>Daily</b>, <b>Weekly</b>, or <b>Monthly</b> → open the generated report → <b>Download PDF</b> or <b>Download CSV</b>.</p>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="generate"><span class="num">1</span>Generate a report <span style="font-weight:400;font-size:14px;color:var(--muted)">— /reports</span></h2>
+  <ol class="steps">
+    <li><b>Pick a window</b> — Daily (last 24 hours), Weekly (last 7 days), or Monthly (last 30 days).</li>
+    <li><b>It rolls up</b> real records across the window into a single report.</li>
+    <li><b>Open it</b> from the list (with its period, generated time, and status), then export.</li>
+  </ol>
+  <p>Generating requires the Marketer role or higher; anyone on the workspace can view and download.</p>
+
+  <!-- 2 -->
+  <h2 id="inside"><span class="num">2</span>What's inside a report</h2>
+  <p>Each report assembles the sections that have data:</p>
+  <table>
+    <tr><th>Section</th><th>What it summarizes</th></tr>
+    <tr><td><b>At a glance</b></td><td>Agent runs, open/approved/rejected &amp; high-risk recommendations, campaigns total/active, landing pages audited, keywords tracked</td></tr>
+    <tr><td><b>Top open recommendations</b></td><td>The most important unresolved recs, with risk levels</td></tr>
+    <tr><td><b>Agent activity</b></td><td>The runs in the window, with status and recommendation counts</td></tr>
+    <tr><td><b>Paid ads</b></td><td>Campaign totals, active-without-budget, stale-active, per-provider breakdown</td></tr>
+    <tr><td><b>SEO &amp; GEO</b></td><td>Top keywords by opportunity (query, impressions, position, score)</td></tr>
+    <tr><td><b>Landing pages</b></td><td>Conversion / mobile / speed scores for audited pages</td></tr>
+    <tr><td><b>Provider writes</b></td><td>Execution stats — total, succeeded, failed, per provider</td></tr>
+    <tr><td><b>Content drafts</b></td><td>Totals by status and type</td></tr>
+    <tr><td><b>Backlink outreach</b></td><td>Prospect and email metrics</td></tr>
+    <tr><td><b>A/B tests</b></td><td>Counts — total, launched, completed, with a winner</td></tr>
+    <tr><td><b>Growth DNA</b></td><td>Funnel &amp; paid-ads readiness scores</td></tr>
+  </table>
+
+  <!-- 3 -->
+  <h2 id="export"><span class="num">3</span>Export &amp; share</h2>
+  <ul class="tight">
+    <li><b>PDF</b> — a clean, client-ready document of the full report.</li>
+    <li><b>CSV</b> — the tabular data for your own spreadsheets/BI.</li>
+    <li>Reports are saved in the list, so you build a history of snapshots over time.</li>
+  </ul>
+
+  <!-- 4 -->
+  <h2 id="empty"><span class="num">4</span>Empty states</h2>
+  <div class="callout safe">
+    <p class="t">No data, no fabrication</p>
+    <p>A report only includes sections you have real data for. A brand-new workspace's report will be sparse — connect integrations, run agents, and audit pages first, then generate. That's the no-fake-data rule working as intended.</p>
+  </div>
+
+  <!-- FAQ -->
+  <h2 id="faq"><span class="num">?</span>FAQ &amp; tips</h2>
+  <div class="card">
+    <h3>My report is mostly empty.</h3>
+    <p>It reflects what's in the window. Run some agents, sync campaigns, audit a landing page, then regenerate — the relevant sections fill in.</p>
+    <h3>Which window should I use?</h3>
+    <p>Daily for standups, Weekly for team reviews, Monthly for executive/client snapshots.</p>
+    <h3>Can I get campaign spend &amp; ROAS here?</h3>
+    <p>Paid-ads sections summarize your synced campaigns. For live, drill-down ad metrics use the <a href="/ads-module.html">Ads module</a>; for traffic-source ROI use the <a href="/traffic-module.html">Traffic dashboard</a>.</p>
+    <h3>Where do the readiness scores come from?</h3>
+    <p>From your <a href="/growth-dna-module.html">Growth DNA</a> profile — derived from onboarding, not from ad data.</p>
+  </div>
+
+</main>
+<footer>
+  <a href="/guides.html">All guides</a>
+  <a href="/ads-module.html">Ads</a>
+  <a href="/website-module.html">Website</a>
+  <a href="/recommendations-module.html">Recommendations</a>
+  <a href="/">Home</a>
+  <div class="updated">AdGenieHQ — module guide · Last updated June 2026</div>
+</footer>
+</body>
+</html>
