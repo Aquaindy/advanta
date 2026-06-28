@@ -56,8 +56,10 @@ from app.models.seo_project import SeoProject
 from app.models.skill_output import SkillOutput
 from app.models.suggested_copy import SuggestedCopy, SuggestedCopyType
 from app.models.sync_log import SyncLog, SyncLogStatus
+from app.models.traffic_campaign import TrafficCampaign, TrafficCampaignAsset
 from app.models.usage_event import UsageEvent, UsageEventType
 from app.models.user import User
+from app.models.utm_link import UtmLink
 from app.models.workspace import Workspace
 from app.models.workspace_invitation import InvitationStatus, WorkspaceInvitation
 from app.models.workspace_member import WorkspaceMember
@@ -142,9 +144,12 @@ __all__ = [
     "SubscriptionStatus",
     "SyncLog",
     "SyncLogStatus",
+    "TrafficCampaign",
+    "TrafficCampaignAsset",
     "UsageEvent",
     "UsageEventType",
     "User",
+    "UtmLink",
     "InvitationStatus",
     "Workspace",
     "WorkspaceInvitation",

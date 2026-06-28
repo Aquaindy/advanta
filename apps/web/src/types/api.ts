@@ -1457,3 +1457,149 @@ export type EmailMarketingReport = {
     not_covered?: string;
   };
 };
+
+// ---- Traffic Genie ----
+
+export type TrafficCategory = {
+  slug: string;
+  name: string;
+  description: string;
+};
+
+export type TrafficSource = {
+  slug: string;
+  name: string;
+  category: string;
+  source_type: "paid" | "paid_email" | "organic";
+  best_for: string[];
+  speed: "Fast" | "Medium" | "Slow";
+  cost: "Free" | "Low" | "Medium" | "High";
+  difficulty: "Easy" | "Medium" | "Hard";
+  content_required: string;
+  recommended_goal: string;
+  tracking: string;
+  recommended_followup: string;
+  agents: string[];
+  status: "active" | "manual" | "coming_soon";
+  asset_types: string[];
+};
+
+export type TrafficRecipe = {
+  slug: string;
+  name: string;
+  goal: string;
+  sources: string[];
+  assets: string[];
+};
+
+export type TrafficCatalog = {
+  categories: TrafficCategory[];
+  sources: TrafficSource[];
+  recipes: TrafficRecipe[];
+};
+
+export type TrafficCampaign = {
+  id: string;
+  source_slug: string;
+  name: string;
+  goal: string | null;
+  offer_name: string | null;
+  offer_url: string | null;
+  audience: string | null;
+  budget_cents: number | null;
+  currency: string | null;
+  status: string;
+  start_date: string | null;
+  end_date: string | null;
+  omnisend_segment: string | null;
+  omnisend_flow: string | null;
+  ai_summary: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TrafficCampaignAsset = {
+  id: string;
+  campaign_id: string;
+  agent_run_id: string | null;
+  asset_type: string;
+  title: string | null;
+  content: string;
+  platform: string | null;
+  variation_label: string | null;
+  agent_name: string | null;
+  created_at: string;
+};
+
+export type TrafficCampaignDetail = TrafficCampaign & {
+  assets: TrafficCampaignAsset[];
+};
+
+export type CreateTrafficCampaignRequest = {
+  source_slug: string;
+  name: string;
+  goal?: string | null;
+  offer_name?: string | null;
+  offer_url?: string | null;
+  audience?: string | null;
+  budget_cents?: number | null;
+  currency?: string | null;
+  omnisend_segment?: string | null;
+  omnisend_flow?: string | null;
+};
+
+export type UtmLink = {
+  id: string;
+  campaign_id: string | null;
+  destination_url: string;
+  source: string;
+  medium: string;
+  campaign: string;
+  content: string | null;
+  term: string | null;
+  vendor_name: string | null;
+  generated_url: string;
+  short_url: string | null;
+  created_at: string;
+};
+
+export type CreateUtmLinkRequest = {
+  destination_url: string;
+  source: string;
+  medium: string;
+  campaign: string;
+  content?: string | null;
+  term?: string | null;
+  vendor_name?: string | null;
+  campaign_id?: string | null;
+};
+
+export type TrafficRecommendationRequest = {
+  business_type?: string;
+  product?: string;
+  audience?: string;
+  goal?: string;
+  monthly_budget?: number;
+  speed?: string;
+  business_model?: string;
+  industry?: string;
+  preference?: string;
+};
+
+// Shape of the traffic_recommendation agent's output_payload (plan).
+export type TrafficRecommendation = {
+  generated_at?: string;
+  inputs_echo?: Record<string, unknown>;
+  primary_source?: TrafficSource | null;
+  secondary_source?: TrafficSource | null;
+  organic_support?: TrafficSource | null;
+  retargeting_channel?: TrafficSource | null;
+  follow_up_journey?: string;
+  tracking_setup?: string;
+  estimated_difficulty?: string;
+  estimated_speed?: string;
+  assets_needed?: string[];
+  launch_plan_7_day?: string[];
+  optimization_plan_30_day?: string[];
+  why?: string;
+};

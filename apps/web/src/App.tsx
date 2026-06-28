@@ -45,6 +45,12 @@ const CampaignDetailPage = lazyPage(() => import("@/features/campaigns/CampaignD
 const CampaignsPage = lazyPage(() => import("@/features/campaigns/CampaignsPage"), "CampaignsPage");
 const CreativesPage = lazyPage(() => import("@/features/creatives/CreativesPage"), "CreativesPage");
 const EmailCampaignsPage = lazyPage(() => import("@/features/email/EmailCampaignsPage"), "EmailCampaignsPage");
+const TrafficGeniePage = lazyPage(() => import("@/features/traffic/TrafficGeniePage"), "TrafficGeniePage");
+const TrafficRecommendationPage = lazyPage(() => import("@/features/traffic/TrafficRecommendationPage"), "TrafficRecommendationPage");
+const TrafficCampaignsPage = lazyPage(() => import("@/features/traffic/TrafficCampaignsPage"), "TrafficCampaignsPage");
+const TrafficCampaignDetailPage = lazyPage(() => import("@/features/traffic/TrafficCampaignDetailPage"), "TrafficCampaignDetailPage");
+const UtmBuilderPage = lazyPage(() => import("@/features/traffic/UtmBuilderPage"), "UtmBuilderPage");
+const TrafficDashboardPage = lazyPage(() => import("@/features/traffic/TrafficDashboardPage"), "TrafficDashboardPage");
 const ContentDraftDetailPage = lazyPage(() => import("@/features/content/ContentDraftDetailPage"), "ContentDraftDetailPage");
 const ContentDraftsPage = lazyPage(() => import("@/features/content/ContentDraftsPage"), "ContentDraftsPage");
 const BlogEditorPage = lazyPage(() => import("@/features/blog/BlogEditorPage"), "BlogEditorPage");
@@ -156,6 +162,12 @@ export function App() {
                 <Route path="campaigns/:campaignId" element={<CampaignDetailPage />} />
                 <Route path="creatives" element={<CreativesPage />} />
                 <Route path="email" element={<EmailCampaignsPage />} />
+                <Route path="traffic" element={<TrafficGeniePage />} />
+                <Route path="traffic/recommendation" element={<TrafficRecommendationPage />} />
+                <Route path="traffic/campaigns" element={<TrafficCampaignsPage />} />
+                <Route path="traffic/campaigns/:campaignId" element={<TrafficCampaignDetailPage />} />
+                <Route path="traffic/utm-builder" element={<UtmBuilderPage />} />
+                <Route path="traffic/dashboard" element={<TrafficDashboardPage />} />
                 <Route path="autoresponders" element={<AutorespondersPage />} />
                 <Route path="content" element={<ContentDraftsPage />} />
                 <Route path="content/:draftId" element={<ContentDraftDetailPage />} />

@@ -12,6 +12,8 @@ from app.agents.orchestrator import MasterOrchestratorAgent
 from app.agents.paid_ads import PaidAdsAgent
 from app.agents.seo_audit import SEOAuditAgent
 from app.agents.tracking_attribution import TrackingAttributionAgent
+from app.agents.traffic_assets import TrafficAssetAgent
+from app.agents.traffic_recommendation import TrafficRecommendationAgent
 from app.agents.website_audit import WebsiteAuditAgent
 
 AGENT_REGISTRY: dict[str, type[BaseAgent]] = {
@@ -28,6 +30,8 @@ AGENT_REGISTRY: dict[str, type[BaseAgent]] = {
     CampaignBuilderAgent.type: CampaignBuilderAgent,
     TrackingAttributionAgent.type: TrackingAttributionAgent,
     EmailMarketingAgent.type: EmailMarketingAgent,
+    TrafficRecommendationAgent.type: TrafficRecommendationAgent,
+    TrafficAssetAgent.type: TrafficAssetAgent,
     MasterOrchestratorAgent.type: MasterOrchestratorAgent,
 }
 

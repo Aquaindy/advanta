@@ -46,6 +46,16 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    heading: "Traffic Genie",
+    items: [
+      { to: "/traffic", label: "Traffic sources" },
+      { to: "/traffic/recommendation", label: "AI recommendation" },
+      { to: "/traffic/campaigns", label: "Traffic campaigns" },
+      { to: "/traffic/utm-builder", label: "UTM builder" },
+      { to: "/traffic/dashboard", label: "Traffic dashboard" },
+    ],
+  },
+  {
     heading: "SEO & Content",
     items: [
       { to: "/seo", label: "SEO & GEO" },
