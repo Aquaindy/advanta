@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Website Intelligence Module — Step-by-Step Guide | AdGenieHQ</title>
+<meta name="description" content="The AdGenieHQ Website Intelligence cheat sheet: landing-page conversion audits with real PageSpeed Insights, A/B tests (landing-page + ad) with a tracking snippet, and roll-up reports." />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://adgeniehq.com/website-module.html" />
+<style>
+  :root{
+    --grape:#3E2F84; --violet:#7C3AED; --lav:#EEEAFE; --night:#111827; --cloud:#F9FAFB;
+    --green:#16A34A; --amber:#F59E0B; --red:#DC2626; --slate:#334155; --line:#e5e7eb; --muted:#64748B;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;line-height:1.6;margin:0;background:var(--cloud)}
+  a{color:var(--grape)}
+  header,main,footer{max-width:880px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .brand{font-weight:700;color:var(--grape);text-decoration:none;font-size:16px}
+  nav a{margin-left:16px;text-decoration:none;color:var(--slate);font-size:14px}
+  nav a.active{color:var(--grape);font-weight:600}
+  main{padding-top:32px;padding-bottom:24px}
+  .hero{background:linear-gradient(135deg,#3E2F84,#7C3AED);color:#fff;border-radius:18px;padding:28px 24px;margin-bottom:24px}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.8;margin:0 0 6px}
+  .hero h1{font-size:30px;font-weight:700;margin:0 0 8px;color:#fff}
+  .hero p{margin:0;color:rgba(255,255,255,.92);max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+  h2{font-size:21px;font-weight:700;margin:34px 0 6px;color:var(--night);scroll-margin-top:16px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--lav);color:var(--grape);font-size:14px;margin-right:8px;vertical-align:middle}
+  h3{font-size:16px;font-weight:600;margin:20px 0 4px;color:var(--night)}
+  p{margin:8px 0;color:var(--slate)}
+  .lead{color:var(--muted);margin-top:0}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:8px}
+  .toc h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+  .toc li{margin:4px 0}
+  .toc a{text-decoration:none}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:12px 0}
+  .steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--grape);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--night)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--grape);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:0}
+  .badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-live{background:#dcfce7;color:#166534}
+  .b-read{background:#e0e7ff;color:#3730a3}
+  .b-built{background:#ede9fe;color:#5b21b6}
+  .score{display:inline-block;min-width:74px;text-align:center;border-radius:8px;padding:3px 8px;font-weight:700;font-size:13px;background:var(--lav);color:var(--grape)}
+  .callout{border-left:4px solid var(--violet);background:#faf9ff;border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--amber);background:#fffbeb}
+  .callout.safe{border-left-color:var(--green);background:#f0fdf4}
+  .callout p{margin:4px 0}
+  .callout .t{font-weight:700;color:var(--night)}
+  code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a}
+  ul.tight{margin:8px 0;padding-left:20px}
+  ul.tight li{margin:4px 0;color:var(--slate)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--grape);font-weight:600}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-top:20px;padding-bottom:48px;margin-top:40px}
+  footer a{margin-right:16px;text-decoration:none}
+  .updated{color:#94a3b8;font-size:13px;margin-top:6px}
+  @media (max-width:640px){.toc ol{columns:1}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">AdGenieHQ</a>
+  <nav>
+    <a href="/ads-module.html">Ads</a>
+    <a href="/traffic-module.html">Traffic</a>
+    <a href="/email-marketing-module.html">Email</a>
+    <a href="/seo-module.html">SEO</a>
+    <a class="active" href="/website-module.html">Website</a>
+    <a href="/">App</a>
+  </nav>
+</header>
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">Module guide · Cheat sheet</p>
+    <h1>Website Intelligence Module</h1>
+    <p>Score your landing pages on conversion, mobile UX, and real page speed; then prove what actually wins with head-to-head A/B tests — and roll it all into shareable reports.</p>
+    <div class="chips">
+      <span class="chip">Landing-page audits</span>
+      <span class="chip">Real PageSpeed Insights</span>
+      <span class="chip">A/B tests (page + ad)</span>
+      <span class="chip">Tracking snippet</span>
+      <span class="chip">Roll-up reports</span>
+    </div>
+  </section>
+
+  <p class="lead">Three sidebar pages: <span class="path">Website</span> (audits), <span class="path">A/B tests</span> (experiments), and <span class="path">Reports</span> (roll-ups). Everything scores real fetched pages and real visitor events — no mock numbers.</p>
+
+  <div class="toc">
+    <h4>On this page</h4>
+    <ol>
+      <li><a href="#audit">Landing-page audits</a></li>
+      <li><a href="#checks">What the audit scores</a></li>
+      <li><a href="#site">Full-site conversion audit</a></li>
+      <li><a href="#abcreate">A/B tests — create</a></li>
+      <li><a href="#ablaunch">Launch &amp; install snippet</a></li>
+      <li><a href="#abresults">Read results &amp; pick a winner</a></li>
+      <li><a href="#reports">Reports</a></li>
+      <li><a href="#sources">External sources</a></li>
+      <li><a href="#faq">FAQ &amp; tips</a></li>
+    </ol>
+  </div>
+
+  <div class="callout">
+    <p class="t">⚡ 60-second quickstart</p>
+    <p><b>Website</b> → add a landing page (or import from onboarding) → <b>Run audit</b> → read the three scores &amp; fixes → spin up an <b>A/B test</b> to prove a change → install the snippet → <b>Declare winner</b>.</p>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="audit"><span class="num">1</span>Landing-page audits <span style="font-weight:400;font-size:14px;color:var(--muted)">— /website</span></h2>
+  <p>Track the pages that matter and audit each one with the <code>landing_page_audit</code> agent.</p>
+  <ol class="steps">
+    <li><b>Add a page</b> — paste a URL (with an optional label), or <b>Import from onboarding</b> to pull the URLs you already gave us.</li>
+    <li><b>Run audit</b> — the agent fetches the live page, scores six conversion skills, and runs a real PageSpeed Insights query.</li>
+    <li><b>Read the three scores</b> — Conversion, Mobile UX, and Page Speed (each 0–100), with a per-skill breakdown and severity pills.</li>
+    <li><b>Open the agent run</b> for the full findings and prioritized recommendations.</li>
+  </ol>
+  <p>
+    <span class="score">Conversion</span> &nbsp;
+    <span class="score">Mobile UX</span> &nbsp;
+    <span class="score">Page Speed</span>
+  </p>
+
+  <!-- 2 -->
+  <h2 id="checks"><span class="num">2</span>What the audit scores</h2>
+  <table>
+    <tr><th>Check</th><th>What it looks at</th></tr>
+    <tr><td><b>Above-the-fold value prop</b></td><td>H1 + first paragraph + value signals visible without scrolling</td></tr>
+    <tr><td><b>Primary CTA</b></td><td>Whether the main button/link is present and clearly worded (not vague)</td></tr>
+    <tr><td><b>Trust signals</b></td><td>Logos, testimonials/quotes, ratings</td></tr>
+    <tr><td><b>Form friction</b></td><td>Number and complexity of form fields</td></tr>
+    <tr><td><b>Copy clarity</b></td><td>Sentence length and jargon</td></tr>
+    <tr><td><b>Mobile viewport</b></td><td>Correct responsive viewport meta tag</td></tr>
+    <tr><td><b>Page speed</b></td><td>Real Google PageSpeed Insights (mobile) — performance, plus accessibility / best-practices / SEO</td></tr>
+  </table>
+  <p>The Conversion score is a weighted blend (CTA weighted highest, then above-the-fold, then trust / friction / clarity). Page speed under 50 raises a high-risk recommendation; 50–75 raises a medium one.</p>
+
+  <!-- 3 -->
+  <h2 id="site"><span class="num">3</span>Full-site conversion audit <span style="font-weight:400;font-size:14px;color:var(--muted)">— via /agents</span></h2>
+  <p>The <code>website_audit</code> agent checks your <b>primary domain</b> (from onboarding) for above-the-fold and basic on-page issues that hurt SEO, GEO, and conversion (title, meta description, headings, viewport, robots/noindex). Run it from the <span class="path">Agents</span> dashboard. It audits a single URL — for per-page conversion scoring, use the landing-page audit above.</p>
+
+  <!-- 4 -->
+  <h2 id="abcreate"><span class="num">4</span>A/B tests — create <span style="font-weight:400;font-size:14px;color:var(--muted)">— /ab-tests</span></h2>
+  <p>Run head-to-head experiments on a landing page or an ad. Pick a tab:</p>
+  <table>
+    <tr><th></th><th>Landing-page test</th><th>Ad test</th></tr>
+    <tr><td><b>You provide</b></td><td>Control URL + Treatment URL</td><td>Provider (Meta/Google/LinkedIn), ad account, two variants + daily budgets</td></tr>
+    <tr><td><b>Objective</b></td><td>conversion rate, CTR, signup rate, revenue/visit</td><td>…plus CPA, ROAS</td></tr>
+    <tr><td><b>Traffic split</b></td><td>JS snippet (sticky per visitor)</td><td>Provider serves each variant</td></tr>
+  </table>
+  <p>Optionally add a hypothesis, and let AI generate variant ideas from your control. New tests start as a <b>draft</b>.</p>
+  <div class="callout warn">
+    <p class="t">Ad tests launch paused</p>
+    <p>Ad A/B tests create their campaigns <b>paused</b> on the provider — you flip them to active explicitly, so nothing spends until you say so.</p>
+  </div>
+
+  <!-- 5 -->
+  <h2 id="ablaunch"><span class="num">5</span>Launch &amp; install the snippet <span style="font-weight:400;font-size:14px;color:var(--muted)">— landing-page tests</span></h2>
+  <ol class="steps">
+    <li><b>Launch</b> the test (draft → launched).</li>
+    <li><b>Copy the snippet</b> the test detail page generates — it's pre-filled with your test ID. Two modes:
+      <ul class="tight">
+        <li><b>Redirect mode</b> — each variant is its own URL; visitors are routed to one.</li>
+        <li><b>In-place mode</b> — one URL; the snippet shows/hides the variant blocks you've marked up.</li>
+      </ul>
+    </li>
+    <li><b>Add the conversion line</b> on your success page (the one-liner shown on the same panel) so wins are counted.</li>
+  </ol>
+  <div class="callout safe">
+    <p class="t">Always copy from the app</p>
+    <p>Use the exact snippet shown on the A/B test detail page — it carries the correct script URL, test ID, and conversion call for your account. Assignment is sticky per visitor, and tracking errors are swallowed so they can never break your page.</p>
+  </div>
+
+  <!-- 6 -->
+  <h2 id="abresults"><span class="num">6</span>Read results &amp; pick a winner</h2>
+  <ul class="tight">
+    <li><b>Per variant</b> — visits, conversions, and conversion rate, fed by the snippet's anonymous assign/convert events.</li>
+    <li><b>Statistics</b> — relative lift, confidence interval, p-value, a suggested winner, and an "underpowered" flag when the sample is too small to trust.</li>
+    <li><b>Record metrics manually</b> for ad tests, or <b>sync from GA4</b> (if Google Analytics is connected) to pull sessions + conversions.</li>
+    <li><b>Declare winner</b> when you're confident, then <b>Archive</b> the test.</li>
+  </ul>
+
+  <!-- 7 -->
+  <h2 id="reports"><span class="num">7</span>Reports <span style="font-weight:400;font-size:14px;color:var(--muted)">— /reports</span></h2>
+  <p>Generate a <b>Daily</b>, <b>Weekly</b>, or <b>Monthly</b> roll-up of everything your AI growth team did. Each report pulls real workspace data and downloads as <b>PDF</b> or <b>CSV</b>.</p>
+  <p>Inside: agent activity, open/approved/rejected &amp; high-risk recommendations, campaign stats, SEO keywords, <b>landing-page scores</b>, <b>A/B test counts</b>, content drafts, outreach, and Growth DNA readiness — only the sections you actually have data for.</p>
+
+  <!-- 8 -->
+  <h2 id="sources"><span class="num">8</span>External sources</h2>
+  <table>
+    <tr><th>Source</th><th>Role</th><th>How</th></tr>
+    <tr><td><b>Google PageSpeed Insights</b></td><td>Real mobile performance score in every landing-page audit</td><td><span class="badge b-built">built in</span> (an optional API key just raises rate limits)</td></tr>
+    <tr><td><b>Google Analytics 4</b></td><td>Optional: pull A/B visits + conversions</td><td><span class="badge b-read">read OAuth</span> — connect in Settings → Integrations</td></tr>
+    <tr><td><b>Meta / Google / LinkedIn Ads</b></td><td>Serve and budget ad-based A/B variants</td><td><span class="badge b-live">OAuth</span> — see the <a href="/ads-module.html">Ads module</a></td></tr>
+    <tr><td><b>Your site (the snippet)</b></td><td>Sticky variant assignment + conversion events</td><td>Paste the generated snippet on your pages</td></tr>
+  </table>
+
+  <!-- FAQ -->
+  <h2 id="faq"><span class="num">?</span>FAQ &amp; tips</h2>
+  <div class="card">
+    <h3>Does the audit crawl my whole site?</h3>
+    <p>No — a landing-page audit scores the single URL you give it (that's what makes the per-page scores precise). For your primary domain's basic on-page health, run the full-site <code>website_audit</code> from Agents.</p>
+    <h3>Is the page-speed score real?</h3>
+    <p>Yes — it's a live Google PageSpeed Insights query (mobile strategy), not an estimate. It works without an API key; a key just raises the rate limit.</p>
+    <h3>Why isn't my A/B test counting conversions?</h3>
+    <p>Make sure you (1) launched the test, (2) installed the snippet on the variant page(s), and (3) added the conversion line on your success page. Copy all three from the test detail page.</p>
+    <h3>Will ad A/B tests spend money automatically?</h3>
+    <p>No. Ad variants are created paused on the provider; you activate them explicitly. See the <a href="/ads-module.html">Ads module</a> for approval &amp; Autopilot guardrails.</p>
+  </div>
+
+</main>
+<footer>
+  <a href="/ads-module.html">Ads</a>
+  <a href="/traffic-module.html">Traffic</a>
+  <a href="/email-marketing-module.html">Email</a>
+  <a href="/seo-module.html">SEO &amp; GEO</a>
+  <a href="/website-module.html">Website</a>
+  <a href="/">Home</a>
+  <div class="updated">AdGenieHQ — module guide · Last updated June 2026</div>
+</footer>
+</body>
+</html>

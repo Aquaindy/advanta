@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SEO &amp; GEO Module — Step-by-Step Guide | AdGenieHQ</title>
+<meta name="description" content="The AdGenieHQ SEO & GEO cheat sheet: technical SEO audit, Search Console keyword opportunities, GEO structured-data foundations, the content drafter, blog editor, and backlink outreach." />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://adgeniehq.com/seo-module.html" />
+<style>
+  :root{
+    --grape:#3E2F84; --violet:#7C3AED; --lav:#EEEAFE; --night:#111827; --cloud:#F9FAFB;
+    --green:#16A34A; --amber:#F59E0B; --red:#DC2626; --slate:#334155; --line:#e5e7eb; --muted:#64748B;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;line-height:1.6;margin:0;background:var(--cloud)}
+  a{color:var(--grape)}
+  header,main,footer{max-width:880px;margin:0 auto;padding:0 20px}
+  header{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+  .brand{font-weight:700;color:var(--grape);text-decoration:none;font-size:16px}
+  nav a{margin-left:16px;text-decoration:none;color:var(--slate);font-size:14px}
+  nav a.active{color:var(--grape);font-weight:600}
+  main{padding-top:32px;padding-bottom:24px}
+  .hero{background:linear-gradient(135deg,#3E2F84,#7C3AED);color:#fff;border-radius:18px;padding:28px 24px;margin-bottom:24px}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;opacity:.8;margin:0 0 6px}
+  .hero h1{font-size:30px;font-weight:700;margin:0 0 8px;color:#fff}
+  .hero p{margin:0;color:rgba(255,255,255,.92);max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+  h2{font-size:21px;font-weight:700;margin:34px 0 6px;color:var(--night);scroll-margin-top:16px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--lav);color:var(--grape);font-size:14px;margin-right:8px;vertical-align:middle}
+  h3{font-size:16px;font-weight:600;margin:20px 0 4px;color:var(--night)}
+  p{margin:8px 0;color:var(--slate)}
+  .lead{color:var(--muted);margin-top:0}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:8px}
+  .toc h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+  .toc li{margin:4px 0}
+  .toc a{text-decoration:none}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:12px 0}
+  .steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--grape);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--night)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--grape);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:0}
+  .badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-live{background:#dcfce7;color:#166534}
+  .b-read{background:#e0e7ff;color:#3730a3}
+  .b-built{background:#ede9fe;color:#5b21b6}
+  .b-low{background:#dcfce7;color:#166534}
+  .b-med{background:#fef3c7;color:#92400e}
+  .b-high{background:#fee2e2;color:#991b1b}
+  .callout{border-left:4px solid var(--violet);background:#faf9ff;border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--amber);background:#fffbeb}
+  .callout.safe{border-left-color:var(--green);background:#f0fdf4}
+  .callout p{margin:4px 0}
+  .callout .t{font-weight:700;color:var(--night)}
+  code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a}
+  ul.tight{margin:8px 0;padding-left:20px}
+  ul.tight li{margin:4px 0;color:var(--slate)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--grape);font-weight:600}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-top:20px;padding-bottom:48px;margin-top:40px}
+  footer a{margin-right:16px;text-decoration:none}
+  .updated{color:#94a3b8;font-size:13px;margin-top:6px}
+  @media (max-width:640px){.toc ol{columns:1}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">AdGenieHQ</a>
+  <nav>
+    <a href="/ads-module.html">Ads</a>
+    <a href="/traffic-module.html">Traffic</a>
+    <a href="/email-marketing-module.html">Email</a>
+    <a class="active" href="/seo-module.html">SEO</a>
+    <a href="/website-module.html">Website</a>
+    <a href="/">App</a>
+  </nav>
+</header>
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">Module guide · Cheat sheet</p>
+    <h1>SEO &amp; GEO Module</h1>
+    <p>Audit your site's technical SEO, mine Search Console for keyword opportunities you already rank for, lay the structured-data foundations AI answer engines rely on, then draft and publish the content — and earn the backlinks — that compound visibility.</p>
+    <div class="chips">
+      <span class="chip">Technical SEO audit</span>
+      <span class="chip">Search Console opportunities</span>
+      <span class="chip">GEO structured data</span>
+      <span class="chip">Content drafter + blog</span>
+      <span class="chip">Backlink outreach</span>
+    </div>
+  </section>
+
+  <p class="lead">This module spans four sidebar pages: <span class="path">SEO &amp; GEO</span>, <span class="path">Content</span>, <span class="path">Blog</span>, and <span class="path">Outreach</span>. Everything runs on your real site data and Search Console — no invented rankings.</p>
+
+  <div class="toc">
+    <h4>On this page</h4>
+    <ol>
+      <li><a href="#audit">Technical SEO audit</a></li>
+      <li><a href="#gsc">Search Console opportunities</a></li>
+      <li><a href="#geo">GEO foundations</a></li>
+      <li><a href="#content">Content drafter</a></li>
+      <li><a href="#blog">Blog editor &amp; publishing</a></li>
+      <li><a href="#outreach">Backlink outreach</a></li>
+      <li><a href="#sources">External sources</a></li>
+      <li><a href="#scope">What's not included (yet)</a></li>
+      <li><a href="#faq">FAQ &amp; tips</a></li>
+    </ol>
+  </div>
+
+  <div class="callout">
+    <p class="t">⚡ 60-second quickstart</p>
+    <p><b>SEO &amp; GEO</b> → <b>Run SEO audit</b> (crawls + checks your pages) → connect Search Console in Settings → <b>Sync Search Console</b> for keyword opportunities → fix the flagged issues → draft content in <b>Content</b>/<b>Blog</b> → chase links in <b>Outreach</b>.</p>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="audit"><span class="num">1</span>Technical SEO audit <span style="font-weight:400;font-size:14px;color:var(--muted)">— /seo · "Run SEO audit"</span></h2>
+  <p>The <code>seo_audit</code> agent discovers your sitemap (via robots.txt / sitemap.xml / sitemap_index.xml), crawls a handful of real pages, and runs on-page checks. Results appear in the <b>Site overview</b> card with issue counts and saved recommendations.</p>
+  <table>
+    <tr><th>What it checks per page</th><th>Flagged when…</th></tr>
+    <tr><td>Title tag</td><td>missing <span class="badge b-high">high</span></td></tr>
+    <tr><td>Meta description</td><td>missing <span class="badge b-med">medium</span></td></tr>
+    <tr><td>H1 / headings</td><td>missing or multiple <span class="badge b-med">medium</span></td></tr>
+    <tr><td>Canonical link</td><td>absent <span class="badge b-low">low</span></td></tr>
+    <tr><td>Structured data (JSON-LD)</td><td>none present <span class="badge b-med">medium</span></td></tr>
+    <tr><td>Open Graph tags</td><td>missing <span class="badge b-low">low</span></td></tr>
+    <tr><td>FAQ schema</td><td>not detected <span class="badge b-low">low</span></td></tr>
+  </table>
+  <p>The overview also tells you whether a sitemap was found, how many URLs it lists, how many pages were crawled, and which Search Console site is linked.</p>
+
+  <!-- 2 -->
+  <h2 id="gsc"><span class="num">2</span>Search Console opportunities <span style="font-weight:400;font-size:14px;color:var(--muted)">— "Sync Search Console"</span></h2>
+  <p>Connect <b>Google Search Console</b> (Settings → Integrations, read-only OAuth), then click <b>Sync Search Console</b>. AdGenieHQ pulls the last 28 days of query data and builds a <b>keyword opportunities</b> table:</p>
+  <ul class="tight">
+    <li>Query · impressions · clicks · CTR · average position · the top page that ranks for it</li>
+    <li>An <b>opportunity score (0–100)</b> per keyword — high impressions + middling position + low CTR float to the top, so you see the "almost there" wins first.</li>
+  </ul>
+  <div class="callout warn">
+    <p class="t">Search Console must be connected first</p>
+    <p>No GSC connection = an empty table with a connect prompt (linking to Integrations). The data only ever reflects keywords your site already appears for — nothing is estimated or scraped from third-party tools.</p>
+  </div>
+
+  <!-- 3 -->
+  <h2 id="geo"><span class="num">3</span>GEO foundations <span style="font-weight:400;font-size:14px;color:var(--muted)">— Generative Engine Optimization</span></h2>
+  <p>"GEO" here means making your pages legible to AI answer engines and rich results. The audit specifically flags the structured-data building blocks those engines rely on, as dedicated recommendations:</p>
+  <ul class="tight">
+    <li><b>Structured data (JSON-LD)</b> missing — so engines can parse what your page is about</li>
+    <li><b>FAQ schema</b> missing — the format most likely to be lifted into answers</li>
+    <li><b>Open Graph</b> missing — clean titles/descriptions when your page is cited or shared</li>
+  </ul>
+  <div class="callout safe">
+    <p class="t">Honest scope</p>
+    <p>GEO here is about <b>fixing the on-page foundations</b> AI engines need — it checks your markup. It does not (yet) query ChatGPT/Perplexity/Google AI to measure your live answer-engine share of voice.</p>
+  </div>
+
+  <!-- 4 -->
+  <h2 id="content"><span class="num">4</span>Content drafter <span style="font-weight:400;font-size:14px;color:var(--muted)">— /content</span></h2>
+  <p>The <code>content_writer</code> agent turns a brief into a saved draft awaiting review.</p>
+  <ol class="steps">
+    <li><b>Pick a type</b> — blog post, landing page, ad copy, meta description, email, or social post.</li>
+    <li><b>Add the brief</b> — topic (required), optional audience and comma-separated keywords.</li>
+    <li><b>Generate draft</b> — uses your configured LLM, or a deterministic template built from your onboarding profile if none.</li>
+    <li><b>Review &amp; move it</b> — edit the title/body/SEO fields, then Approve → Publish → Archive (or Reject with a reason). Every step is audit-trailed.</li>
+  </ol>
+
+  <!-- 5 -->
+  <h2 id="blog"><span class="num">5</span>Blog editor &amp; publishing <span style="font-weight:400;font-size:14px;color:var(--muted)">— /blog/posts</span></h2>
+  <ul class="tight">
+    <li><b>Markdown editor</b> with live preview, drag-and-drop image upload, and a cover image picker.</li>
+    <li><b>AI Assist</b> — outline, expand, refine, suggest a title, suggest meta — applied to the whole draft or a selection.</li>
+    <li><b>Settings tab</b> — slug (unique per workspace), excerpt, keywords, and SEO meta (title/description).</li>
+    <li><b>Publish</b> — approved + published posts render on your public blog at <span class="path">/blog</span> and <span class="path">/blog/{slug}</span>; an optional publish webhook can notify an external CMS.</li>
+  </ul>
+
+  <!-- 6 -->
+  <h2 id="outreach"><span class="num">6</span>Backlink outreach <span style="font-weight:400;font-size:14px;color:var(--muted)">— /outreach</span></h2>
+  <p>Track the sites you want links from and run safe, human-approved outreach.</p>
+  <ol class="steps">
+    <li><b>Add prospects</b> — by domain (with optional contact, relevance score, domain authority), bulk-import a list, or <b>discover</b> them by crawling a competitor's outbound links.</li>
+    <li><b>Draft an email</b> — generate a personalized pitch (optionally with an angle + sender name); it lands in <b>draft</b>.</li>
+    <li><b>Approve &amp; send</b> — edit, then an Admin approves and sends. SMTP is the only path that actually reaches the recipient.</li>
+    <li><b>Track replies</b> — inbound replies are matched back to the thread automatically; mark won/replied and record the live backlink URL. Draft threaded follow-ups as needed.</li>
+  </ol>
+  <div class="callout warn">
+    <p class="t">Emails never auto-send</p>
+    <p>Drafted outreach always waits for explicit Admin approval, every send is audit-logged with IP + user agent, and AdGenieHQ adds an unsubscribe path. No spam blasts, no surprise sends.</p>
+  </div>
+
+  <!-- 7 -->
+  <h2 id="sources"><span class="num">7</span>External sources <span style="font-weight:400;font-size:14px;color:var(--muted)">— what feeds this module</span></h2>
+  <table>
+    <tr><th>Source</th><th>Role</th><th>How</th></tr>
+    <tr><td><b>Google Search Console</b></td><td>Keyword impressions, clicks, CTR, position</td><td><span class="badge b-read">read-only OAuth</span> — connect in Settings → Integrations</td></tr>
+    <tr><td><b>Sitemap + page crawler</b></td><td>Discovers and fetches your real pages for the audit</td><td><span class="badge b-built">built in</span> — no setup</td></tr>
+    <tr><td><b>SMTP + inbound parse</b></td><td>Sends approved outreach &amp; matches replies</td><td><span class="badge b-built">server-side</span> — set by your operator</td></tr>
+  </table>
+
+  <!-- 8 -->
+  <h2 id="scope"><span class="num">8</span>What's not included (yet)</h2>
+  <p>So you know exactly where the lines are:</p>
+  <ul class="tight">
+    <li>No third-party keyword databases (Semrush / Ahrefs / DataForSEO) — opportunities come from <b>your</b> Search Console only.</li>
+    <li>No automatic search-intent classification or content-gap mapping.</li>
+    <li>No single "site visibility" index — scoring is per-keyword opportunity.</li>
+    <li>Page-speed scoring lives in the <a href="/website-module.html">Website module</a>, not here.</li>
+    <li>Domain authority / relevance in Outreach are entered by you, not auto-fetched.</li>
+  </ul>
+
+  <!-- FAQ -->
+  <h2 id="faq"><span class="num">?</span>FAQ &amp; tips</h2>
+  <div class="card">
+    <h3>The keyword table is empty.</h3>
+    <p>Connect Google Search Console in Settings → Integrations, then click <b>Sync Search Console</b>. The table fills with the queries your site already ranks for.</p>
+    <h3>How many pages does the audit crawl?</h3>
+    <p>A focused sample (homepage + a few sitemap URLs) so it's fast and respectful of your server — enough to surface systemic issues across templates.</p>
+    <h3>Does the audit need an OpenAI key?</h3>
+    <p>No. The crawl, checks, and Search Console scoring are deterministic. The content drafter and AI Assist use your LLM when configured, with template fallbacks.</p>
+    <h3>Where do published blog posts appear?</h3>
+    <p>On your public blog (<span class="path">/blog</span> and <span class="path">/blog/{slug}</span>) once a post is approved and published with a slug.</p>
+  </div>
+
+</main>
+<footer>
+  <a href="/ads-module.html">Ads</a>
+  <a href="/traffic-module.html">Traffic</a>
+  <a href="/email-marketing-module.html">Email</a>
+  <a href="/seo-module.html">SEO &amp; GEO</a>
+  <a href="/website-module.html">Website</a>
+  <a href="/">Home</a>
+  <div class="updated">AdGenieHQ — module guide · Last updated June 2026</div>
+</footer>
+</body>
+</html>

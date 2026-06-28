@@ -51,7 +51,7 @@ function SiteFooter() {
   return (
     <footer className="border-t border-slate-200 bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <Link to="/" className="flex items-center gap-2">
               <Logomark />
@@ -68,6 +68,17 @@ function SiteFooter() {
             <FooterLink to="/">Overview</FooterLink>
             <FooterLink to="/pricing">Pricing</FooterLink>
             <FooterLink to="/blog">Blog</FooterLink>
+          </FooterColumn>
+
+          {/* Module guides are static HTML in public/ (served by the CDN
+              before the SPA rewrite), so they MUST use real <a> anchors —
+              a React Router <Link> would client-side route and 404. */}
+          <FooterColumn title="Guides">
+            <FooterAnchor href="/ads-module.html">Ads module</FooterAnchor>
+            <FooterAnchor href="/traffic-module.html">Traffic module</FooterAnchor>
+            <FooterAnchor href="/email-marketing-module.html">Email module</FooterAnchor>
+            <FooterAnchor href="/seo-module.html">SEO &amp; GEO module</FooterAnchor>
+            <FooterAnchor href="/website-module.html">Website module</FooterAnchor>
           </FooterColumn>
 
           <FooterColumn title="Get started">
@@ -121,6 +132,18 @@ function FooterLink({ to, children }: { to: string; children: ReactNode }) {
       <Link to={to} className="text-slate-600 transition hover:text-grape-700">
         {children}
       </Link>
+    </li>
+  );
+}
+
+
+// Plain anchor (full-page navigation) for static files outside the SPA router.
+function FooterAnchor({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <li>
+      <a href={href} className="text-slate-600 transition hover:text-grape-700">
+        {children}
+      </a>
     </li>
   );
 }
