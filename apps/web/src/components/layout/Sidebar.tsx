@@ -51,6 +51,7 @@ const navGroups: NavGroup[] = [
       { to: "/traffic", label: "Traffic sources" },
       { to: "/traffic/recommendation", label: "AI recommendation" },
       { to: "/traffic/campaigns", label: "Traffic campaigns" },
+      { to: "/traffic/solo-ads", label: "Solo Ads" },
       { to: "/traffic/utm-builder", label: "UTM builder" },
       { to: "/traffic/dashboard", label: "Traffic dashboard" },
     ],

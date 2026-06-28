@@ -54,6 +54,7 @@ from app.models.refresh_token import RefreshToken
 from app.models.report import Report, ReportPeriod, ReportStatus
 from app.models.seo_project import SeoProject
 from app.models.skill_output import SkillOutput
+from app.models.solo_ad import SoloAdOrder, SoloAdVendor
 from app.models.suggested_copy import SuggestedCopy, SuggestedCopyType
 from app.models.sync_log import SyncLog, SyncLogStatus
 from app.models.traffic_campaign import TrafficCampaign, TrafficCampaignAsset
@@ -138,6 +139,8 @@ __all__ = [
     "ReportStatus",
     "SeoProject",
     "SkillOutput",
+    "SoloAdOrder",
+    "SoloAdVendor",
     "SuggestedCopy",
     "SuggestedCopyType",
     "SubscriptionSource",

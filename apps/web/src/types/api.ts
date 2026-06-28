@@ -1603,3 +1603,101 @@ export type TrafficRecommendation = {
   optimization_plan_30_day?: string[];
   why?: string;
 };
+
+// ---- Solo Ads (Paid Email Traffic) ----
+
+export type SoloAdVendor = {
+  id: string;
+  name: string;
+  website: string | null;
+  contact_email: string | null;
+  niche: string | null;
+  countries: string | null;
+  average_cpc_cents: number | null;
+  notes: string | null;
+  quality_score: number | null;
+  status: string;
+  created_at: string;
+};
+
+export type CreateVendorRequest = {
+  name: string;
+  website?: string | null;
+  contact_email?: string | null;
+  niche?: string | null;
+  countries?: string | null;
+  average_cpc_cents?: number | null;
+  notes?: string | null;
+  status?: string | null;
+};
+
+export type SoloAdOrder = {
+  id: string;
+  vendor_id: string | null;
+  traffic_campaign_id: string | null;
+  name: string | null;
+  status: string;
+  currency: string | null;
+  clicks_purchased: number;
+  clicks_delivered: number;
+  unique_clicks: number;
+  cost_cents: number;
+  optins: number;
+  sales: number;
+  revenue_cents: number;
+  refunds: number;
+  cpc_cents: number | null;
+  cpl_cents: number | null;
+  epc_cents: number | null;
+  roi: number | null;
+  optin_rate: number | null;
+  quality_score: number | null;
+  quality_verdict: string | null;
+  quality_flags: string[] | null;
+  quality_note: string | null;
+  created_at: string;
+};
+
+export type CreateOrderRequest = {
+  vendor_id?: string | null;
+  traffic_campaign_id?: string | null;
+  name?: string | null;
+  status?: string | null;
+  currency?: string | null;
+  clicks_purchased?: number | null;
+  clicks_delivered?: number | null;
+  unique_clicks?: number | null;
+  cost_cents?: number | null;
+  optins?: number | null;
+  sales?: number | null;
+  revenue_cents?: number | null;
+  refunds?: number | null;
+};
+
+export type SoloAdsPlaybookRequest = {
+  offer_name?: string;
+  offer_url?: string;
+  audience?: string;
+  goal?: string;
+  niche?: string;
+  lead_magnet?: string;
+  vendor_name?: string;
+  campaign_name?: string;
+};
+
+export type SoloAdsPlaybook = {
+  offer_name?: string | null;
+  goal?: string | null;
+  generation?: string;
+  offer_suitability?: string;
+  subject_lines?: string[];
+  email_swipes?: string[];
+  preheader?: string;
+  cta_options?: string[];
+  landing_headline?: string;
+  thank_you_cta?: string;
+  vendor_screening_checklist?: string[];
+  followup_sequence?: string[];
+  tracking_plan?: string[];
+  compliance_notes?: string[];
+};

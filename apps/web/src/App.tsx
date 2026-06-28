@@ -51,6 +51,7 @@ const TrafficCampaignsPage = lazyPage(() => import("@/features/traffic/TrafficCa
 const TrafficCampaignDetailPage = lazyPage(() => import("@/features/traffic/TrafficCampaignDetailPage"), "TrafficCampaignDetailPage");
 const UtmBuilderPage = lazyPage(() => import("@/features/traffic/UtmBuilderPage"), "UtmBuilderPage");
 const TrafficDashboardPage = lazyPage(() => import("@/features/traffic/TrafficDashboardPage"), "TrafficDashboardPage");
+const SoloAdsPage = lazyPage(() => import("@/features/traffic/SoloAdsPage"), "SoloAdsPage");
 const ContentDraftDetailPage = lazyPage(() => import("@/features/content/ContentDraftDetailPage"), "ContentDraftDetailPage");
 const ContentDraftsPage = lazyPage(() => import("@/features/content/ContentDraftsPage"), "ContentDraftsPage");
 const BlogEditorPage = lazyPage(() => import("@/features/blog/BlogEditorPage"), "BlogEditorPage");
@@ -168,6 +169,7 @@ export function App() {
                 <Route path="traffic/campaigns/:campaignId" element={<TrafficCampaignDetailPage />} />
                 <Route path="traffic/utm-builder" element={<UtmBuilderPage />} />
                 <Route path="traffic/dashboard" element={<TrafficDashboardPage />} />
+                <Route path="traffic/solo-ads" element={<SoloAdsPage />} />
                 <Route path="autoresponders" element={<AutorespondersPage />} />
                 <Route path="content" element={<ContentDraftsPage />} />
                 <Route path="content/:draftId" element={<ContentDraftDetailPage />} />
